@@ -12,6 +12,9 @@ func ProcessCommand(ctx context.Context, command string) {
 	switch command {
 	case "echo":
 		port.SendResult("echo")
+	case "example":
+		Example()
+		port.SendResult("ok")
 	case "stop":
 		log.Info("Stopping Go MIDI server ...")
 		<-ctx.Done()
