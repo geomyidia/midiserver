@@ -14,7 +14,7 @@ TBD
 
 Apache Version 2 License
 
-Copyright © 2020-2021, Duncan McGreggor <oubiwann@gmail.com>
+Copyright © 2020-2021, Duncan McGreggor
 
 [//]: ---Named-Links---
 
