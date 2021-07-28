@@ -23,6 +23,7 @@ func ProcessMessages(ctx context.Context, fn CommandProcessor) {
 	log.Info("Processing messages sent to Go language server ...")
 	go func() {
 		for {
+			// XXX Let's make these switchable with a CLI flag
 			cmd := ProcessExecMessage()
 			// cmd := ProcessPortMessage()
 			if cmd == "continue" {
