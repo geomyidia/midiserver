@@ -35,4 +35,4 @@ run:
 	@GO111MODULE=on go run ./$(CMD_APP)
 
 clean:
-	@rm $(BIN_APP)
+	@rm -f $(BIN_APP)

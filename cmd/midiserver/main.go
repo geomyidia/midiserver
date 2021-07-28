@@ -24,7 +24,7 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		port.ProcessPortMessages(ctx, midiserver.ProcessCommand)
+		port.ProcessMessages(ctx, midiserver.ProcessCommand)
 	}()
 
 	// Listen for the interrupt signal.

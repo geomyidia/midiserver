@@ -9,7 +9,7 @@ import (
 // CommandProcessor ...
 type CommandProcessor func(context.Context, string)
 
-// ProcessPortMessages handles messages of the Erlang Port format along the
+// ProcessMessages handles messages of the Erlang Port format along the
 // following lines:
 //   a           = []byte{0x83, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   "a"         = []byte{0x83, 0x6b, 0x0, 0x1, 0x61, 0xa}
@@ -19,11 +19,12 @@ type CommandProcessor func(context.Context, string)
 //   {a, a}      = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   {a, test}   = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
 //   {a, "test"} = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x6b, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
-func ProcessPortMessages(ctx context.Context, fn CommandProcessor) {
+func ProcessMessages(ctx context.Context, fn CommandProcessor) {
 	log.Info("Processing messages sent to Go language server ...")
 	go func() {
 		for {
-			cmd := ProcessPortMessage()
+			cmd := ProcessExecMessage()
+			// cmd := ProcessPortMessage()
 			if cmd == "continue" {
 				continue
 			}

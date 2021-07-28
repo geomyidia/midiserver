@@ -11,12 +11,12 @@ import (
 
 type printer struct{}
 
-func (pr printer) noteOn(p *reader.Position, channel, key, vel uint8) {
-	fmt.Printf("NoteOn (ch %v: key %v vel: %v)\n", channel, key, vel)
+func (pr printer) noteOn(p *reader.Position, channel, pitch, vel uint8) {
+	fmt.Printf("NoteOn (ch %v: pitch %v vel: %v)\n", channel, pitch, vel)
 }
 
-func (pr printer) noteOff(p *reader.Position, channel, key, vel uint8) {
-	fmt.Printf("NoteOff (ch %v: key %v)\n", channel, key)
+func (pr printer) noteOff(p *reader.Position, channel, pitch, vel uint8) {
+	fmt.Printf("NoteOff (ch %v: pitch %v)\n", channel, pitch)
 }
 
 func Example() {
@@ -36,10 +36,10 @@ func Example() {
 
 	go func() {
 		wr := writer.New(pipewr)
-		wr.SetChannel(11) // sets the channel for the next messages
-		writer.NoteOn(wr, 120, 50)
-		time.Sleep(time.Second)
-		writer.NoteOff(wr, 120) // let the note ring for 1 sec
+		wr.SetChannel(1) // sets the channel for the next messages
+		writer.NoteOn(wr, 120, 100)
+		time.Sleep(5 * time.Second)
+		writer.NoteOff(wr, 120) // let the note ring for 5 sec
 		pipewr.Close()          // finishes the writing
 	}()
 
@@ -49,7 +49,4 @@ func Example() {
 			break
 		}
 	}
-
-	// Output: NoteOn (ch 11: key 120 vel: 50)
-	// NoteOff (ch 11: key 120)
 }
