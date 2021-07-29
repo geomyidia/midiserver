@@ -11,6 +11,8 @@ type Version struct {
 	GitCommit  string
 	GitBranch  string
 	GitSummary string
+	GoVersion  string
+	GoArch     string
 }
 
 // BuildString ...
@@ -19,6 +21,22 @@ func BuildString(version *Version) string {
 		return na
 	}
 	return fmt.Sprintf("%s@%s, %s", version.GitBranch, version.GitCommit, version.BuildDate)
+}
+
+// GoVersionString ...
+func GoVersionString(version *Version) string {
+	if version.GoVersion == "" {
+		return na
+	}
+	return version.GoVersion
+}
+
+// GoArchString ...
+func GoArchString(version *Version) string {
+	if version.GoArch == "" {
+		return na
+	}
+	return version.GoArch
 }
 
 // VersionString ...
@@ -39,5 +57,5 @@ func VersionedBuildString(version *Version) string {
 	if gc == "" {
 		gc = na
 	}
-	return fmt.Sprintf("%s, %s@%s, %s", v, version.GitBranch, gc, version.BuildDate)
+	return fmt.Sprintf("%s/%s@%s, built: %s", v, version.GitBranch, gc, version.BuildDate)
 }

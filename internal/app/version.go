@@ -9,6 +9,8 @@ var (
 	gitCommit  string
 	gitBranch  string
 	gitSummary string
+	goVersion  string
+	goArch     string
 )
 
 // VersionData stuff for things
@@ -19,12 +21,24 @@ func VersionData() *util.Version {
 		GitCommit:  gitCommit,
 		GitBranch:  gitBranch,
 		GitSummary: gitSummary,
+		GoVersion:  goVersion,
+		GoArch:  goArch,
 	}
 }
 
 // BuildString ...
 func BuildString() string {
 	return util.BuildString(VersionData())
+}
+
+// GoVersionString ...
+func GoVersionString() string {
+	return util.GoVersionString(VersionData())
+}
+
+// GoArchString ...
+func GoArchString() string {
+	return util.GoArchString(VersionData())
 }
 
 // VersionString ...
