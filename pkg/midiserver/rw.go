@@ -6,19 +6,19 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-	driver "gitlab.com/gomidi/rtmididrv"
 	"gitlab.com/gomidi/midi/reader"
 	"gitlab.com/gomidi/midi/writer"
+	driver "gitlab.com/gomidi/rtmididrv"
 )
 
 type printer struct{}
 
 func (pr printer) noteOn(p *reader.Position, channel, pitch, vel uint8) {
-	fmt.Printf("NoteOn (ch %v: pitch %v vel: %v)\n", channel, pitch, vel)
+	fmt.Printf("NoteOn (ch %v: pitch %v vel: %v)", channel, pitch, vel)
 }
 
 func (pr printer) noteOff(p *reader.Position, channel, pitch, vel uint8) {
-	fmt.Printf("NoteOff (ch %v: pitch %v)\n", channel, pitch)
+	fmt.Printf("NoteOff (ch %v: pitch %v)", channel, pitch)
 }
 
 func Example() {
@@ -41,14 +41,14 @@ func Example() {
 		log.Panic(err)
 	}
 
-	log.Debug("MIDI IN Ports")
+	log.Debug("MIDI IN Ports:")
 	for _, port := range ins {
-		log.Debugf("[%v] %s\n", port.Number(), port.String())
+		log.Debugf("\t[%v] %s", port.Number(), port.String())
 	}
 
-	log.Debug("MIDI OUT Ports")
+	log.Debug("MIDI OUT Ports:")
 	for _, port := range outs {
-		log.Debugf("[%v] %s\n", port.Number(), port.String())
+		log.Debugf("\t[%v] %s", port.Number(), port.String())
 	}
 
 	in, out := ins[0], outs[0]
@@ -78,13 +78,19 @@ func Example() {
 		// wr := writer.New(pipewr)
 		wr := writer.New(out)
 		wr.SetChannel(0) // sets the channel for the next messages
+
+		seconds := 5
+		log.Debugf("Playing note for %d seconds ...", seconds)
+
 		err := writer.NoteOn(wr, 60, 100)
 		if err != nil {
 			log.Panic(err)
 		}
-		time.Sleep(5 * time.Second)
+
+		duration := time.Duration(seconds) * time.Second
+		time.Sleep(duration)
 		writer.NoteOff(wr, 60) // let the note ring for 5 sec
-		pipewr.Close()          // finishes the writing
+		pipewr.Close()         // finishes the writing
 	}()
 
 	for {
