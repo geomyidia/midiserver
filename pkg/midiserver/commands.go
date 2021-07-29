@@ -6,23 +6,41 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geomyidia/erl-midi-server/pkg/port"
+	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
 // ProcessCommand ...
-func ProcessCommand(ctx context.Context, command string) {
+func ProcessCommand(ctx context.Context, key types.ParserKey, command string) {
+	parserType := ctx.Value(key).(string)
 	switch command {
 	case "ping":
-		port.SendResult("pong")
+		sendResult(parserType, "pong")
 	case "example":
 		Example()
-		port.SendResult("ok")
+		sendResult(parserType, "ok")
 	case "stop":
 		log.Info("Stopping Go MIDI server ...")
 		<-ctx.Done()
 	case "version":
-		port.SendResult(version.VersionedBuildString())
+		sendResult(parserType, version.VersionedBuildString())
 	default:
-		port.SendError("Received unsupported command: " + command)
+		sendError(parserType, "Received unsupported command: "+command)
+	}
+}
+
+func sendResult(parserType string, msg string) {
+	if parserType == "text" {
+		println(msg)
+	} else {
+		port.SendResult(msg)
+	}
+}
+
+func sendError(parserType string, msg string) {
+	if parserType == "text" {
+		log.Error(msg)
+	} else {
+		port.SendError(msg)
 	}
 }

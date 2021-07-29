@@ -4,10 +4,12 @@ import (
 	"context"
 
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geomyidia/erl-midi-server/pkg/types"
 )
 
 // CommandProcessor ...
-type CommandProcessor func(context.Context, string)
+type CommandProcessor func(context.Context, types.ParserKey, string)
 type MessageParser func() string
 
 // ProcessMessages handles messages of the Erlang Port format along the
@@ -20,7 +22,7 @@ type MessageParser func() string
 //   {a, a}      = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   {a, test}   = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
 //   {a, "test"} = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x6b, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
-func ProcessMessages(ctx context.Context, procFn MessageParser, cmdFn CommandProcessor) {
+func ProcessMessages(ctx context.Context, procFn MessageParser, cmdFn CommandProcessor, key types.ParserKey) {
 	log.Info("Processing messages sent to Go language server ...")
 	log.Debugf("Using message parser %T", procFn)
 	log.Debugf("Using command processor %T", cmdFn)
@@ -30,7 +32,7 @@ func ProcessMessages(ctx context.Context, procFn MessageParser, cmdFn CommandPro
 			if cmd == "continue" {
 				continue
 			}
-			cmdFn(ctx, cmd)
+			cmdFn(ctx, key, cmd)
 
 		}
 	}()
