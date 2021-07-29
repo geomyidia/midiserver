@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"flag"
+	"fmt"
+	"os"
 	"sync"
 	"syscall"
 
@@ -13,7 +16,18 @@ import (
 )
 
 func main() {
-	app.SetupLogging()
+	logLevelPtr := flag.String("loglevel", "info", "Set the logging level")
+	versionPtr := flag.Bool("version", false, "Display version/build info and exit")
+
+	flag.Parse()
+	if *versionPtr {
+		println("Version: ", app.VersionString())
+		println("Build: ", app.BuildString())
+		fmt.Printf("Go: %s (%s)\n", app.GoVersionString(), app.GoArchString())
+		os.Exit(0)
+	}
+
+	app.SetupLogging(*logLevelPtr)
 	log.Info("Starting up Go midiserver ...")
 	log.Infof("Running version: %s", app.VersionedBuildString())
 	app.SetupRandom()
