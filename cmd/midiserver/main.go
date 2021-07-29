@@ -1,43 +1,22 @@
 package main
 
 import (
-	"context"
-	"sync"
-	"syscall"
-
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geomyidia/erl-midi-server/internal/app"
-	"github.com/geomyidia/erl-midi-server/pkg/midiserver"
-	"github.com/geomyidia/erl-midi-server/pkg/port"
+	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
 func main() {
 	flags := app.ParseCLI()
 	app.SetupLogging(flags.LogLevel)
-	log.Info("Starting up Go midiserver ...")
-	log.Infof("Running version: %s", app.VersionedBuildString())
+	log.Info("Welcome to the Go midiserver!")
+	log.Infof("Running version: %s", version.VersionedBuildString())
 	app.SetupRandom()
-	ctx, cancel := app.SignalWithContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer cancel()
-	var wg sync.WaitGroup
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		parser := port.ProcessExecMessage
-		if flags.Parser == app.PortParser {
-			parser = port.ProcessPortMessage
-		}
-		port.ProcessMessages(ctx, parser, midiserver.ProcessCommand)
-	}()
-
-	// Listen for the interrupt signal.
-	<-ctx.Done()
-	// Restore default behavior on the interrupt signal and notify user of shutdown.
-	cancel()
-	log.Info("Shutting down gracefully, press Ctrl+C again to force")
-	log.Info("Waiting for wait groups to finish ...")
-	wg.Wait()
-	log.Info("Application shutdown complete.")
+	log.Tracef("Flags: %+v", flags)
+	if flags.Daemon || flags.Parser != app.TextParser {
+		app.Serve(flags.Parser)
+	} else {
+		log.Debug("Using CLI mode ...")
+	}
 }

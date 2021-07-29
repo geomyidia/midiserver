@@ -5,8 +5,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/erl-midi-server/internal/app"
 	"github.com/geomyidia/erl-midi-server/pkg/port"
+	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
 // ProcessCommand ...
@@ -21,7 +21,7 @@ func ProcessCommand(ctx context.Context, command string) {
 		log.Info("Stopping Go MIDI server ...")
 		<-ctx.Done()
 	case "version":
-		port.SendResult(app.VersionedBuildString())
+		port.SendResult(version.VersionedBuildString())
 	default:
 		port.SendError("Received unsupported command: " + command)
 	}

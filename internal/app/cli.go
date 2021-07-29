@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
 const (
@@ -24,7 +26,7 @@ func ParseCLI() *Flags {
 	shortUse := "; short-form flag"
 
 	var daemon bool
-	daemDef := true
+	daemDef := false
 	daemUse := "Daemonise midiserver; this disables the text parser"
 	flag.BoolVar(&daemon, "daemon", daemDef, daemUse)
 	flag.BoolVar(&daemon, "d", daemDef, daemUse+shortUse)
@@ -42,28 +44,31 @@ func ParseCLI() *Flags {
 		PortParser + ", " +
 		TextParser + "]"
 	parsUse := "Set the parser to user for commands and data. Legal values are " +
-		parsLegals
+		parsLegals + ". \n" +
+		"Note that setting to 'text' disables daemonisation and setting any of " +
+		"the other \n" +
+		"parsers automatically enables daemonisation"
 	flag.StringVar(&parser, "parser", parsDef, parsUse)
 	flag.StringVar(&parser, "p", parsDef, parsUse+shortUse)
 
-	var version bool
+	var vsn bool
 	verDef := false
 	verUse := "Display version/build info and exit"
-	flag.BoolVar(&version, "version", verDef, verUse)
-	flag.BoolVar(&version, "v", verDef, verUse+shortUse)
+	flag.BoolVar(&vsn, "version", verDef, verUse)
+	flag.BoolVar(&vsn, "v", verDef, verUse+shortUse)
 
 	flag.Parse()
 	flags := &Flags{
 		Daemon:   daemon,
 		LogLevel: loglevel,
 		Parser:   parser,
-		Version:  version,
+		Version:  vsn,
 	}
 
 	if flags.Version {
-		println("Version: ", VersionString())
-		println("Build: ", BuildString())
-		fmt.Printf("Go: %s (%s)\n", GoVersionString(), GoArchString())
+		println("Version: ", version.VersionString())
+		println("Build: ", version.BuildString())
+		fmt.Printf("Go: %s (%s)\n", version.GoVersionString(), version.GoArchString())
 		os.Exit(0)
 	}
 	return flags
