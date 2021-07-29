@@ -8,6 +8,7 @@ import (
 
 // CommandProcessor ...
 type CommandProcessor func(context.Context, string)
+type MessageParser func() string
 
 // ProcessMessages handles messages of the Erlang Port format along the
 // following lines:
@@ -19,17 +20,17 @@ type CommandProcessor func(context.Context, string)
 //   {a, a}      = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   {a, test}   = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
 //   {a, "test"} = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x6b, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
-func ProcessMessages(ctx context.Context, fn CommandProcessor) {
+func ProcessMessages(ctx context.Context, procFn MessageParser, cmdFn CommandProcessor) {
 	log.Info("Processing messages sent to Go language server ...")
+	log.Debugf("Using message parser %T", procFn)
+	log.Debugf("Using command processor %T", cmdFn)
 	go func() {
 		for {
-			// XXX Let's make these switchable with a CLI flag
-			cmd := ProcessExecMessage()
-			// cmd := ProcessPortMessage()
+			cmd := procFn()
 			if cmd == "continue" {
 				continue
 			}
-			fn(ctx, cmd)
+			cmdFn(ctx, cmd)
 
 		}
 	}()
