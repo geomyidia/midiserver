@@ -7,7 +7,8 @@ import (
 
 	"github.com/geomyidia/erl-midi-server/internal/cli"
 	"github.com/geomyidia/erl-midi-server/internal/util"
-	"github.com/geomyidia/erl-midi-server/pkg/port"
+	"github.com/geomyidia/erl-midi-server/pkg/erl/exec"
+	"github.com/geomyidia/erl-midi-server/pkg/erl/port"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
@@ -21,11 +22,11 @@ func Serve(ctx context.Context, key types.ParserKey, parserFlag string) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		parser := port.ProcessExecMessage
+		parser := exec.ProcessMessage
 		if parserFlag == cli.PortParser {
-			parser = port.ProcessPortMessage
+			parser = port.ProcessMessage
 		}
-		port.ProcessMessages(ctx, parser, ProcessCommand, key)
+		ProcessMessages(ctx, parser, ProcessCommand, key)
 	}()
 
 	// Listen for the interrupt signal.

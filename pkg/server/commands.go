@@ -6,8 +6,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/erl-midi-server/pkg/erl/messages"
 	"github.com/geomyidia/erl-midi-server/pkg/midi"
-	"github.com/geomyidia/erl-midi-server/pkg/port"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
@@ -37,7 +37,7 @@ func sendResult(parserType string, msg string) {
 	if parserType == "text" {
 		println(msg)
 	} else {
-		port.SendResult(msg)
+		messages.SendResult(msg)
 	}
 }
 
@@ -45,7 +45,7 @@ func sendError(parserType string, msg string) {
 	if parserType == "text" {
 		log.Error(msg)
 	} else {
-		port.SendError(msg)
+		messages.SendError(msg)
 	}
 }
 

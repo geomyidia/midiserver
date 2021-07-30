@@ -1,13 +1,15 @@
-package port
+package exec
 
 import (
 	"bufio"
-	"fmt"
 	"encoding/hex"
+	"fmt"
 	"os"
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geomyidia/erl-midi-server/pkg/erl/messages"
 )
 
 // Constants
@@ -19,52 +21,10 @@ const (
 	CMDVALUEINDEX = 1
 )
 
-// ProcessPortMessage ...
-func ProcessPortMessage() string {
-	var term interface{}
-	reader := bufio.NewReader(os.Stdin)
-	packet, _ := reader.ReadBytes(DELIMITER)
-	if len(packet) == 0 {
-		log.Fatal("Read zero bytes")
-		return "continue"
-	}
-	log.Debugf("Original packet: %#v", packet)
-	log.Debugf("Packet length: %d", len(packet))
-	// Drop the message's field separator, \0xa (newline)
-	packet = packet[:len(packet)-1]
-	log.Debugf("New packet: %#v", packet)
-	term, err := erlang.BinaryToTerm(packet)
-	if err != nil {
-		log.Errorf("Problem with packet: %#v", packet)
-		log.Error(err)
-		return "continue"
-	}
-	log.Debugf("Got Erlang Port message: %#v", term)
-	tuple, ok := term.(erlang.OtpErlangTuple)
-	if !ok {
-		SendError("Did not receive expected message type")
-		return "continue"
-	}
-	if len(tuple) != CMDARITY {
-		SendError(fmt.Sprintf("Tuple of wrong size; expected 2, got %d", len(tuple)))
-		return "continue"
-	}
-	if tuple[CMDKEYINDEX] != erlang.OtpErlangAtom("command") {
-		SendError("Did not receive expected tuple message format {command, ...}")
-		return "continue"
-	}
-	command, ok := tuple[CMDVALUEINDEX].(erlang.OtpErlangAtom)
-	if !ok {
-		SendError("Did not receive command as Erlang atom")
-		return "continue"
-	}
-	return string(command)
-}
-
-// ProcessExecMessage - when using the Erlang exec library to send
+// ProcessMessage - when using the Erlang exec library to send
 // messages to this Go server, a stange thing happens: a byte is
-// dropped from the middle of the 
-func ProcessExecMessage() string {
+// dropped from the middle of the
+func ProcessMessage() string {
 	reader := bufio.NewReader(os.Stdin)
 	packet, _ := reader.ReadBytes(DELIMITER)
 	if len(packet) == 0 {
@@ -89,32 +49,32 @@ func ProcessExecMessage() string {
 	log.Debugf("Got Erlang Exec message: %#v", term)
 	tuple, ok := term.(erlang.OtpErlangTuple)
 	if !ok {
-		SendError("Did not receive expected message type")
+		messages.SendError("Did not receive expected message type")
 		return "continue"
 	}
 	if len(tuple) != CMDARITY {
-		SendError(fmt.Sprintf("Tuple of wrong size; expected 2, got %d", len(tuple)))
+		messages.SendError(fmt.Sprintf("Tuple of wrong size; expected 2, got %d", len(tuple)))
 		return "continue"
 	}
 	if tuple[CMDKEYINDEX] != erlang.OtpErlangAtom("command") {
-		SendError("Did not receive expected tuple message format {command, ...}")
+		messages.SendError("Did not receive expected tuple message format {command, ...}")
 		return "continue"
 	}
 	command, ok := tuple[CMDVALUEINDEX].(erlang.OtpErlangAtom)
 	if !ok {
-		SendError("Did not receive command as Erlang atom")
+		messages.SendError("Did not receive command as Erlang atom")
 		return "continue"
 	}
 	return string(command)
 }
 
-// unwrap is a utility function for a hack needed in order to 
+// unwrap is a utility function for a hack needed in order to
 // successully handle messages from the Erlang exec library.
 //
 // What was happening when exec messages were being processed
 // by ProcessPortMessage was that a single byte was being dropped
 // from the middle (in the case of the #(command ping) message,
-// it was byte 0x04 of the Term protocol encoded bytes). The 
+// it was byte 0x04 of the Term protocol encoded bytes). The
 // bytes at the sending end were present and correct, just not
 // at the receiving end.
 //
