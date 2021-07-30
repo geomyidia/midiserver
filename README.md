@@ -6,7 +6,7 @@
 
 [![][logo]][logo-large]
 
-*A MIDI CLI tool and server, focused on supporting BEAM apps via the Erlang Ports protocol*
+*A MIDI CLI tool and server written in Go, focused on supporting BEAM apps via Erlang Ports*
 
 TBD
 
