@@ -1,4 +1,4 @@
-# erl-midi-server
+# midiserver
 
 [![Build Status][gh-actions-badge]][gh-actions]
 [![LFE Versions][lfe badge]][lfe]
@@ -6,7 +6,7 @@
 
 [![][logo]][logo-large]
 
-*A MIDI server that communicates with BEAM apps via the Erlang Ports protocol*
+*A MIDI CLI tool and server, focused on supporting BEAM apps via the Erlang Ports protocol*
 
 TBD
 
