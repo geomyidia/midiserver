@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geomyidia/erl-midi-server/internal/app"
-	"github.com/geomyidia/erl-midi-server/pkg/midiserver"
+	"github.com/geomyidia/erl-midi-server/pkg/server"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
@@ -30,6 +30,6 @@ func main() {
 		app.Serve(ctx, key, flags.Parser)
 	} else {
 		log.Debug("Using CLI mode ...")
-		midiserver.ProcessCommand(ctx, key, cmd)
+		server.ProcessCommand(ctx, key, cmd)
 	}
 }

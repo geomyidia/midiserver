@@ -1,4 +1,4 @@
-package midiserver
+package server
 
 import (
 	"time"

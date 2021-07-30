@@ -5,8 +5,8 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/geomyidia/erl-midi-server/pkg/midiserver"
 	"github.com/geomyidia/erl-midi-server/pkg/port"
+	"github.com/geomyidia/erl-midi-server/pkg/server"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
@@ -24,7 +24,7 @@ func Serve(ctx context.Context, key types.ParserKey, parserFlag string) {
 		if parserFlag == PortParser {
 			parser = port.ProcessPortMessage
 		}
-		port.ProcessMessages(ctx, parser, midiserver.ProcessCommand, key)
+		port.ProcessMessages(ctx, parser, server.ProcessCommand, key)
 	}()
 
 	// Listen for the interrupt signal.
