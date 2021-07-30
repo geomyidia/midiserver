@@ -22,7 +22,10 @@ func main() {
 	app.SetupRandom()
 	key := types.ParserKey("key")
 	ctx := context.WithValue(context.Background(), key, flags.Parser)
-	cmd := flag.Args()[0]
+	cmd := ""
+	if len(flag.Args()) > 0 {
+		cmd = flag.Args()[0]
+	}
 	if flags.Daemon || flags.Parser != app.TextParser {
 		app.Serve(ctx, key, flags.Parser)
 	} else {

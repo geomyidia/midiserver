@@ -2,9 +2,11 @@ package midiserver
 
 import (
 	"context"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/erl-midi-server/pkg/midi"
 	"github.com/geomyidia/erl-midi-server/pkg/port"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
@@ -19,6 +21,8 @@ func ProcessCommand(ctx context.Context, key types.ParserKey, command string) {
 	case "example":
 		Example()
 		sendResult(parserType, "ok")
+	case "list-devices":
+		listDevices()
 	case "stop":
 		log.Info("Stopping Go MIDI server ...")
 		<-ctx.Done()
@@ -43,4 +47,21 @@ func sendError(parserType string, msg string) {
 	} else {
 		port.SendError(msg)
 	}
+}
+
+func listDevices() {
+
+	midiSystem := midi.NewSystem()
+	defer midiSystem.Close()
+
+	fmt.Printf("MIDI IN Ports:\n")
+	for _, port := range midiSystem.Ins {
+		fmt.Printf("\t[%v] %s\n", port.Number(), port.String())
+	}
+
+	fmt.Printf("MIDI OUT Ports:\n")
+	for _, port := range midiSystem.Outs {
+		fmt.Printf("\t[%v] %s\n", port.Number(), port.String())
+	}
+
 }
