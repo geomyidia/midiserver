@@ -1,19 +1,20 @@
-package app
+package server
 
 import (
 	"context"
 	"sync"
 	"syscall"
 
+	"github.com/geomyidia/erl-midi-server/internal/cli"
+	"github.com/geomyidia/erl-midi-server/internal/util"
 	"github.com/geomyidia/erl-midi-server/pkg/port"
-	"github.com/geomyidia/erl-midi-server/pkg/server"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	log "github.com/sirupsen/logrus"
 )
 
 func Serve(ctx context.Context, key types.ParserKey, parserFlag string) {
 	log.Info("Starting the server ...")
-	ctx, cancel := SignalWithContext(ctx, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := util.SignalWithContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 	var wg sync.WaitGroup
 
@@ -21,10 +22,10 @@ func Serve(ctx context.Context, key types.ParserKey, parserFlag string) {
 	go func() {
 		defer wg.Done()
 		parser := port.ProcessExecMessage
-		if parserFlag == PortParser {
+		if parserFlag == cli.PortParser {
 			parser = port.ProcessPortMessage
 		}
-		port.ProcessMessages(ctx, parser, server.ProcessCommand, key)
+		port.ProcessMessages(ctx, parser, ProcessCommand, key)
 	}()
 
 	// Listen for the interrupt signal.

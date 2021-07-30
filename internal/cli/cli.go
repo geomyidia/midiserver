@@ -1,4 +1,4 @@
-package app
+package cli
 
 import (
 	"flag"
@@ -16,13 +16,14 @@ const (
 )
 
 type Flags struct {
+	Args     []string
 	Daemon   bool
 	LogLevel string
 	Parser   string
 	Version  bool
 }
 
-func ParseCLI() *Flags {
+func Parse() *Flags {
 	shortUse := "; short-form flag"
 
 	var daemon bool
@@ -59,6 +60,7 @@ func ParseCLI() *Flags {
 
 	flag.Parse()
 	flags := &Flags{
+		Args:     flag.Args(),
 		Daemon:   daemon,
 		LogLevel: loglevel,
 		Parser:   parser,
