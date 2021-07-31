@@ -38,3 +38,9 @@ func NewSystem() *System {
 func (s *System) Close() {
 	s.Driver.Close()
 }
+
+func MessageDispatch() {
+	// Process the new messages defined here:
+	// * https://github.com/erlsci/midilib/blob/release/0.4.x/src/midimsg.erl
+	// that have been processed in pkg/erl/...?
+}

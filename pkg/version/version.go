@@ -20,7 +20,7 @@ func BuildString() string {
 	if gitCommit == "" {
 		return na
 	}
-	return fmt.Sprintf("%s@%s, %s", gitBranch, gitCommit, buildDate)
+	return fmt.Sprintf("%s@%s, built: %s", gitBranch, gitCommit, buildDate)
 }
 
 // GoVersionString ...
@@ -57,5 +57,5 @@ func VersionedBuildString() string {
 	if gc == "" {
 		gc = na
 	}
-	return fmt.Sprintf("%s/%s@%s, built: %s", v, gitBranch, gc, buildDate)
+	return fmt.Sprintf("%s/%s", v, BuildString())
 }

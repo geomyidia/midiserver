@@ -16,6 +16,8 @@ import (
 func ProcessCommand(ctx context.Context, key types.ParserKey, command string) {
 	parserType := ctx.Value(key).(string)
 	switch command {
+	case "midi":
+		midi.MessageDispatch()
 	case "ping":
 		sendResult(parserType, "pong")
 	case "example":
@@ -29,6 +31,9 @@ func ProcessCommand(ctx context.Context, key types.ParserKey, command string) {
 	case "version":
 		sendResult(parserType, version.VersionedBuildString())
 	default:
+		if command == "" {
+			command = "(no value)"
+		}
 		sendError(parserType, "Received unsupported command: "+command)
 	}
 }

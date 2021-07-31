@@ -22,23 +22,36 @@ LD_GO_ARCH = -X $(FQ_PROJ)/pkg/version.goArch=$(GO_ARCH)
 
 LDFLAGS = -w -s $(LD_VERSION) $(LD_BUILDDATE) $(LD_GITBRANCH) $(LD_GITSUMMARY) $(LD_GITCOMMIT) $(LD_GO_VERSION) $(LD_GO_ARCH)
 
+MAINS = cmd/%/main.go
+CMDS = $(wildcard cmd/*/main.go)
+BINS = $(patsubst $(MAINS),bin/%,$(CMDS))
+
 default: all
 
-all: build
+all: $(BINS)
 
-build: $(BIN_APP)
-
-bin:
-	@mkdir ./bin
-
-$(BIN_APP): bin
-	@GO111MODULE=on go build -ldflags "$(LDFLAGS)" -o $(BIN_APP) ./$(CMD_APP)
-
-start: build
-	@$(BIN_APP)
-
-run:
-	@GO111MODULE=on go run ./$(CMD_APP)
+bin/%: $(MAINS)
+	@echo ">> Building $@ ..."
+	@go build -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
 clean:
-	@rm -f $(BIN_APP)
+	@echo ">> Removing $(BINS) ..."
+	@rm -f $(BINS)
+
+serve: all
+	@echo ">> Serving from compiled binary ..."
+	@$(BIN_APP) -loglevel debug -daemon
+
+run:
+	@echo ">> Running ..."
+	@GO111MODULE=on go run ./$(CMD_APP)
+
+help: all
+	@echo ">> Getting binary version info ..."
+	@$(BIN_APP) -loglevel error -h
+
+version: all
+	@echo ">> Getting binary version info ..."
+	@$(BIN_APP) -loglevel error -version
+
+rebuild: clean all
