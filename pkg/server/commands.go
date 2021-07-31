@@ -6,15 +6,15 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/erl-midi-server/pkg/erl"
 	"github.com/geomyidia/erl-midi-server/pkg/erl/messages"
-	"github.com/geomyidia/erl-midi-server/pkg/erl/term"
 	"github.com/geomyidia/erl-midi-server/pkg/midi"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
 // ProcessCommand ...
-func ProcessCommand(ctx context.Context, key types.ParserKey, command term.Result) {
+func ProcessCommand(ctx context.Context, key types.ParserKey, command erl.Result) {
 	parserType := ctx.Value(key).(string)
 	switch command {
 	case "midi":

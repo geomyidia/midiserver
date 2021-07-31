@@ -1,4 +1,4 @@
-package term
+package erl
 
 import (
 	"bufio"

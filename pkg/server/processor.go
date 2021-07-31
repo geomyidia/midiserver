@@ -5,13 +5,22 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/erl-midi-server/pkg/erl/term"
+	"github.com/geomyidia/erl-midi-server/pkg/erl"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 )
 
 // CommandProcessor ...
-type CommandProcessor func(context.Context, types.ParserKey, term.Result)
-type MessageParser func() term.Result
+type CommandProcessor func(context.Context, types.ParserKey, erl.Result)
+type MessageProcessor func() erl.Result
+
+func ProcessMessage(opts *erl.Opts) erl.Result {
+	mp, err := erl.NewMessageProcessor(opts)
+	if err != nil {
+		log.Error(err)
+		return mp.Continue()
+	}
+	return mp.Process()
+}
 
 // ProcessMessages handles messages of the Erlang Port format along the
 // following lines:
@@ -23,14 +32,14 @@ type MessageParser func() term.Result
 //   {a, a}      = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   {a, test}   = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
 //   {a, "test"} = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x6b, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
-func ProcessMessages(ctx context.Context, procFn MessageParser, cmdFn CommandProcessor, key types.ParserKey) {
+func ProcessMessages(ctx context.Context, cmdFn CommandProcessor, key types.ParserKey, opts *erl.Opts) {
 	log.Info("Processing messages sent to Go language server ...")
-	log.Debugf("Using message parser %T", procFn)
 	log.Debugf("Using command processor %T", cmdFn)
+	log.Debugf("Using command processor options %#v", opts)
 	go func() {
 		for {
-			cmd := procFn()
-			if cmd == term.Result("continue") {
+			cmd := ProcessMessage(opts)
+			if cmd == erl.Result("continue") {
 				continue
 			}
 			cmdFn(ctx, key, cmd)
