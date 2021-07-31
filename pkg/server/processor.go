@@ -5,12 +5,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/erl-midi-server/pkg/erl/term"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 )
 
 // CommandProcessor ...
-type CommandProcessor func(context.Context, types.ParserKey, string)
-type MessageParser func() string
+type CommandProcessor func(context.Context, types.ParserKey, term.Result)
+type MessageParser func() term.Result
 
 // ProcessMessages handles messages of the Erlang Port format along the
 // following lines:
@@ -29,7 +30,7 @@ func ProcessMessages(ctx context.Context, procFn MessageParser, cmdFn CommandPro
 	go func() {
 		for {
 			cmd := procFn()
-			if cmd == "continue" {
+			if cmd == term.Result("continue") {
 				continue
 			}
 			cmdFn(ctx, key, cmd)

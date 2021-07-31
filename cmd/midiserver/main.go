@@ -7,6 +7,7 @@ import (
 
 	"github.com/geomyidia/erl-midi-server/internal/app"
 	"github.com/geomyidia/erl-midi-server/internal/cli"
+	"github.com/geomyidia/erl-midi-server/pkg/erl/term"
 	"github.com/geomyidia/erl-midi-server/pkg/server"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
@@ -29,6 +30,6 @@ func main() {
 		server.Serve(ctx, key, flags.Parser)
 	} else {
 		log.Debug("Using CLI mode ...")
-		server.ProcessCommand(ctx, key, cmd)
+		server.ProcessCommand(ctx, key, term.Result(cmd))
 	}
 }
