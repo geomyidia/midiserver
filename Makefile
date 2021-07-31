@@ -54,4 +54,8 @@ version: all
 	@echo ">> Getting binary version info ..."
 	@$(BIN_APP) -loglevel error -version
 
+test:
+	@echo ">> Running unit tests ..."
+	@export PATH=$$PATH:~/go/bin && richgo test -v ./... || echo "Uh-oh ... 🔥"
+
 rebuild: clean all
