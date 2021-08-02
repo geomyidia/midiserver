@@ -52,7 +52,7 @@ func Example() {
 	wr.SetChannel(0) // sets the channel for the next messages
 
 	seconds := 5
-	log.Debugf("Playing note for %d seconds ...", seconds)
+	log.Debugf("playing note for %d seconds ...", seconds)
 
 	err = writer.NoteOn(wr, 60, 100)
 	if err != nil {

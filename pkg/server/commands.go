@@ -26,8 +26,9 @@ func ProcessCommand(ctx context.Context, key types.ParserKey, command erl.Result
 		sendResult(parserType, "ok")
 	case "list-devices":
 		listDevices()
+		sendResult(parserType, "ok")
 	case "stop":
-		log.Info("Stopping Go MIDI server ...")
+		log.Info("stopping Go MIDI server ...")
 		<-ctx.Done()
 	case "version":
 		sendResult(parserType, version.VersionedBuildString())
@@ -35,7 +36,7 @@ func ProcessCommand(ctx context.Context, key types.ParserKey, command erl.Result
 		if command == "" {
 			command = "(no value)"
 		}
-		sendError(parserType, "Received unsupported command: "+string(command))
+		sendError(parserType, "received unsupported command: "+string(command))
 	}
 }
 
@@ -56,7 +57,6 @@ func sendError(parserType string, msg string) {
 }
 
 func listDevices() {
-
 	midiSystem := midi.NewSystem()
 	defer midiSystem.Close()
 

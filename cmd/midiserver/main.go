@@ -17,8 +17,8 @@ func main() {
 	flags := cli.Parse()
 	app.SetupLogging(flags.LogLevel)
 	log.Info("Welcome to the Go midiserver!")
-	log.Infof("Running version: %s", version.VersionedBuildString())
-	log.Tracef("Flags: %+v", flags)
+	log.Infof("running version: %s", version.VersionedBuildString())
+	log.Tracef("flags: %+v", flags)
 	app.SetupRandom()
 	key := types.ParserKey("key")
 	ctx := context.WithValue(context.Background(), key, flags.Parser)
@@ -29,7 +29,7 @@ func main() {
 	if flags.Daemon || flags.Parser != cli.TextParser {
 		server.Serve(ctx, key, flags.Parser)
 	} else {
-		log.Debug("Using CLI mode ...")
+		log.Debug("using CLI mode ...")
 		server.ProcessCommand(ctx, key, erl.Result(cmd))
 	}
 }

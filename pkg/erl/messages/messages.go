@@ -12,7 +12,7 @@ func ErrorMessage(errMsg string) erlang.OtpErlangTuple {
 	err := make([]interface{}, 2)
 	err[0] = erlang.OtpErlangAtom("error")
 	err[1] = errMsg
-	log.Warnf("Created error tuple: %#v", err)
+	log.Warnf("created error tuple: %#v", err)
 	return erlang.OtpErlangTuple(err)
 }
 
@@ -21,7 +21,7 @@ func ResultMessage(value string) erlang.OtpErlangTuple {
 	result := make([]interface{}, 2)
 	result[0] = erlang.OtpErlangAtom("result")
 	result[1] = value
-	log.Tracef("Created result tuple: %#v", result)
+	log.Tracef("created result tuple: %#v", result)
 	return erlang.OtpErlangTuple(result)
 }
 
@@ -45,6 +45,6 @@ func SendError(errMsg string) {
 // SendResult ...
 func SendResult(value string) {
 	msg := ResultMessage(value)
-	log.Debugf("Created result message: %#v", msg)
+	log.Debugf("created result message: %#v", msg)
 	SendMessage(msg)
 }

@@ -23,6 +23,10 @@ const (
 
 type Result string
 
+func Continue() Result {
+	return Result("continue")
+}
+
 type Opts struct {
 	IsHexEncoded bool
 }
@@ -34,12 +38,10 @@ func DefaultOpts() *Opts {
 }
 
 type Packet struct {
-	bytes     []byte
-	len       int
-	last      int
-	trimmed   []byte
-	unwrapped []byte
-	opts      *Opts
+	bytes []byte
+	len   int
+	last  int
+	opts  *Opts
 }
 
 func ReadStdIOPacket(opts *Opts) (*Packet, error) {
@@ -49,30 +51,29 @@ func ReadStdIOPacket(opts *Opts) (*Packet, error) {
 	if byteLen == 0 {
 		return nil, errors.New("read zero bytes")
 	}
-	log.Tracef("Original packet: %#v", bytes)
-	log.Tracef("Original packet length: %d", byteLen)
+	log.Tracef("original packet: %#v", bytes)
+	log.Tracef("original packet length: %d", byteLen)
 	packet := &Packet{
 		bytes: bytes,
 		len:   byteLen,
 		last:  byteLen - 1,
-	}
-	packet.setTrimmed()
-	err := packet.setUnwrapped()
-	if err != nil {
-		return nil, err
+		opts:  opts,
 	}
 	return packet, nil
 }
 
-func (p *Packet) setTrimmed() {
-	p.trimmed = p.bytes[:p.last]
+func (p *Packet) getTrimmed() []byte {
+	log.Debug("getting trimmed ...")
+	return p.bytes[:p.last]
 }
 
-func (p *Packet) Bytes() []byte {
+func (p *Packet) Bytes() ([]byte, error) {
+	log.Debug("getting bytes ...")
+	log.Debugf("IsHexEncoded: %v", p.opts.IsHexEncoded)
 	if p.opts.IsHexEncoded {
-		return p.unwrapped
+		return p.getUnwrapped()
 	}
-	return p.trimmed
+	return p.getTrimmed(), nil
 }
 
 // setUnwrapped is a utility method for a hack needed in order to
@@ -90,20 +91,30 @@ func (p *Packet) Bytes() []byte {
 // function below hex-decodes this, and allows the function
 // ProcessExecMessage to handle binary encoded Term data with
 // none of its bytes missing.
-func (p *Packet) setUnwrapped() error {
+func (p *Packet) getUnwrapped() ([]byte, error) {
+	log.Debug("getting unwrapped ... ")
 	if p.opts.IsHexEncoded {
-		hexStr := string(p.trimmed[:])
+		hexStr := string(p.getTrimmed()[:])
+		log.Tracef("got hex string: %s", hexStr)
 		bytes, err := hex.DecodeString(hexStr)
+		log.Tracef("got decoded string: %v", bytes)
 		if err != nil {
-			return fmt.Errorf("problem unwrapping packet: %s", err.Error())
+			return nil, fmt.Errorf("problem unwrapping packet: %s", err.Error())
 		}
-		p.trimmed = bytes
+		log.Tracef("set trim bytes: %v", bytes)
+		return bytes, nil
 	}
-	return nil
+	return nil, nil
 }
 
 func (p *Packet) Term() (interface{}, error) {
-	bytes := p.Bytes()
+	log.Debug("getting term ...")
+	bytes, err := p.Bytes()
+	if err != nil {
+		return nil, fmt.Errorf("problem getting bytes %#v: %s",
+			bytes, err.Error())
+	}
+	log.Tracef("got bytes: %v", bytes)
 	term, err := erlang.BinaryToTerm(bytes)
 	if err != nil {
 		return nil, fmt.Errorf("problem creating Erlang term from %#v: %s",
@@ -180,7 +191,7 @@ func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
 	if err != nil {
 		return &MessageProcessor{}, err
 	}
-	log.Debugf("Got Erlang Port term")
+	log.Debugf("got Erlang Port term")
 	log.Tracef("%#v", t)
 	msg, err := NewMessage(t)
 	if err != nil {
@@ -210,7 +221,7 @@ func (mp *MessageProcessor) Process() Result {
 		// process MIDI message
 		return mp.Continue()
 	} else {
-		log.Error("Unexected message type")
+		log.Error("unexected message type")
 		return mp.Continue()
 	}
 }
