@@ -121,63 +121,57 @@ func (p *Packet) Term() (interface{}, error) {
 	return term, nil
 }
 
-type Message struct {
-	tuple     erlang.OtpErlangTuple
-	directive erlang.OtpErlangAtom
-	payload   interface{}
+type CommandMessage struct {
+	command erlang.OtpErlangAtom
+	args    []interface{}
 }
 
-func NewMessage(t interface{}) (*Message, error) {
-	tuple, ok := t.(erlang.OtpErlangTuple)
-	if !ok {
-		return nil, errors.New("unexpected message format")
-	}
+func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
+	log.Debug("handling command tuple ...")
 	if len(tuple) != DRCTVARITY {
 		return nil, fmt.Errorf("tuple of wrong size; expected 2, got %d", len(tuple))
 	}
-	directive, ok := tuple[DRCTVKEYINDEX].(erlang.OtpErlangAtom)
+	_, ok := tuple[DRCTVKEYINDEX].(erlang.OtpErlangAtom)
 	if !ok {
 		return nil, errors.New("unexpected type for directive")
 	}
-	msg := &Message{tuple: tuple}
-	msg.directive = directive
-	msg.payload = tuple[DRCTVVALUEINDEX]
+	msg := &CommandMessage{}
+	msg.command = tuple[DRCTVVALUEINDEX].(erlang.OtpErlangAtom)
 	return msg, nil
 }
 
-func (m *Message) Directive() erlang.OtpErlangAtom {
-	return m.directive
+func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
+	msg := &CommandMessage{}
+	//msg.command = tuple[DRCTVVALUEINDEX].(erlang.OtpErlangAtom)
+	//msg.args =
+	return msg, nil
 }
 
-func (m *Message) Payload() interface{} {
-	return m.payload
-}
-
-func (m *Message) IsCommand() bool {
-	return m.directive == erlang.OtpErlangAtom("command")
-}
-
-func (m *Message) IsMIDI() bool {
-	return m.directive == erlang.OtpErlangAtom("midi")
-}
-
-func (m *Message) Command() (erlang.OtpErlangAtom, error) {
-	if !m.IsCommand() {
-		return erlang.OtpErlangAtom("error"),
-			errors.New("directive is not a command")
-	}
-	command, ok := m.Payload().(erlang.OtpErlangAtom)
+func NewCommandMessage(t interface{}) (*CommandMessage, error) {
+	tuple, ok := t.(erlang.OtpErlangTuple)
 	if !ok {
-		return erlang.OtpErlangAtom("error"),
-			errors.New("could not extract command atom")
+		tuples, ok := t.(erlang.OtpErlangList)
+		if !ok {
+			return nil, errors.New("unexpected message format")
+		}
+		return handleTuples(tuples)
 	}
-	return command, nil
+	return handleTuple(tuple)
+}
+
+func (m *CommandMessage) Command() erlang.OtpErlangAtom {
+	return m.command
+}
+
+func (m *CommandMessage) Args() []interface{} {
+	return m.args
 }
 
 type MessageProcessor struct {
-	packet *Packet
-	term   interface{}
-	msg    *Message
+	packet  *Packet
+	term    interface{}
+	cmdMsg  *CommandMessage
+	midiMsg interface{}
 }
 
 func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
@@ -191,7 +185,7 @@ func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
 	}
 	log.Debugf("got Erlang Port term")
 	log.Tracef("%#v", t)
-	msg, err := NewMessage(t)
+	msg, err := NewCommandMessage(t)
 	if err != nil {
 		resp := NewResponse(types.Result(""), types.Err(err.Error()))
 		resp.Send()
@@ -200,7 +194,7 @@ func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
 	return &MessageProcessor{
 		packet: packet,
 		term:   t,
-		msg:    msg,
+		cmdMsg: msg,
 	}, nil
 }
 
@@ -209,14 +203,9 @@ func (mp *MessageProcessor) Continue() types.Result {
 }
 
 func (mp *MessageProcessor) Process() types.Result {
-	if mp.msg.IsCommand() {
-		command, err := mp.msg.Command()
-		if err != nil {
-			log.Error(err)
-			return mp.Continue()
-		}
-		return types.Result(command)
-	} else if mp.msg.IsMIDI() {
+	if mp.cmdMsg != nil {
+		return types.Result(mp.cmdMsg.Command())
+	} else if mp.midiMsg != nil {
 		// process MIDI message
 		return mp.Continue()
 	} else {
