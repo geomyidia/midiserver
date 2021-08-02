@@ -1,14 +1,36 @@
-package messages
+package erl
 
 import (
 	"os"
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geomyidia/erl-midi-server/pkg/types"
 )
 
+type Response struct {
+	hasError bool
+	result   erlang.OtpErlangTuple
+	err      erlang.OtpErlangTuple
+}
+
+func NewResponse(result types.Result, err types.Err) *Response {
+	hasError := false
+	if err != "" {
+		hasError = true
+	}
+	msg := &Response{
+		result:   ResultMessage(result),
+		err:      ErrorMessage(err),
+		hasError: hasError,
+	}
+	log.Debugf("created result message: %#v", msg)
+	return msg
+}
+
 // ErrorMessage ...
-func ErrorMessage(errMsg string) erlang.OtpErlangTuple {
+func ErrorMessage(errMsg types.Err) erlang.OtpErlangTuple {
 	err := make([]interface{}, 2)
 	err[0] = erlang.OtpErlangAtom("error")
 	err[1] = errMsg
@@ -17,7 +39,7 @@ func ErrorMessage(errMsg string) erlang.OtpErlangTuple {
 }
 
 // ResultMessage ...
-func ResultMessage(value string) erlang.OtpErlangTuple {
+func ResultMessage(value types.Result) erlang.OtpErlangTuple {
 	result := make([]interface{}, 2)
 	result[0] = erlang.OtpErlangAtom("result")
 	result[1] = value
@@ -26,25 +48,19 @@ func ResultMessage(value string) erlang.OtpErlangTuple {
 }
 
 // SendMessage ...
-func SendMessage(tuple erlang.OtpErlangTuple) {
-	msg, err := erlang.TermToBinary(tuple, -1)
+func (r *Response) Send() {
+	msg := r.result
+	if r.hasError {
+		msg = r.err
+		log.Errorf("Response: %+v", msg)
+
+	}
+
+	bytes, err := erlang.TermToBinary(msg, -1)
 	if err != nil {
 		log.Error(err)
+		return
 	}
-	os.Stdout.Write(msg)
+	os.Stdout.Write(bytes)
 	os.Stdout.Write([]byte("\n"))
-}
-
-// SendError ...
-func SendError(errMsg string) {
-	log.Error(errMsg)
-	err := ErrorMessage(errMsg)
-	SendMessage(err)
-}
-
-// SendResult ...
-func SendResult(value string) {
-	msg := ResultMessage(value)
-	log.Debugf("created result message: %#v", msg)
-	SendMessage(msg)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
@@ -15,15 +16,7 @@ const (
 	TextParser    string = "text"
 )
 
-type Flags struct {
-	Args     []string
-	Daemon   bool
-	LogLevel string
-	Parser   string
-	Version  bool
-}
-
-func Parse() *Flags {
+func Parse() *types.Flags {
 	shortUse := "; short-form flag"
 
 	var daemon bool
@@ -59,11 +52,17 @@ func Parse() *Flags {
 	flag.BoolVar(&vsn, "v", verDef, verUse+shortUse)
 
 	flag.Parse()
-	flags := &Flags{
+	var cmd types.CommandName
+	args := flag.Args()
+	if len(args) > 0 {
+		cmd = types.CommandName(args[0])
+	}
+	flags := &types.Flags{
 		Args:     flag.Args(),
+		Command:  types.Command(cmd),
 		Daemon:   daemon,
 		LogLevel: loglevel,
-		Parser:   parser,
+		Parser:   types.Parser(types.ParserName(parser)),
 		Version:  vsn,
 	}
 

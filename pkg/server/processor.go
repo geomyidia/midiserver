@@ -9,11 +9,7 @@ import (
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 )
 
-// CommandProcessor ...
-type CommandProcessor func(context.Context, types.ParserKey, erl.Result)
-type MessageProcessor func() erl.Result
-
-func ProcessMessage(opts *erl.Opts) erl.Result {
+func ProcessMessage(opts *erl.Opts) types.Result {
 	log.Debug("process message ...")
 	mp, err := erl.NewMessageProcessor(opts)
 	if err != nil {
@@ -33,17 +29,18 @@ func ProcessMessage(opts *erl.Opts) erl.Result {
 //   {a, a}      = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   {a, test}   = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
 //   {a, "test"} = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x6b, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
-func ProcessMessages(ctx context.Context, cmdFn CommandProcessor, key types.ParserKey, opts *erl.Opts) {
+func ProcessMessages(ctx context.Context, cmdFn types.CommandProcessor, opts *erl.Opts, flags *types.Flags) {
 	log.Info("processing messages sent to Go language server ...")
 	log.Debugf("using command processor %T", cmdFn)
 	log.Debugf("using command processor options %#v", opts)
 	go func() {
 		for {
-			cmd := ProcessMessage(opts)
-			if cmd == erl.Continue() {
+			result := ProcessMessage(opts)
+			if result == erl.Continue() {
 				continue
 			}
-			cmdFn(ctx, key, cmd)
+			cmd := types.Command(types.CommandName(string(result)))
+			cmdFn(ctx, cmd, flags)
 
 		}
 	}()

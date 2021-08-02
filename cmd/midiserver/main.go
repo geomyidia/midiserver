@@ -7,7 +7,6 @@ import (
 
 	"github.com/geomyidia/erl-midi-server/internal/app"
 	"github.com/geomyidia/erl-midi-server/internal/cli"
-	"github.com/geomyidia/erl-midi-server/pkg/erl"
 	"github.com/geomyidia/erl-midi-server/pkg/server"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
@@ -20,16 +19,14 @@ func main() {
 	log.Infof("running version: %s", version.VersionedBuildString())
 	log.Tracef("flags: %+v", flags)
 	app.SetupRandom()
-	key := types.ParserKey("key")
-	ctx := context.WithValue(context.Background(), key, flags.Parser)
-	cmd := ""
-	if len(flags.Args) > 0 {
-		cmd = flags.Args[0]
-	}
-	if flags.Daemon || flags.Parser != cli.TextParser {
-		server.Serve(ctx, key, flags.Parser)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if flags.Daemon || (flags.Parser != types.TextParser()) {
+		server.Serve(ctx, flags)
 	} else {
 		log.Debug("using CLI mode ...")
-		server.ProcessCommand(ctx, key, erl.Result(cmd))
+		server.ProcessCommand(ctx, flags.Command, flags)
 	}
 }

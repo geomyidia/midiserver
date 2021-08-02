@@ -7,52 +7,48 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geomyidia/erl-midi-server/pkg/erl"
-	"github.com/geomyidia/erl-midi-server/pkg/erl/messages"
 	"github.com/geomyidia/erl-midi-server/pkg/midi"
+	"github.com/geomyidia/erl-midi-server/pkg/text"
 	"github.com/geomyidia/erl-midi-server/pkg/types"
 	"github.com/geomyidia/erl-midi-server/pkg/version"
 )
 
 // ProcessCommand ...
-func ProcessCommand(ctx context.Context, key types.ParserKey, command erl.Result) {
-	parserType := ctx.Value(key).(string)
+func ProcessCommand(ctx context.Context, command types.CommandType, flags *types.Flags) {
+	var result types.Result
+	var err types.Err
 	switch command {
-	case "midi":
+	case types.MidiCommand():
 		midi.MessageDispatch()
-	case "ping":
-		sendResult(parserType, "pong")
-	case "example":
+	case types.PingCommand():
+		result = types.Result("pong")
+	case types.ExampleCommand():
 		Example()
-		sendResult(parserType, "ok")
-	case "list-devices":
+		result = types.Result("ok")
+	case types.ListDevicesCommand():
 		listDevices()
-		sendResult(parserType, "ok")
-	case "stop":
+		result = types.Result("ok")
+	case types.StopCommand():
 		log.Info("stopping Go MIDI server ...")
+		result = types.Result("stopping")
 		<-ctx.Done()
-	case "version":
-		sendResult(parserType, version.VersionedBuildString())
+	case types.VersionCommand():
+		result = types.Result(version.VersionedBuildString())
 	default:
 		if command == "" {
 			command = "(no value)"
 		}
-		sendError(parserType, "received unsupported command: "+string(command))
+		result = types.Result("received unsupported command: " + string(command))
 	}
-}
 
-func sendResult(parserType string, msg string) {
-	if parserType == "text" {
-		println(msg)
+	if flags.Parser == types.ExecParser() || flags.Parser == types.PortParser() {
+		resp := erl.NewResponse(result, err)
+		resp.Send()
+	} else if flags.Parser == types.TextParser() {
+		resp := text.NewResponse(result, err)
+		resp.Send()
 	} else {
-		messages.SendResult(msg)
-	}
-}
-
-func sendError(parserType string, msg string) {
-	if parserType == "text" {
-		log.Error(msg)
-	} else {
-		messages.SendError(msg)
+		log.Errorf("unexpected parser type: %v", flags.Parser)
 	}
 }
 

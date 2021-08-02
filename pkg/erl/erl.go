@@ -10,7 +10,7 @@ import (
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/erl-midi-server/pkg/erl/messages"
+	"github.com/geomyidia/erl-midi-server/pkg/types"
 )
 
 // Constants
@@ -21,10 +21,8 @@ const (
 	DRCTVVALUEINDEX = 1
 )
 
-type Result string
-
-func Continue() Result {
-	return Result("continue")
+func Continue() types.Result {
+	return types.Result("continue")
 }
 
 type Opts struct {
@@ -195,7 +193,8 @@ func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
 	log.Tracef("%#v", t)
 	msg, err := NewMessage(t)
 	if err != nil {
-		messages.SendError(err.Error())
+		resp := NewResponse(types.Result(""), types.Err(err.Error()))
+		resp.Send()
 		return &MessageProcessor{}, err
 	}
 	return &MessageProcessor{
@@ -205,18 +204,18 @@ func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
 	}, nil
 }
 
-func (mp *MessageProcessor) Continue() Result {
-	return Result("continue")
+func (mp *MessageProcessor) Continue() types.Result {
+	return types.Result("continue")
 }
 
-func (mp *MessageProcessor) Process() Result {
+func (mp *MessageProcessor) Process() types.Result {
 	if mp.msg.IsCommand() {
 		command, err := mp.msg.Command()
 		if err != nil {
 			log.Error(err)
 			return mp.Continue()
 		}
-		return Result(command)
+		return types.Result(command)
 	} else if mp.msg.IsMIDI() {
 		// process MIDI message
 		return mp.Continue()
