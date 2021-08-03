@@ -27,6 +27,8 @@ func main() {
 		server.Serve(ctx, flags)
 	} else {
 		log.Debug("using CLI mode ...")
-		server.ProcessCommand(ctx, flags.Command, flags)
+		// XXX fill this up
+		args := make(types.Proplist)
+		server.ProcessCommand(ctx, flags.Command, args, flags)
 	}
 }

@@ -9,14 +9,21 @@ import (
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
-func ProcessMessage(opts *erl.Opts) types.Result {
-	log.Debug("process message ...")
+func ProcessMessage(ctx context.Context, cmdFn types.CommandProcessor,
+	opts *erl.Opts, flags *types.Flags) {
 	mp, err := erl.NewMessageProcessor(opts)
 	if err != nil {
 		log.Error(err)
-		return mp.Continue()
+		return
 	}
-	return mp.Process()
+	result := mp.Process()
+	if result == erl.Continue() {
+		return
+	}
+	log.Warning(result)
+	cmdFn(ctx, result.ToCommand(), mp.CommandArgs(), flags)
+	log.Debug("processed message ...")
+	return
 }
 
 // ProcessMessages handles messages of the Erlang Port format along the
@@ -35,14 +42,8 @@ func ProcessMessages(ctx context.Context, cmdFn types.CommandProcessor, opts *er
 	log.Debugf("using command processor options %#v", opts)
 	go func() {
 		for {
-			result := ProcessMessage(opts)
-			if result == erl.Continue() {
-				continue
-			}
-			log.Warning(result)
-			cmd := types.Command(types.CommandName(string(result)))
-			cmdFn(ctx, cmd, flags)
-
+			ProcessMessage(ctx, cmdFn, opts, flags)
+			continue
 		}
 	}()
 	<-ctx.Done()

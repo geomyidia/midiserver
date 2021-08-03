@@ -14,7 +14,8 @@ import (
 )
 
 // ProcessCommand ...
-func ProcessCommand(ctx context.Context, command types.CommandType, flags *types.Flags) {
+func ProcessCommand(ctx context.Context, command types.CommandType,
+	args types.Proplist, flags *types.Flags) {
 	var result types.Result
 	var err types.Err
 	switch command {
@@ -23,7 +24,7 @@ func ProcessCommand(ctx context.Context, command types.CommandType, flags *types
 	case types.PingCommand():
 		result = types.Result("pong")
 	case types.ExampleCommand():
-		Example()
+		Example(args)
 		result = types.Result("ok")
 	case types.ListDevicesCommand():
 		listDevices()
@@ -38,7 +39,9 @@ func ProcessCommand(ctx context.Context, command types.CommandType, flags *types
 		if command == "" {
 			command = "(no value)"
 		}
-		result = types.Result("received unsupported command: " + string(command))
+		result = types.Result(
+			fmt.Sprintf("received unsupported command: '%v' (type %T)",
+			command, command))
 	}
 
 	if flags.Parser == types.ExecParser() || flags.Parser == types.PortParser() {

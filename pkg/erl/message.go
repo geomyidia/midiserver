@@ -2,7 +2,6 @@ package erl
 
 import (
 	"errors"
-	"fmt"
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
@@ -12,39 +11,8 @@ import (
 )
 
 type CommandMessage struct {
-	command erlang.OtpErlangAtom
-	args    []interface{}
-}
-
-type MessageProcessor struct {
-	packet  *Packet
-	term    interface{}
-	cmdMsg  *CommandMessage
-	midiMsg interface{}
-}
-
-func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
-	log.Debug("handling tuple ...")
-	if len(tuple) != DRCTVARITY {
-		return nil, fmt.Errorf("tuple of wrong size; expected 2, got %d", len(tuple))
-	}
-	_, ok := tuple[DRCTVKEYINDEX].(erlang.OtpErlangAtom)
-	if !ok {
-		return nil, errors.New("unexpected type for directive")
-	}
-	msg := &CommandMessage{}
-	msg.command = tuple[DRCTVVALUEINDEX].(erlang.OtpErlangAtom)
-	return msg, nil
-}
-
-func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
-	log.Debug("handling tuples ...")
-	t := proplists.ToMap(tuples)
-	log.Debug("Got map: %+v", t)
-	msg := &CommandMessage{}
-	//msg.command = tuple[DRCTVVALUEINDEX].(erlang.OtpErlangAtom)
-	//msg.args =
-	return msg, nil
+	command types.CommandType
+	args    types.Proplist
 }
 
 func NewCommandMessage(t interface{}) (*CommandMessage, error) {
@@ -59,12 +27,37 @@ func NewCommandMessage(t interface{}) (*CommandMessage, error) {
 	return handleTuple(tuple)
 }
 
-func (m *CommandMessage) Command() erlang.OtpErlangAtom {
-	return m.command
+func (cm *CommandMessage) Command() types.CommandType {
+	return cm.command
 }
 
-func (m *CommandMessage) Args() []interface{} {
-	return m.args
+func (cm *CommandMessage) Args() types.Proplist {
+	return cm.args
+}
+
+func (cm *CommandMessage) SetCommand(cmdIf interface{}) error {
+	cmdAtom, ok := cmdIf.(erlang.OtpErlangAtom)
+	if ! ok {
+		return errors.New("could not cast command to atom")
+	}
+	cm.command = types.Command(types.CommandName(string(cmdAtom)))
+	return nil
+}
+
+func (cm *CommandMessage) SetArgs(argsIf interface{}) error {
+	args, err := proplists.ToMap(argsIf.(erlang.OtpErlangList))
+	if err != nil {
+		return err
+	}
+	cm.args = args
+	return nil
+}
+
+type MessageProcessor struct {
+	packet  *Packet
+	term    interface{}
+	cmdMsg  *CommandMessage
+	midiMsg interface{}
 }
 
 func NewMessageProcessor(opts *Opts) (*MessageProcessor, error) {
@@ -105,4 +98,46 @@ func (mp *MessageProcessor) Process() types.Result {
 		log.Error("unexected message type")
 		return mp.Continue()
 	}
+}
+
+func (mp *MessageProcessor) CommandArgs() types.Proplist {
+	return mp.cmdMsg.Args()
+}
+
+func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
+	log.Debug("handling tuple ...")
+	_, val, err := proplists.ExtractTuple(tuple)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	msg := &CommandMessage{}
+	err = msg.SetCommand(val)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	return msg, nil
+}
+
+func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
+	log.Debug("handling tuples ...")
+	t, err := proplists.ToMap(tuples)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Debugf("Got map: %+v", t)
+	msg := &CommandMessage{}
+	err = msg.SetCommand(t[types.CommandKey])
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	err = msg.SetArgs(t[types.ArgsKey])
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	return msg, nil
 }
