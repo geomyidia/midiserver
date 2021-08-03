@@ -39,6 +39,7 @@ func ProcessMessages(ctx context.Context, cmdFn types.CommandProcessor, opts *er
 			if result == erl.Continue() {
 				continue
 			}
+			log.Warning(result)
 			cmd := types.Command(types.CommandName(string(result)))
 			cmdFn(ctx, cmd, flags)
 

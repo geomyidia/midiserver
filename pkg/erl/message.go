@@ -7,6 +7,7 @@ import (
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/midiserver/pkg/erl/proplists"
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
@@ -23,7 +24,7 @@ type MessageProcessor struct {
 }
 
 func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
-	log.Debug("handling command tuple ...")
+	log.Debug("handling tuple ...")
 	if len(tuple) != DRCTVARITY {
 		return nil, fmt.Errorf("tuple of wrong size; expected 2, got %d", len(tuple))
 	}
@@ -37,6 +38,9 @@ func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
 }
 
 func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
+	log.Debug("handling tuples ...")
+	t := proplists.ToMap(tuples)
+	log.Debug("Got map: %+v", t)
 	msg := &CommandMessage{}
 	//msg.command = tuple[DRCTVVALUEINDEX].(erlang.OtpErlangAtom)
 	//msg.args =
