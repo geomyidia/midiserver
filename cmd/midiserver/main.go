@@ -5,11 +5,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/erl-midi-server/internal/app"
-	"github.com/geomyidia/erl-midi-server/internal/cli"
-	"github.com/geomyidia/erl-midi-server/pkg/server"
-	"github.com/geomyidia/erl-midi-server/pkg/types"
-	"github.com/geomyidia/erl-midi-server/pkg/version"
+	"github.com/geomyidia/midiserver/internal/app"
+	"github.com/geomyidia/midiserver/internal/cli"
+	"github.com/geomyidia/midiserver/pkg/server"
+	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/geomyidia/midiserver/pkg/version"
 )
 
 func main() {

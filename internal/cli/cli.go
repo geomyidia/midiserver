@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/geomyidia/erl-midi-server/pkg/types"
-	"github.com/geomyidia/erl-midi-server/pkg/version"
+	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/geomyidia/midiserver/pkg/version"
 )
 
 const (

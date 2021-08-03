@@ -6,11 +6,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/erl-midi-server/pkg/erl"
-	"github.com/geomyidia/erl-midi-server/pkg/midi"
-	"github.com/geomyidia/erl-midi-server/pkg/text"
-	"github.com/geomyidia/erl-midi-server/pkg/types"
-	"github.com/geomyidia/erl-midi-server/pkg/version"
+	"github.com/geomyidia/midiserver/pkg/erl"
+	"github.com/geomyidia/midiserver/pkg/midi"
+	"github.com/geomyidia/midiserver/pkg/text"
+	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/geomyidia/midiserver/pkg/version"
 )
 
 // ProcessCommand ...

@@ -5,10 +5,11 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/geomyidia/erl-midi-server/internal/util"
-	"github.com/geomyidia/erl-midi-server/pkg/erl"
-	"github.com/geomyidia/erl-midi-server/pkg/types"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geomyidia/midiserver/internal/util"
+	"github.com/geomyidia/midiserver/pkg/erl"
+	"github.com/geomyidia/midiserver/pkg/types"
 )
 
 func Serve(ctx context.Context, flags *types.Flags) {
