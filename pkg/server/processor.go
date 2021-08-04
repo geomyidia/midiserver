@@ -21,6 +21,7 @@ func ProcessMessage(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
 		return
 	}
 	log.Warning(result)
+	log.Debugf("Got MIDI data: %+v", mp.Midi())
 	commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
 	log.Debug("processed message ...")
 	return

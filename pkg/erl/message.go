@@ -104,20 +104,31 @@ func (mp *MessageProcessor) CommandArgs() types.Proplist {
 	return mp.cmdMsg.Args()
 }
 
+func (mp *MessageProcessor) Midi() interface{} {
+	return mp.midiMsg
+}
+
 func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
 	log.Debug("handling tuple ...")
-	_, val, err := proplists.ExtractTuple(tuple)
+	key, val, err := proplists.ExtractTuple(tuple)
 	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
-	msg := &CommandMessage{}
-	err = msg.SetCommand(val)
-	if err != nil {
-		log.Error(err)
-		return nil, err
+	log.Debugf("Key: %+v (type %T)", key, key)
+	if key == types.CommandKey {
+		msg := &CommandMessage{}
+		err = msg.SetCommand(val)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		return msg, nil
+	} else if key == types.MidiKey {
+		log.Warning("MIDI Support: TODO")
+		return nil, nil
 	}
-	return msg, nil
+	return nil, nil
 }
 
 func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {

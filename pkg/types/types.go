@@ -5,6 +5,7 @@ import "context"
 const (
 	ArgsKey string = "args"
 	CommandKey string = "command"
+	MidiKey string = "midi"
 )
 
 type CommandName string

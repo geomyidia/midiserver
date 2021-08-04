@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geomyidia/midiserver/pkg/erl"
-	"github.com/geomyidia/midiserver/pkg/midi"
 	"github.com/geomyidia/midiserver/pkg/text"
 	"github.com/geomyidia/midiserver/pkg/types"
 	"github.com/geomyidia/midiserver/pkg/version"
@@ -19,8 +18,6 @@ func Dispatch(ctx context.Context, command types.CommandType,
 	var result types.Result
 	var err types.Err
 	switch command {
-	case types.MidiCommand():
-		midi.MessageDispatch()
 	case types.PingCommand():
 		result = types.Result("pong")
 	case types.ExampleCommand():
