@@ -1,4 +1,4 @@
-package erl
+package packets
 
 import (
 	"bufio"
@@ -9,18 +9,20 @@ import (
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/geomyidia/midiserver/pkg/erl"
 )
 
 type Packet struct {
 	bytes []byte
 	len   int
 	last  int
-	opts  *Opts
+	opts  *erl.Opts
 }
 
-func ReadStdIOPacket(opts *Opts) (*Packet, error) {
+func ReadStdIOPacket(opts *erl.Opts) (*Packet, error) {
 	reader := bufio.NewReader(os.Stdin)
-	bytes, _ := reader.ReadBytes(DELIMITER)
+	bytes, _ := reader.ReadBytes(erl.DELIMITER)
 	byteLen := len(bytes)
 	if byteLen == 0 {
 		return nil, errors.New("read zero bytes")

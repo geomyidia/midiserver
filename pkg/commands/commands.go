@@ -6,7 +6,7 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/erl"
+	"github.com/geomyidia/midiserver/pkg/erl/messages"
 	"github.com/geomyidia/midiserver/pkg/text"
 	"github.com/geomyidia/midiserver/pkg/types"
 	"github.com/geomyidia/midiserver/pkg/version"
@@ -37,11 +37,11 @@ func Dispatch(ctx context.Context, command types.CommandType,
 	default:
 		result = types.Result(
 			fmt.Sprintf("received unsupported command: '%v' (type %T)",
-			command, command))
+				command, command))
 	}
 
 	if flags.Parser == types.ExecParser() || flags.Parser == types.PortParser() {
-		resp := erl.NewResponse(result, err)
+		resp := messages.NewResponse(result, err)
 		resp.Send()
 	} else if flags.Parser == types.TextParser() {
 		resp := text.NewResponse(result, err)

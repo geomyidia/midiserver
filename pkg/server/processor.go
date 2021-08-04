@@ -7,11 +7,12 @@ import (
 
 	"github.com/geomyidia/midiserver/pkg/commands"
 	"github.com/geomyidia/midiserver/pkg/erl"
+	"github.com/geomyidia/midiserver/pkg/erl/messages"
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
 func ProcessMessage(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
-	mp, err := erl.NewMessageProcessor(opts)
+	mp, err := messages.NewMessageProcessor(opts)
 	if err != nil {
 		log.Error(err)
 		return
