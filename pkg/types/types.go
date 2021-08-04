@@ -50,7 +50,7 @@ func ExampleCommand() CommandType {
 }
 
 func ListDevicesCommand() CommandType {
-	return CommandType(CommandType("midi"))
+	return CommandType(CommandType("list-devices"))
 }
 
 func MidiCommand() CommandType {
@@ -67,6 +67,10 @@ func StopCommand() CommandType {
 
 func VersionCommand() CommandType {
 	return CommandType(CommandType("version"))
+}
+
+func EmptyCommand() CommandType {
+	return CommandType(CommandType(""))
 }
 
 func (r Result) ToCommand() CommandType {

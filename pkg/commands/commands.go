@@ -1,4 +1,4 @@
-package server
+package commands
 
 import (
 	"context"
@@ -13,8 +13,8 @@ import (
 	"github.com/geomyidia/midiserver/pkg/version"
 )
 
-// ProcessCommand ...
-func ProcessCommand(ctx context.Context, command types.CommandType,
+// Dispatch ...
+func Dispatch(ctx context.Context, command types.CommandType,
 	args types.Proplist, flags *types.Flags) {
 	var result types.Result
 	var err types.Err
@@ -27,7 +27,7 @@ func ProcessCommand(ctx context.Context, command types.CommandType,
 		Example(args)
 		result = types.Result("ok")
 	case types.ListDevicesCommand():
-		listDevices()
+		ListDevices()
 		result = types.Result("ok")
 	case types.StopCommand():
 		log.Info("stopping Go MIDI server ...")
@@ -35,10 +35,9 @@ func ProcessCommand(ctx context.Context, command types.CommandType,
 		<-ctx.Done()
 	case types.VersionCommand():
 		result = types.Result(version.VersionedBuildString())
+	case types.EmptyCommand():
+		result = types.Result("missing command; see -h for useage")
 	default:
-		if command == "" {
-			command = "(no value)"
-		}
 		result = types.Result(
 			fmt.Sprintf("received unsupported command: '%v' (type %T)",
 			command, command))
@@ -51,22 +50,6 @@ func ProcessCommand(ctx context.Context, command types.CommandType,
 		resp := text.NewResponse(result, err)
 		resp.Send()
 	} else {
-		log.Errorf("unexpected parser type: %v", flags.Parser)
+		log.Errorf("unsupported parser type: %v", flags.Parser)
 	}
-}
-
-func listDevices() {
-	midiSystem := midi.NewSystem()
-	defer midiSystem.Close()
-
-	fmt.Printf("MIDI IN Ports:\n")
-	for _, port := range midiSystem.Ins {
-		fmt.Printf("\t[%v] %s\n", port.Number(), port.String())
-	}
-
-	fmt.Printf("MIDI OUT Ports:\n")
-	for _, port := range midiSystem.Outs {
-		fmt.Printf("\t[%v] %s\n", port.Number(), port.String())
-	}
-
 }

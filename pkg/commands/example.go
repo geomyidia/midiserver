@@ -1,4 +1,4 @@
-package server
+package commands
 
 import (
 	"time"
@@ -18,14 +18,30 @@ type Opts struct {
 	Duration    uint8
 }
 
+func DefaultOpts() *Opts {
+	return &Opts{
+		DeviceId:    0,
+		MidiChannel: 0,
+		Pitch:       24,
+		Velocity:    100,
+		Duration:    4,
+	}
+}
+
 func Example(arg types.Proplist) {
-	opts := &Opts{
+	var opts *Opts
+	if arg == nil || len(arg) == 0 {
+		log.Debug("got nil args ...")
+		opts = DefaultOpts()
+	} else {
+	opts = &Opts{
 		DeviceId:    arg["device"].(uint8),
 		MidiChannel: arg["channel"].(uint8),
 		Pitch:       arg["pitch"].(uint8),
 		Velocity:    arg["velocity"].(uint8),
 		Duration:    arg["duration"].(uint8),
 	}
+}
 	log.Tracef("Got opts: %+v", opts)
 	drv, err := driver.New()
 	if err != nil {

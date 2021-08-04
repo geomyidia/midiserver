@@ -25,7 +25,7 @@ func Serve(ctx context.Context, flags *types.Flags) {
 		if flags.Parser == types.PortParser() {
 			opts = erl.DefaultOpts()
 		}
-		ProcessMessages(ctx, ProcessCommand, opts, flags)
+		ProcessMessages(ctx, opts, flags)
 	}()
 
 	// Listen for the interrupt signal.

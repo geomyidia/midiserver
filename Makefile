@@ -6,7 +6,7 @@ CMD_APP = cmd/$(APP)
 
 DVCS_HOST = github.com
 ORG = geomyidia
-PROJ = erl-midi-server
+PROJ = $(APP)
 FQ_PROJ = $(DVCS_HOST)/$(ORG)/$(PROJ)
 
 GO_VERSION_STRING = $(shell go version)

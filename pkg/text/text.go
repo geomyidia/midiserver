@@ -22,6 +22,8 @@ func (r *Response) Send() {
 	if r.err != "" {
 		log.Error(r.err)
 	} else {
-		println(string(r.result))
+		if r.result != "ok" {
+			println(string(r.result))
+		}
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/geomyidia/midiserver/internal/app"
 	"github.com/geomyidia/midiserver/internal/cli"
+	"github.com/geomyidia/midiserver/pkg/commands"
 	"github.com/geomyidia/midiserver/pkg/server"
 	"github.com/geomyidia/midiserver/pkg/types"
 	"github.com/geomyidia/midiserver/pkg/version"
@@ -29,6 +30,6 @@ func main() {
 		log.Debug("using CLI mode ...")
 		// XXX fill this up
 		args := make(types.Proplist)
-		server.ProcessCommand(ctx, flags.Command, args, flags)
+		commands.Dispatch(ctx, flags.Command, args, flags)
 	}
 }
