@@ -43,11 +43,11 @@ func (s *System) Close() {
 	s.Driver.Close()
 }
 
-func Dispatch(ctx context.Context, op types.MidiOpType, data interface{}, flags *types.Flags) {
+func Dispatch(ctx context.Context, op types.MidiOpType, args *types.MidiArgs, flags *types.Flags) {
 	log.Debug("Dispatching MIDI operation ...")
 	log.Trace("Got MIDI op: ", op)
-	log.Tracef("Got MIDI data: %+v", data)
-	switch op {
-	case types.MidiBatch():
-	}
+	log.Tracef("Got MIDI args: %+v", args)
+	// switch op {
+	// case types.MidiBatch():
+	// }
 }

@@ -87,3 +87,7 @@ func (mp *MessageProcessor) MidiOp() types.MidiOpType {
 func (mp *MessageProcessor) MidiData() interface{} {
 	return mp.midiMsg.Data()
 }
+
+func (mp *MessageProcessor) MidiArgs() *types.MidiArgs {
+	return mp.midiMsg.Args()
+}

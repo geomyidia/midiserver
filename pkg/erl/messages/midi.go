@@ -12,6 +12,7 @@ type MidiMessage struct {
 	op   types.MidiOpType
 	data types.PropList
 	ops  types.MidiOps
+	args *types.MidiArgs
 }
 
 func NewMidiMessage(t interface{}) (*MidiMessage, error) {
@@ -22,6 +23,7 @@ func NewMidiMessage(t interface{}) (*MidiMessage, error) {
 	}
 	msg.op = op
 	msg.handleData(data)
+	log.Tracef("Got args: %+v", msg.args)
 	return msg, nil
 }
 
@@ -39,6 +41,10 @@ func MidiOp(term interface{}) (types.MidiOpType, types.PropList, error) {
 		return "", nil, err
 	}
 	return types.MidiOp(key), data, nil
+}
+
+func (mm *MidiMessage) Args() *types.MidiArgs {
+	return mm.args
 }
 
 func (mm *MidiMessage) Op() types.MidiOpType {
@@ -60,9 +66,38 @@ func (mm *MidiMessage) handleData(data types.PropList) {
 
 func (mm *MidiMessage) handleBatch(data types.PropList) {
 	log.Debug("Handling batch op ...")
-	var ops types.MidiOps
-	// for k, v := range data {
-	// 	ops = append(ops)
-	// }
-	mm.ops = ops
+	args := &types.MidiArgs{}
+	for k, v := range data {
+		switch k {
+		case "device":
+			args.Device = v.(uint8)
+		case "tempo":
+			args.Tempo = v.(uint8)
+		case "note_off":
+			args.NoteOff = v.(uint8)
+		case "meter":
+			list := v.(erlang.OtpErlangList)
+			meter, err := datatypes.PropListToMap(list)
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			args.Meter = types.MidiMeter{
+				Numerator:   meter["numerator"].(uint8),
+				Denominator: meter["denominator"].(uint8),
+			}
+		case "note_on":
+			list := v.(erlang.OtpErlangList)
+			noteOn, err := datatypes.PropListToMap(list)
+			if err != nil {
+				log.Error(err)
+				continue
+			}
+			args.NoteOn = types.MidiNoteOn{
+				Pitch:    noteOn["pitch"].(uint8),
+				Velocity: noteOn["velocity"].(uint8),
+			}
+		}
+	}
+	mm.args = args
 }

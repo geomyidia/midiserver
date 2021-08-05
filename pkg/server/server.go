@@ -65,7 +65,7 @@ func ProcessMessage(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
 	}
 	log.Warning(result)
 	if mp.IsMidi {
-		midi.Dispatch(ctx, mp.MidiOp(), mp.MidiData(), flags)
+		midi.Dispatch(ctx, mp.MidiOp(), mp.MidiArgs(), flags)
 	} else {
 		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
 	}

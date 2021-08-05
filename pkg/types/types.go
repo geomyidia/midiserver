@@ -32,6 +32,8 @@ type MessageProcessor func() Result
 
 // MIDI types
 type MidiOpType string
+type MidiNumerator uint8
+type MidiDenominator uint8
 type MidiMeter struct {
 	Numerator   uint8
 	Denominator uint8
@@ -39,11 +41,11 @@ type MidiMeter struct {
 type MidiPitch uint8
 type MidiVelocity uint8
 type MidiNoteOn struct {
-	Pitch    MidiPitch
-	Velocity MidiVelocity
+	Pitch    uint8
+	Velocity uint8
 }
 type MidiOps map[MidiOpType]interface{}
-type MidiOpts struct {
+type MidiArgs struct {
 	Device  uint8
 	Meter   MidiMeter
 	Tempo   uint8
