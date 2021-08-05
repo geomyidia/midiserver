@@ -29,7 +29,7 @@ func main() {
 	} else {
 		log.Debug("using CLI mode ...")
 		// XXX fill this up
-		args := make(types.Proplist)
+		args := make(types.PropList)
 		commands.Dispatch(ctx, flags.Command, args, flags)
 	}
 }

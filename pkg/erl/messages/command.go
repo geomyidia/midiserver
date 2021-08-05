@@ -5,13 +5,13 @@ import (
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 
-	"github.com/geomyidia/midiserver/pkg/erl/proplists"
+	"github.com/geomyidia/midiserver/pkg/erl/datatypes"
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
 type CommandMessage struct {
 	command types.CommandType
-	args    types.Proplist
+	args    types.PropList
 }
 
 func NewCommandMessage(t interface{}) (*CommandMessage, error) {
@@ -30,7 +30,7 @@ func (cm *CommandMessage) Command() types.CommandType {
 	return cm.command
 }
 
-func (cm *CommandMessage) Args() types.Proplist {
+func (cm *CommandMessage) Args() types.PropList {
 	return cm.args
 }
 
@@ -44,7 +44,7 @@ func (cm *CommandMessage) SetCommand(cmdIf interface{}) error {
 }
 
 func (cm *CommandMessage) SetArgs(argsIf interface{}) error {
-	args, err := proplists.ToMap(argsIf.(erlang.OtpErlangList))
+	args, err := datatypes.PropListToMap(argsIf.(erlang.OtpErlangList))
 	if err != nil {
 		return err
 	}

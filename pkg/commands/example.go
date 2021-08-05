@@ -28,20 +28,20 @@ func DefaultOpts() *Opts {
 	}
 }
 
-func Example(arg types.Proplist) {
+func Example(arg types.PropList) {
 	var opts *Opts
 	if arg == nil || len(arg) == 0 {
 		log.Debug("got nil args ...")
 		opts = DefaultOpts()
 	} else {
-	opts = &Opts{
-		DeviceId:    arg["device"].(uint8),
-		MidiChannel: arg["channel"].(uint8),
-		Pitch:       arg["pitch"].(uint8),
-		Velocity:    arg["velocity"].(uint8),
-		Duration:    arg["duration"].(uint8),
+		opts = &Opts{
+			DeviceId:    arg["device"].(uint8),
+			MidiChannel: arg["channel"].(uint8),
+			Pitch:       arg["pitch"].(uint8),
+			Velocity:    arg["velocity"].(uint8),
+			Duration:    arg["duration"].(uint8),
+		}
 	}
-}
 	log.Tracef("Got opts: %+v", opts)
 	drv, err := driver.New()
 	if err != nil {

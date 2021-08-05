@@ -4,13 +4,13 @@ import (
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/erl/proplists"
+	"github.com/geomyidia/midiserver/pkg/erl/datatypes"
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
 func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
 	log.Debug("handling tuple ...")
-	key, val, err := proplists.ExtractTuple(tuple)
+	key, val, err := datatypes.Tuple(tuple)
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -33,7 +33,7 @@ func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
 
 func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
 	log.Debug("handling tuples ...")
-	t, err := proplists.ToMap(tuples)
+	t, err := datatypes.PropListToMap(tuples)
 	if err != nil {
 		log.Error(err)
 		return nil, err

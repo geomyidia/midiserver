@@ -14,7 +14,8 @@ import (
 
 // Dispatch ...
 func Dispatch(ctx context.Context, command types.CommandType,
-	args types.Proplist, flags *types.Flags) {
+	args types.PropList, flags *types.Flags) {
+	log.Debug("Dispatching command ...")
 	var result types.Result
 	var err types.Err
 	switch command {

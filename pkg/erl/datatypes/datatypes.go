@@ -1,4 +1,4 @@
-package proplists
+package datatypes
 
 import (
 	"errors"
@@ -11,19 +11,19 @@ import (
 )
 
 const (
-	TUPLEKEY = 0
-	TUPLEVAL = 1
+	TUPLEKEY   = 0
+	TUPLEVAL   = 1
 	TUPLEARITY = 2
 )
 
 type PropList erlang.OtpErlangList
 
-func ToMap(list erlang.OtpErlangList) (types.Proplist, error) {
+func PropListToMap(list erlang.OtpErlangList) (types.PropList, error) {
 	log.Warning("Preparing to iterate ...")
-	tuplesMap := make(types.Proplist)
+	tuplesMap := make(types.PropList)
 	for idx, term := range list.Value {
 		log.Trace("Iteration ", idx)
-		k, v, err := ExtractTuple(term)
+		k, v, err := Tuple(term)
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -33,7 +33,7 @@ func ToMap(list erlang.OtpErlangList) (types.Proplist, error) {
 	return tuplesMap, nil
 }
 
-func ExtractTuple(term interface{}) (string, interface{}, error) {
+func Tuple(term interface{}) (string, interface{}, error) {
 	switch t := term.(type) {
 	default:
 		return "", nil, fmt.Errorf("term %T is not a tuple", t)
@@ -41,7 +41,7 @@ func ExtractTuple(term interface{}) (string, interface{}, error) {
 		tuple := term.(erlang.OtpErlangTuple)
 		if len(tuple) != TUPLEARITY {
 			return "", nil, fmt.Errorf("tuple of wrong size; expected %d, got %d",
-			TUPLEARITY, len(tuple))
+				TUPLEARITY, len(tuple))
 		}
 		atomKey, ok := tuple[TUPLEKEY].(erlang.OtpErlangAtom)
 		if !ok {
@@ -51,4 +51,13 @@ func ExtractTuple(term interface{}) (string, interface{}, error) {
 		val := tuple[TUPLEVAL]
 		return key, val, nil
 	}
+}
+
+func TupleHasKey(term interface{}, soughtKey string) bool {
+	key, _, err := Tuple(term)
+	if err != nil {
+		log.Error(err)
+		return false
+	}
+	return key == soughtKey
 }

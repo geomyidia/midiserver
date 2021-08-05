@@ -1,6 +1,8 @@
 package midi
 
 import (
+	"context"
+
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/gomidi/midi"
 	"gitlab.com/gomidi/rtmididrv"
@@ -41,8 +43,11 @@ func (s *System) Close() {
 	s.Driver.Close()
 }
 
-func Dispatch(data interface{}, flags *types.Flags) {
-	// Process the new messages defined here:
-	// * https://github.com/erlsci/midilib/blob/release/0.4.x/src/midimsg.erl
-	// that have been processed in pkg/erl/...?
+func Dispatch(ctx context.Context, op types.MidiOpType, data interface{}, flags *types.Flags) {
+	log.Debug("Dispatching MIDI operation ...")
+	log.Trace("Got MIDI op: ", op)
+	log.Tracef("Got MIDI data: %+v", data)
+	switch op {
+	case types.MidiBatch():
+	}
 }

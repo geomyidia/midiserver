@@ -8,7 +8,10 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/geomyidia/midiserver/internal/util"
+	"github.com/geomyidia/midiserver/pkg/commands"
 	"github.com/geomyidia/midiserver/pkg/erl"
+	"github.com/geomyidia/midiserver/pkg/erl/messages"
+	"github.com/geomyidia/midiserver/pkg/midi"
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
@@ -36,4 +39,35 @@ func Serve(ctx context.Context, flags *types.Flags) {
 	log.Info("waiting for wait groups to finish ...")
 	wg.Wait()
 	log.Info("application shutdown complete.")
+}
+
+func ProcessMessages(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
+	log.Info("processing messages sent to Go language server ...")
+	log.Debugf("using command processor options %#v", opts)
+	go func() {
+		for {
+			ProcessMessage(ctx, opts, flags)
+			continue
+		}
+	}()
+	<-ctx.Done()
+}
+
+func ProcessMessage(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
+	mp, err := messages.NewMessageProcessor(opts)
+	if err != nil {
+		log.Error(err)
+		return
+	}
+	result := mp.Process()
+	if result == erl.Continue() {
+		return
+	}
+	log.Warning(result)
+	if mp.IsMidi {
+		midi.Dispatch(ctx, mp.MidiOp(), mp.MidiData(), flags)
+	} else {
+		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
+	}
+	log.Debug("processed message ...")
 }

@@ -3,17 +3,14 @@ package types
 import "context"
 
 const (
-	ArgsKey string = "args"
+	ArgsKey    string = "args"
 	CommandKey string = "command"
-	MidiKey string = "midi"
+	MidiKey    string = "midi"
 )
 
-type CommandName string
-type CommandType CommandName
+// CLI Flag types
 type ParserName string
 type ParserType ParserName
-type Result string
-type Err string
 type Flags struct {
 	Args     []string
 	Command  CommandType
@@ -22,9 +19,42 @@ type Flags struct {
 	Parser   ParserType
 	Version  bool
 }
-type Proplist map[string]interface{}
-type CommandProcessor func(context.Context, CommandType, Proplist, *Flags)
+
+// General result types
+type Result string
+type Err string
+
+// Command types
+type CommandName string
+type CommandType CommandName
+type CommandProcessor func(context.Context, CommandType, PropList, *Flags)
 type MessageProcessor func() Result
+
+// MIDI types
+type MidiOpType string
+type MidiMeter struct {
+	Numerator   uint8
+	Denominator uint8
+}
+type MidiPitch uint8
+type MidiVelocity uint8
+type MidiNoteOn struct {
+	Pitch    MidiPitch
+	Velocity MidiVelocity
+}
+type MidiOps map[MidiOpType]interface{}
+type MidiOpts struct {
+	Device  uint8
+	Meter   MidiMeter
+	Tempo   uint8
+	NoteOn  MidiNoteOn
+	NoteOff uint8
+}
+
+// Other types
+type PropList map[string]interface{}
+
+// Part of CLI Options
 
 func Parser(key ParserName) ParserType {
 	return ParserType(key)
@@ -42,6 +72,8 @@ func TextParser() ParserType {
 	return ParserType(ParserName("text"))
 }
 
+// Commands
+
 func Command(name CommandName) CommandType {
 	return CommandType(name)
 }
@@ -52,10 +84,6 @@ func ExampleCommand() CommandType {
 
 func ListDevicesCommand() CommandType {
 	return CommandType(CommandType("list-devices"))
-}
-
-func MidiCommand() CommandType {
-	return CommandType(CommandType("midi"))
 }
 
 func PingCommand() CommandType {
@@ -76,4 +104,14 @@ func EmptyCommand() CommandType {
 
 func (r Result) ToCommand() CommandType {
 	return Command(CommandName(string(r)))
+}
+
+// MIDI
+
+func MidiOp(name string) MidiOpType {
+	return MidiOpType(name)
+}
+
+func MidiBatch() MidiOpType {
+	return MidiOpType("batch")
 }
