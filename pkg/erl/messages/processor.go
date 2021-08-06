@@ -13,7 +13,7 @@ type MessageProcessor struct {
 	packet    *packets.Packet
 	term      interface{}
 	cmdMsg    *CommandMessage
-	midiMsg   *MidiMessage
+	midiCalls *MidiCalls
 	IsMidi    bool
 	IsCommand bool
 }
@@ -38,13 +38,13 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 	log.Tracef("%#v", t)
 	if datatypes.TupleHasKey(t, "midi") {
 		mp.IsMidi = true
-		msg, err := NewMidiMessage(t)
+		calls, err := NewMidiCalls(t)
 		if err != nil {
 			resp := NewResponse(types.Result(""), types.Err(err.Error()))
 			resp.Send()
 			return nilMp, err
 		}
-		mp.midiMsg = msg
+		mp.midiCalls = calls
 		return mp, nil
 	}
 	msg, err := NewCommandMessage(t)
@@ -64,8 +64,8 @@ func (mp *MessageProcessor) Continue() types.Result {
 func (mp *MessageProcessor) Process() types.Result {
 	if mp.cmdMsg != nil {
 		return types.Result(mp.cmdMsg.Command())
-	} else if mp.midiMsg != nil {
-		return types.Result(mp.midiMsg.Op())
+	} else if mp.midiCalls.Length() != 0 {
+		return types.Result(types.MidiOp(types.MidiKey))
 	} else {
 		log.Error("unexected message type")
 		return mp.Continue()
@@ -76,18 +76,6 @@ func (mp *MessageProcessor) CommandArgs() types.PropList {
 	return mp.cmdMsg.Args()
 }
 
-func (mp *MessageProcessor) Midi() *MidiMessage {
-	return mp.midiMsg
-}
-
-func (mp *MessageProcessor) MidiOp() types.MidiOpType {
-	return mp.midiMsg.Op()
-}
-
-func (mp *MessageProcessor) MidiData() interface{} {
-	return mp.midiMsg.Data()
-}
-
-func (mp *MessageProcessor) MidiArgs() *types.MidiArgs {
-	return mp.midiMsg.Args()
+func (mp *MessageProcessor) MidiCalls() []types.MidiCall {
+	return mp.midiCalls.Calls()
 }

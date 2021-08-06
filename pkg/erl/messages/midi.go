@@ -1,6 +1,8 @@
 package messages
 
 import (
+	"errors"
+
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
@@ -8,65 +10,80 @@ import (
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
-type MidiMessage struct {
-	op   types.MidiOpType
-	data types.PropList
-	ops  types.MidiOps
-	args *types.MidiArgs
+type MidiCalls struct {
+	calls []types.MidiCall
 }
 
-func NewMidiMessage(t interface{}) (*MidiMessage, error) {
-	msg := &MidiMessage{}
-	op, data, err := MidiOp(t)
+func NewMidiCalls(t interface{}) (*MidiCalls, error) {
+	calls, err := getCalls(t)
 	if err != nil {
+		log.Error(err)
 		return nil, err
 	}
-	msg.op = op
-	msg.handleData(data)
-	log.Tracef("Got args: %+v", msg.args)
-	return msg, nil
+	return &MidiCalls{calls: calls}, nil
 }
 
-func MidiOp(term interface{}) (types.MidiOpType, types.PropList, error) {
-	_, opTerm, err := datatypes.Tuple(term)
+func (mc *MidiCalls) Length() int {
+	return len(mc.calls)
+}
+
+func (mc *MidiCalls) Calls() []types.MidiCall {
+	return mc.calls
+}
+
+func getCalls(t interface{}) ([]types.MidiCall, error) {
+	var calls []types.MidiCall
+	key, val, err := datatypes.Tuple(t)
 	if err != nil {
-		return "", nil, err
+		log.Error(err)
+		return calls, err
 	}
-	key, val, err := datatypes.Tuple(opTerm)
-	if err != nil {
-		return "", nil, err
+	if key == types.MidiKey {
+		return getCalls(val)
 	}
-	data, err := datatypes.PropListToMap(val.(erlang.OtpErlangList))
-	if err != nil {
-		return "", nil, err
+	if key == types.MidiBatchCall {
+		batches, ok := val.(erlang.OtpErlangList)
+		if !ok {
+			return calls, errors.New("couldn't parse batches")
+		}
+		log.Tracef("Batches: %+v", batches)
+		for _, op := range batches.Value {
+			subCalls, err := getCalls(op)
+			log.Tracef("Sub-calls: %+v", subCalls)
+			if err != nil {
+				log.Error(err)
+				return calls, err
+			}
+			calls = append(calls, subCalls...)
+		}
+	} else {
+		op := types.MidiOpType(key)
+		log.Tracef("Op: %v", op)
+		args, err := convertArgs(val)
+		if err != nil {
+			log.Error(err)
+			return calls, err
+		}
+		log.Tracef("Args: %+v", args)
+		calls = append(calls, types.MidiCall{Op: op, Args: args})
+		log.Tracef("Calls: %+v", calls)
+		return calls, nil
 	}
-	return types.MidiOp(key), data, nil
+	return calls, nil
 }
 
-func (mm *MidiMessage) Args() *types.MidiArgs {
-	return mm.args
-}
-
-func (mm *MidiMessage) Op() types.MidiOpType {
-	return mm.op
-}
-
-func (mm *MidiMessage) Data() types.PropList {
-	return mm.data
-}
-
-func (mm *MidiMessage) handleData(data types.PropList) {
-	log.Debug("Handling op data ...")
-	switch mm.op {
-	case types.MidiBatch():
-		mm.handleBatch(data)
-	}
-	mm.data = data
-}
-
-func (mm *MidiMessage) handleBatch(data types.PropList) {
-	log.Debug("Handling batch op ...")
+func convertArgs(t interface{}) (*types.MidiArgs, error) {
+	log.Debug("Converting args ...")
 	args := &types.MidiArgs{}
+	propList, ok := t.(erlang.OtpErlangList)
+	if !ok {
+		return args, errors.New("couldn't parse batches")
+	}
+	data, err := datatypes.PropListToMap(propList)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
 	for k, v := range data {
 		switch k {
 		case "device":
@@ -99,5 +116,5 @@ func (mm *MidiMessage) handleBatch(data types.PropList) {
 			}
 		}
 	}
-	mm.args = args
+	return args, nil
 }
