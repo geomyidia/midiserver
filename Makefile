@@ -59,3 +59,5 @@ test:
 	@export PATH=$$PATH:~/go/bin && richgo test -v ./... || echo "Uh-oh ... 🔥"
 
 rebuild: clean all
+
+.PHONY: test
