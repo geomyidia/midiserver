@@ -2,6 +2,7 @@ package messages
 
 import (
 	"errors"
+	"fmt"
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
@@ -59,7 +60,7 @@ func getCalls(t interface{}) ([]types.MidiCall, error) {
 	} else {
 		op := types.MidiOpType(key)
 		log.Tracef("Op: %v", op)
-		args, err := convertArgs(val)
+		args, err := ConvertArgs(val)
 		if err != nil {
 			log.Error(err)
 			return calls, err
@@ -72,12 +73,13 @@ func getCalls(t interface{}) ([]types.MidiCall, error) {
 	return calls, nil
 }
 
-func convertArgs(t interface{}) (*types.MidiArgs, error) {
+func ConvertArgs(t interface{}) (*types.MidiArgs, error) {
 	log.Debug("Converting args ...")
-	args := &types.MidiArgs{}
+	var args *types.MidiArgs
+	nilArgs := &types.MidiArgs{}
 	propList, ok := t.(erlang.OtpErlangList)
 	if !ok {
-		return args, errors.New("couldn't parse batches")
+		return nilArgs, errors.New("couldn't parse batches")
 	}
 	data, err := datatypes.PropListToMap(propList)
 	if err != nil {
@@ -85,36 +87,71 @@ func convertArgs(t interface{}) (*types.MidiArgs, error) {
 		return nil, err
 	}
 	for k, v := range data {
-		switch k {
-		case "device":
-			args.Device = v.(uint8)
-		case "tempo":
-			args.Tempo = v.(uint8)
-		case "note_off":
-			args.NoteOff = v.(uint8)
-		case "meter":
-			list := v.(erlang.OtpErlangList)
-			meter, err := datatypes.PropListToMap(list)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			args.Meter = types.MidiMeter{
-				Numerator:   meter["numerator"].(uint8),
-				Denominator: meter["denominator"].(uint8),
-			}
-		case "note_on":
-			list := v.(erlang.OtpErlangList)
-			noteOn, err := datatypes.PropListToMap(list)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			args.NoteOn = types.MidiNoteOn{
-				Pitch:    noteOn["pitch"].(uint8),
-				Velocity: noteOn["velocity"].(uint8),
-			}
+		args, err = ConvertArg(k, v)
+		if err != nil {
+			continue
 		}
 	}
 	return args, nil
+}
+
+func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
+	args := &types.MidiArgs{}
+	switch k {
+	case "device":
+		args.Device = v.(uint8)
+	case "tempo_bpm":
+		args.Tempo = v.(uint8)
+	case "note_off":
+		args.NoteOff = v.(uint8)
+	case "meter":
+		list := v.(erlang.OtpErlangList)
+		meter, err := datatypes.PropListToMap(list)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		args.Meter = types.MidiMeter{
+			Numerator:   meter["numerator"].(uint8),
+			Denominator: meter["denominator"].(uint8),
+		}
+	case "note_on":
+		list := v.(erlang.OtpErlangList)
+		noteOn, err := datatypes.PropListToMap(list)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		args.NoteOn = types.MidiNoteOn{
+			Pitch:    noteOn["pitch"].(uint8),
+			Velocity: noteOn["velocity"].(uint8),
+		}
+	}
+	return args, nil
+}
+
+func Convert(term interface{}) (*types.MidiCall, error) {
+	switch t := term.(type) {
+	default:
+		return nil, fmt.Errorf("Could not convert %T", t)
+	case erlang.OtpErlangTuple:
+		key, val, err := datatypes.Tuple(t)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		if key == types.MidiKey {
+			key, val, err = datatypes.Tuple(val)
+		}
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		args, err := ConvertArg(key, val)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		return &types.MidiCall{Op: types.MidiOpType(key), Args: args}, nil
+	}
 }
