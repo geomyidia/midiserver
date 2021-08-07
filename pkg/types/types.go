@@ -123,3 +123,7 @@ func MidiOp(name string) MidiOpType {
 func MidiBatch() MidiOpType {
 	return MidiOpType("batch")
 }
+
+func MidiTempo() MidiOpType {
+	return MidiOpType("tempo_bpm")
+}
