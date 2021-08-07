@@ -8,6 +8,7 @@ import (
 	"github.com/geomyidia/midiserver/internal/app"
 	"github.com/geomyidia/midiserver/internal/cli"
 	"github.com/geomyidia/midiserver/pkg/commands"
+	"github.com/geomyidia/midiserver/pkg/midi"
 	"github.com/geomyidia/midiserver/pkg/server"
 	"github.com/geomyidia/midiserver/pkg/types"
 	"github.com/geomyidia/midiserver/pkg/version"
@@ -21,11 +22,13 @@ func main() {
 	log.Tracef("flags: %+v", flags)
 	app.SetupRandom()
 
+	midiSystem := midi.NewSystem()
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	if flags.Daemon || (flags.Parser != types.TextParser()) {
-		server.Serve(ctx, flags)
+		server.Serve(ctx, midiSystem, flags)
 	} else {
 		log.Debug("using CLI mode ...")
 		// XXX fill this up

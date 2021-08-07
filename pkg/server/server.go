@@ -15,7 +15,7 @@ import (
 	"github.com/geomyidia/midiserver/pkg/types"
 )
 
-func Serve(ctx context.Context, flags *types.Flags) {
+func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	log.Info("starting the server ...")
 	ctx, cancel := util.SignalWithContext(ctx, syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
@@ -28,7 +28,7 @@ func Serve(ctx context.Context, flags *types.Flags) {
 		if flags.Parser == types.PortParser() {
 			opts = erl.DefaultOpts()
 		}
-		ProcessMessages(ctx, opts, flags)
+		ProcessMessages(ctx, midiSys, opts, flags)
 	}()
 
 	// Listen for the interrupt signal.
@@ -37,23 +37,24 @@ func Serve(ctx context.Context, flags *types.Flags) {
 	cancel()
 	log.Info("shutting down gracefully, press Ctrl+C again to force")
 	log.Info("waiting for wait groups to finish ...")
+	midiSys.Close()
 	wg.Wait()
 	log.Info("application shutdown complete.")
 }
 
-func ProcessMessages(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
+func ProcessMessages(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
 	log.Info("processing messages sent to Go language server ...")
 	log.Debugf("using command processor options %#v", opts)
 	go func() {
 		for {
-			ProcessMessage(ctx, opts, flags)
+			ProcessMessage(ctx, midiSys, opts, flags)
 			continue
 		}
 	}()
 	<-ctx.Done()
 }
 
-func ProcessMessage(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
+func ProcessMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
 	mp, err := messages.NewMessageProcessor(opts)
 	if err != nil {
 		log.Error(err)
@@ -65,7 +66,7 @@ func ProcessMessage(ctx context.Context, opts *erl.Opts, flags *types.Flags) {
 	}
 	log.Warning(result)
 	if mp.IsMidi {
-		midi.Dispatch(ctx, mp.MidiCalls(), flags)
+		midiSys.Dispatch(ctx, mp.MidiCalls(), flags)
 	} else {
 		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
 	}

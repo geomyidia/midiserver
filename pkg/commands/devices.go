@@ -11,12 +11,12 @@ func ListDevices() {
 	defer midiSystem.Close()
 
 	fmt.Printf("MIDI IN Ports:\n")
-	for _, port := range midiSystem.Ins {
+	for _, port := range midiSystem.DevicesIn {
 		fmt.Printf("\t[%v] %s\n", port.Number(), port.String())
 	}
 
 	fmt.Printf("MIDI OUT Ports:\n")
-	for _, port := range midiSystem.Outs {
+	for _, port := range midiSystem.DevicesOut {
 		fmt.Printf("\t[%v] %s\n", port.Number(), port.String())
 	}
 }
