@@ -9,7 +9,7 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/okeuday/erlang_go/v2 v2.0.2
 	github.com/sirupsen/logrus v1.8.1
-	github.com/stretchr/testify v1.5.1 // indirect
+	github.com/stretchr/testify v1.5.1
 	gitlab.com/gomidi/midi v1.23.7
 	gitlab.com/gomidi/rtmididrv v0.14.0
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
