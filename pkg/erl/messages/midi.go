@@ -1,7 +1,6 @@
 package messages
 
 import (
-	"errors"
 	"fmt"
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
@@ -16,7 +15,7 @@ type MidiCalls struct {
 }
 
 func NewMidiCalls(t interface{}) (*MidiCalls, error) {
-	calls, err := getCalls(t)
+	calls, err := Convert(t)
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -30,69 +29,6 @@ func (mc *MidiCalls) Length() int {
 
 func (mc *MidiCalls) Calls() []types.MidiCall {
 	return mc.calls
-}
-
-func getCalls(t interface{}) ([]types.MidiCall, error) {
-	var calls []types.MidiCall
-	key, val, err := datatypes.Tuple(t)
-	if err != nil {
-		log.Error(err)
-		return calls, err
-	}
-	if key == types.MidiKey {
-		return getCalls(val)
-	}
-	if key == types.MidiBatchCall {
-		batches, ok := val.(erlang.OtpErlangList)
-		if !ok {
-			return calls, errors.New("couldn't parse batches")
-		}
-		log.Tracef("Batches: %+v", batches)
-		for _, op := range batches.Value {
-			subCalls, err := getCalls(op)
-			log.Tracef("Sub-calls: %+v", subCalls)
-			if err != nil {
-				log.Error(err)
-				return calls, err
-			}
-			calls = append(calls, subCalls...)
-		}
-	} else {
-		op := types.MidiOpType(key)
-		log.Tracef("Op: %v", op)
-		args, err := ConvertArgs(val)
-		if err != nil {
-			log.Error(err)
-			return calls, err
-		}
-		log.Tracef("Args: %+v", args)
-		calls = append(calls, types.MidiCall{Op: op, Args: args})
-		log.Tracef("Calls: %+v", calls)
-		return calls, nil
-	}
-	return calls, nil
-}
-
-func ConvertArgs(t interface{}) (*types.MidiArgs, error) {
-	log.Debug("Converting args ...")
-	var args *types.MidiArgs
-	nilArgs := &types.MidiArgs{}
-	propList, ok := t.(erlang.OtpErlangList)
-	if !ok {
-		return nilArgs, errors.New("couldn't parse batches")
-	}
-	data, err := datatypes.PropListToMap(propList)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	for k, v := range data {
-		args, err = ConvertArg(k, v)
-		if err != nil {
-			continue
-		}
-	}
-	return args, nil
 }
 
 func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
@@ -130,28 +66,56 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 	return args, nil
 }
 
-func Convert(term interface{}) (*types.MidiCall, error) {
+func Convert(term interface{}) ([]types.MidiCall, error) {
+	emptyCalls := []types.MidiCall{}
+	calls := []types.MidiCall{}
 	switch t := term.(type) {
 	default:
-		return nil, fmt.Errorf("Could not convert %T", t)
+		return emptyCalls, fmt.Errorf("could not convert %T", t)
+	case erlang.OtpErlangList:
+		ops, ok := term.(erlang.OtpErlangList)
+		fmt.Printf("%+v\n", ops)
+		if !ok {
+			return emptyCalls, fmt.Errorf("could not convert %T", t)
+		}
+		for _, op := range ops.Value {
+			call, err := Convert(op)
+			if err != nil {
+				log.Error(err)
+				return emptyCalls, err
+			}
+			calls = append(calls, call...)
+		}
+		return calls, nil
 	case erlang.OtpErlangTuple:
 		key, val, err := datatypes.Tuple(t)
 		if err != nil {
 			log.Error(err)
-			return nil, err
+			return emptyCalls, err
 		}
 		if key == types.MidiKey {
 			key, val, err = datatypes.Tuple(val)
 		}
 		if err != nil {
 			log.Error(err)
-			return nil, err
+			return emptyCalls, err
 		}
-		args, err := ConvertArg(key, val)
-		if err != nil {
-			log.Error(err)
-			return nil, err
+		if key == types.MidiBatchKey {
+			batchCalls, err := Convert(val)
+			if err != nil {
+				log.Error(err)
+				return emptyCalls, err
+			}
+			calls = append(calls, batchCalls...)
+		} else {
+			args, err := ConvertArg(key, val)
+			if err != nil {
+				log.Error(err)
+				return emptyCalls, err
+			}
+			call := types.MidiCall{Op: types.MidiOpType(key), Args: args}
+			calls = append(calls, call)
 		}
-		return &types.MidiCall{Op: types.MidiOpType(key), Args: args}, nil
+		return calls, nil
 	}
 }

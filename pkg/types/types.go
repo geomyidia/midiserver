@@ -3,10 +3,10 @@ package types
 import "context"
 
 const (
-	ArgsKey       string = "args"
-	CommandKey    string = "command"
-	MidiKey       string = "midi"
-	MidiBatchCall string = "batch"
+	ArgsKey      string = "args"
+	CommandKey   string = "command"
+	MidiKey      string = "midi"
+	MidiBatchKey string = "batch"
 )
 
 // CLI Flag types
@@ -48,6 +48,7 @@ type MidiNoteOn struct {
 type MidiOps map[MidiOpType]interface{}
 type MidiArgs struct {
 	Device  uint8
+	Channel uint8
 	Meter   MidiMeter
 	Tempo   uint8
 	NoteOn  MidiNoteOn
@@ -120,10 +121,30 @@ func MidiOp(name string) MidiOpType {
 	return MidiOpType(name)
 }
 
-func MidiBatch() MidiOpType {
+func MidiBatchType() MidiOpType {
 	return MidiOpType("batch")
 }
 
-func MidiTempo() MidiOpType {
+func MidiChannelType() MidiOpType {
+	return MidiOpType("channel")
+}
+
+func MidiDeviceType() MidiOpType {
+	return MidiOpType("device")
+}
+
+func MidiMeterType() MidiOpType {
+	return MidiOpType("meter")
+}
+
+func MidiNoteOnType() MidiOpType {
+	return MidiOpType("note_on")
+}
+
+func MidiNoteOffType() MidiOpType {
+	return MidiOpType("note_off")
+}
+
+func MidiTempoType() MidiOpType {
 	return MidiOpType("tempo_bpm")
 }

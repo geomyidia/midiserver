@@ -36,20 +36,29 @@ func (suite *MidiMessageTestSuite) SetupTest() {
 func (suite *MidiMessageTestSuite) TestConvertTempo() {
 	converted, err := messages.Convert(suite.tempo)
 	suite.NoError(err)
-	suite.Equal(types.MidiTempo(), converted.Op)
-	suite.Equal(uint8(68), converted.Args.Tempo)
+	suite.Equal(types.MidiTempoType(), converted[0].Op)
+	suite.Equal(uint8(68), converted[0].Args.Tempo)
 }
 
 func (suite *MidiMessageTestSuite) TestConvertMeter() {
-	// converted, err := messages.ConvertArgs(suite.meter)
-	// suite.NoError(err)
-	// suite.Equal(5, converted)
+	converted, err := messages.Convert(suite.meter)
+	suite.NoError(err)
+	suite.Equal(types.MidiMeterType(), converted[0].Op)
+	suite.Equal(uint8(4), converted[0].Args.Meter.Numerator)
+	suite.Equal(uint8(4), converted[0].Args.Meter.Denominator)
 }
 
 func (suite *MidiMessageTestSuite) TestConvertBatch() {
-	// converted, err := messages.ConvertArgs(suite.batch)
-	// suite.NoError(err)
-	// suite.Equal(5, converted)
+	converted, err := messages.Convert(suite.batch)
+	suite.NoError(err)
+	suite.Equal(3, len(converted))
+	suite.Equal(types.MidiDeviceType(), converted[0].Op)
+	suite.Equal(uint8(0), converted[0].Args.Device)
+	suite.Equal(types.MidiMeterType(), converted[1].Op)
+	suite.Equal(uint8(4), converted[1].Args.Meter.Numerator)
+	suite.Equal(uint8(4), converted[1].Args.Meter.Denominator)
+	suite.Equal(types.MidiTempoType(), converted[2].Op)
+	suite.Equal(uint8(68), converted[2].Args.Tempo)
 }
 
 // In order for 'go test' to run this suite, we need to create
