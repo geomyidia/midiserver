@@ -38,16 +38,20 @@ type Packet struct {
 func ReadStdIOPacket(opts *erl.Opts) (*Packet, error) {
 	reader := bufio.NewReader(os.Stdin)
 	bytes, _ := reader.ReadBytes(DELIMITER)
-	byteLen := len(bytes)
-	if byteLen == 0 {
+	return NewPacket(bytes, opts)
+}
+
+func NewPacket(bytes []byte, opts *erl.Opts) (*Packet, error) {
+	bytesLen := len(bytes)
+	if bytesLen == 0 {
 		return nil, errors.New("read zero bytes")
 	}
 	log.Tracef("original packet: %#v", bytes)
-	log.Tracef("original packet length: %d", byteLen)
+	log.Tracef("original packet length: %d", bytesLen)
 	packet := &Packet{
 		bytes: bytes,
-		len:   byteLen,
-		last:  byteLen - 1,
+		len:   bytesLen,
+		last:  bytesLen - 1,
 		opts:  opts,
 	}
 	return packet, nil
