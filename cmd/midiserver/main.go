@@ -23,6 +23,7 @@ func main() {
 	app.SetupRandom()
 
 	midiSystem := midi.NewSystem()
+	defer midiSystem.Shutdown()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

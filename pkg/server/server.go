@@ -37,7 +37,7 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	cancel()
 	log.Info("shutting down gracefully, press Ctrl+C again to force")
 	log.Info("waiting for wait groups to finish ...")
-	midiSys.Close()
+	midiSys.Shutdown()
 	wg.Wait()
 	log.Info("application shutdown complete.")
 }

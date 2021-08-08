@@ -8,7 +8,7 @@ import (
 
 func ListDevices() {
 	midiSystem := midi.NewSystem()
-	defer midiSystem.Close()
+	defer midiSystem.Shutdown()
 
 	fmt.Printf("MIDI IN Ports:\n")
 	for _, port := range midiSystem.DevicesIn {
