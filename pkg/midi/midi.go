@@ -3,9 +3,11 @@ package midi
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/gomidi/midi"
+	"gitlab.com/gomidi/midi/midimessage/channel"
 	"gitlab.com/gomidi/midi/writer"
 	"gitlab.com/gomidi/rtmididrv"
 
@@ -18,8 +20,9 @@ type System struct {
 	DevicesOut      []midi.Out
 	DeviceIn        midi.In
 	DeviceOut       midi.Out
-	DeviceOutOpened bool
 	Writer          *writer.Writer
+	DeviceOutOpened bool
+	ChannelSet      bool
 }
 
 func NewSystem() *System {
@@ -39,9 +42,11 @@ func NewSystem() *System {
 	}
 
 	return &System{
-		Driver:     drv,
-		DevicesIn:  ins,
-		DevicesOut: outs,
+		Driver:          drv,
+		DevicesIn:       ins,
+		DevicesOut:      outs,
+		DeviceOutOpened: false,
+		ChannelSet:      false,
 	}
 }
 
@@ -64,13 +69,15 @@ func (s *System) SetDevice(deviceId uint8) error {
 	return nil
 }
 
-func (s *System) SetChannel(channelId uint8) {
+func (s *System) SetChannel(channelId uint8) error {
 	log.Trace("setting channel ...")
 	s.Writer.SetChannel(channelId)
+	s.ChannelSet = true
+	return nil
 }
 
-func (s *System) GetChannel(channelId uint8) uint8 {
-	return s.Writer.Channel()
+func (s *System) GetChannel() channel.Channel {
+	return channel.Channel(s.Writer.Channel())
 }
 
 func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall, flags *types.Flags) {
@@ -88,27 +95,28 @@ func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall, flags *ty
 func (s *System) CallMidi(call types.MidiCall) error {
 	switch call.Op {
 	case types.MidiDeviceType():
-		s.SetDevice(call.Args.Device)
-		return nil
+		return s.SetDevice(call.Args.Device)
 	case types.MidiChannelType():
-		s.SetChannel(call.Args.Channel)
-		return nil
-	case types.MidiMeterType():
-		println("tbd")
-		return nil
-	case types.MidiTempoType():
-		println("tbd")
-		return nil
+		return s.SetChannel(call.Args.Channel)
+	}
+	if !s.ChannelSet {
+		return fmt.Errorf("message of type %s require the channel to be set",
+			call.Op)
+	}
+	ch := s.GetChannel()
+	switch call.Op {
 	case types.MidiNoteOnType():
-		log.Tracef("Calling NoteOn with values: %+v", call.Args.NoteOn)
+		log.Tracef("calling NoteOn with values: %+v", call.Args.NoteOn)
 		var err error
 		if !s.DeviceOutOpened {
-			err = errors.New("can't send command when device not opened")
+			return errors.New("can't send command when device not opened")
 		} else {
-			err = writer.NoteOn(s.Writer, call.Args.NoteOn.Pitch, call.Args.NoteOn.Velocity)
-		}
-		if err != nil {
-			return err
+			msg := ch.NoteOn(call.Args.NoteOn.Pitch, call.Args.NoteOn.Velocity)
+			log.Tracef("created MIDI msg: %+v", msg)
+			err = s.Writer.Write(msg)
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	case types.MidiNoteOffType():
