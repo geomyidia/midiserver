@@ -106,6 +106,7 @@ func (s *System) CallMidi(call types.MidiCall) error {
 	ch := s.GetChannel()
 	switch call.Op {
 	case types.MidiNoteOnType():
+		// XXX go back to the writer.NoteOn usage for this ...
 		log.Tracef("calling NoteOn with values: %+v", call.Args.NoteOn)
 		var err error
 		if !s.DeviceOutOpened {
