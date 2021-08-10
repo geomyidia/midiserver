@@ -52,6 +52,7 @@ type MidiNoteOn struct {
 }
 type MidiOps map[MidiOpType]interface{}
 type MidiArgs struct {
+	Id      string
 	Device  uint8
 	Channel uint8
 	Meter   MidiMeter
