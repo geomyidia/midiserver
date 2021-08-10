@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/geomyidia/zylog v0.1.5
+	github.com/google/uuid v1.3.0
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/okeuday/erlang_go/v2 v2.0.2

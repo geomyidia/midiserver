@@ -3,10 +3,15 @@ package types
 import "context"
 
 const (
-	ArgsKey      string = "args"
-	CommandKey   string = "command"
-	MidiKey      string = "midi"
-	MidiBatchKey string = "batch"
+	ArgsKey         string = "args"
+	CommandKey      string = "command"
+	MidiKey         string = "midi"
+	MidiBatchKey    string = "batch"
+	MidiIdKey       string = "id"
+	MidiMessagesKey string = "messages"
+	MidiDeviceKey   string = "device"
+	MidiNoteOffKey  string = "note_off"
+	MidiNoteOnKey   string = "note_on"
 )
 
 // CLI Flag types
@@ -56,6 +61,7 @@ type MidiArgs struct {
 }
 
 type MidiCall struct {
+	Id   int
 	Op   MidiOpType
 	Args *MidiArgs
 }

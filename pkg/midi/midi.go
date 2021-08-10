@@ -132,6 +132,7 @@ func (s *System) CallMidi(call types.MidiCall) error {
 		}
 		return nil
 	default:
+		log.Errorf("no handler for operation '%s'", call.Op)
 		return nil
 	}
 }

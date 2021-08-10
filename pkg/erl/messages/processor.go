@@ -13,7 +13,7 @@ type MessageProcessor struct {
 	packet    *packets.Packet
 	term      interface{}
 	cmdMsg    *CommandMessage
-	midiCalls *MidiCalls
+	midiCalls *MidiCallGroup
 	IsMidi    bool
 	IsCommand bool
 }
