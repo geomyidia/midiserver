@@ -19,14 +19,13 @@ type MessageProcessor struct {
 }
 
 func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
-	nilMp := &MessageProcessor{}
 	packet, err := packets.ReadStdIOPacket(opts)
 	if err != nil {
-		return nilMp, err
+		return nil, err
 	}
 	t, err := packet.Term()
 	if err != nil {
-		return nilMp, err
+		return nil, err
 	}
 	mp := &MessageProcessor{
 		packet:    packet,
@@ -38,11 +37,11 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 	log.Tracef("%#v", t)
 	if datatypes.TupleHasKey(t, "midi") {
 		mp.IsMidi = true
-		calls, err := NewMidiCalls(t)
+		calls, err := NewMidiCallGroup(t)
 		if err != nil {
 			resp := NewResponse(types.Result(""), types.Err(err.Error()))
 			resp.Send()
-			return nilMp, err
+			return nil, err
 		}
 		mp.midiCalls = calls
 		return mp, nil
@@ -51,7 +50,7 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 	if err != nil {
 		resp := NewResponse(types.Result(""), types.Err(err.Error()))
 		resp.Send()
-		return nilMp, err
+		return nil, err
 	}
 	mp.cmdMsg = msg
 	return mp, nil

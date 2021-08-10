@@ -19,10 +19,10 @@ const (
 type PropList erlang.OtpErlangList
 
 func PropListToMap(list erlang.OtpErlangList) (types.PropList, error) {
-	log.Warning("Preparing to iterate ...")
+	log.Debug("preparing to iterate ...")
 	tuplesMap := make(types.PropList)
 	for idx, term := range list.Value {
-		log.Trace("Iteration ", idx)
+		log.Trace("iteration ", idx)
 		k, v, err := Tuple(term)
 		if err != nil {
 			log.Error(err)

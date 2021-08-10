@@ -13,11 +13,12 @@ import (
 )
 
 type MidiCallGroup struct {
-	id    string
-	calls []types.MidiCall
+	id         string
+	isParallel bool
+	calls      []types.MidiCall
 }
 
-func NewMidiCalls(t interface{}) (*MidiCallGroup, error) {
+func NewMidiCallGroup(t interface{}) (*MidiCallGroup, error) {
 	id, calls, err := Convert(t)
 	if err != nil {
 		log.Error(err)
@@ -30,34 +31,16 @@ func (mcg *MidiCallGroup) Id() string {
 	return mcg.id
 }
 
+func (mcg *MidiCallGroup) IsParallel() bool {
+	return mcg.isParallel
+}
+
 func (mcg *MidiCallGroup) Length() int {
 	return len(mcg.calls)
 }
 
 func (mcg *MidiCallGroup) Calls() []types.MidiCall {
 	return mcg.calls
-}
-
-func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
-	args := &types.MidiArgs{}
-	switch k {
-	case types.MidiDeviceKey:
-		args.Device = v.(uint8)
-	case types.MidiNoteOffKey:
-		args.NoteOff = v.(uint8)
-	case types.MidiNoteOnKey:
-		list := v.(erlang.OtpErlangList)
-		noteOn, err := datatypes.PropListToMap(list)
-		if err != nil {
-			log.Error(err)
-			return nil, err
-		}
-		args.NoteOn = types.MidiNoteOn{
-			Pitch:    noteOn["pitch"].(uint8),
-			Velocity: noteOn["velocity"].(uint8),
-		}
-	}
-	return args, nil
 }
 
 func Convert(term interface{}) (string, []types.MidiCall, error) {
@@ -68,7 +51,6 @@ func Convert(term interface{}) (string, []types.MidiCall, error) {
 		return "", nil, fmt.Errorf("could not convert %T", t)
 	case erlang.OtpErlangList:
 		ops, ok := term.(erlang.OtpErlangList)
-		fmt.Printf("%+v\n", ops)
 		if !ok {
 			return "", nil, fmt.Errorf("could not convert %T", t)
 		}
@@ -147,4 +129,26 @@ func ConvertBatch(term interface{}) (string, []types.MidiCall, error) {
 		return "", nil, err
 	}
 	return id, batch, nil
+}
+
+func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
+	args := &types.MidiArgs{}
+	switch k {
+	case types.MidiDeviceKey:
+		args.Device = v.(uint8)
+	case types.MidiNoteOffKey:
+		args.NoteOff = v.(uint8)
+	case types.MidiNoteOnKey:
+		list := v.(erlang.OtpErlangList)
+		noteOn, err := datatypes.PropListToMap(list)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		args.NoteOn = types.MidiNoteOn{
+			Pitch:    noteOn["pitch"].(uint8),
+			Velocity: noteOn["velocity"].(uint8),
+		}
+	}
+	return args, nil
 }
