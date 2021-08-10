@@ -32,7 +32,7 @@ all: $(BINS)
 
 bin/%: $(MAINS)
 	@echo ">> Building $@ ..."
-	@go build -ldflags "$(LDFLAGS)" -o ./$@ ./$<
+	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
 clean:
 	@echo ">> Removing $(BINS) ..."
