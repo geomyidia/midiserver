@@ -82,9 +82,9 @@ func (s *System) GetChannel() channel.Channel {
 
 func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall, flags *types.Flags) {
 	log.Debug("dispatching MIDI operation ...")
-	log.Tracef("got MIDI calls: %v", calls)
+	// log.Tracef("got MIDI calls: %v", calls)
 	for _, call := range calls {
-		log.Debugf("making MIDI call %v ...", call)
+		log.Debugf("making MIDI call %+v ...", call)
 		err := s.CallMidi(call)
 		if err != nil {
 			log.Error(err)

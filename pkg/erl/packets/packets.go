@@ -92,11 +92,11 @@ func (p *Packet) getUnwrapped() ([]byte, error) {
 		hexStr := string(p.getTrimmed()[:])
 		log.Tracef("got hex string: %s", hexStr)
 		bytes, err := hex.DecodeString(hexStr)
-		log.Tracef("got decoded string: %v", bytes)
+		// log.Tracef("got decoded string: %v", bytes)
 		if err != nil {
 			return nil, fmt.Errorf("problem unwrapping packet: %s", err.Error())
 		}
-		log.Tracef("set trim bytes: %v", bytes)
+		// log.Tracef("set trim bytes: %v", bytes)
 		return bytes, nil
 	}
 	return nil, nil
