@@ -3,15 +3,20 @@ package types
 import "context"
 
 const (
-	ArgsKey         string = "args"
-	CommandKey      string = "command"
-	MidiKey         string = "midi"
-	MidiBatchKey    string = "batch"
-	MidiIdKey       string = "id"
-	MidiMessagesKey string = "messages"
-	MidiDeviceKey   string = "device"
-	MidiNoteOffKey  string = "note_off"
-	MidiNoteOnKey   string = "note_on"
+	ArgsKey           string = "args"
+	CommandKey        string = "command"
+	MidiKey           string = "midi"
+	MidiBatchKey      string = "batch"
+	MidiIdKey         string = "id"
+	MidiMessagesKey   string = "messages"
+	MidiDeviceKey     string = "device"
+	MidiPitchKey      string = "pitch"
+	MidiVelocityKey   string = "velocity"
+	MidiNoteOffKey    string = "note_off"
+	MidiNoteOnKey     string = "note_on"
+	MidiCCKey         string = "cc"
+	MidiControllerKey string = "controller"
+	MidiValueKey      string = "value"
 )
 
 // CLI Flag types
@@ -38,27 +43,24 @@ type MessageProcessor func() Result
 
 // MIDI types
 type MidiOpType string
-type MidiNumerator uint8
-type MidiDenominator uint8
-type MidiMeter struct {
-	Numerator   uint8
-	Denominator uint8
-}
 type MidiPitch uint8
 type MidiVelocity uint8
 type MidiNoteOn struct {
 	Pitch    uint8
 	Velocity uint8
 }
+type MidiCC struct {
+	Controller uint8
+	Value      uint8
+}
 type MidiOps map[MidiOpType]interface{}
 type MidiArgs struct {
 	Id      string
 	Device  uint8
 	Channel uint8
-	Meter   MidiMeter
-	Tempo   uint8
 	NoteOn  MidiNoteOn
 	NoteOff uint8
+	CC      MidiCC
 }
 
 type MidiCall struct {
@@ -154,4 +156,8 @@ func MidiNoteOffType() MidiOpType {
 
 func MidiTempoType() MidiOpType {
 	return MidiOpType("tempo_bpm")
+}
+
+func MidiCCType() MidiOpType {
+	return MidiOpType("cc")
 }

@@ -82,9 +82,10 @@ func (s *System) GetChannel() channel.Channel {
 
 func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall, flags *types.Flags) {
 	log.Debug("dispatching MIDI operation ...")
-	// log.Tracef("got MIDI calls: %v", calls)
+	log.Tracef("got MIDI calls: %v", calls)
 	for _, call := range calls {
-		log.Debugf("making MIDI call %+v ...", call)
+		log.Debugf("making MIDI call '%s' ...", call.Op)
+		log.Tracef("with (id, args): (%d, %+v) ...", call.Id, call.Args)
 		err := s.CallMidi(call)
 		if err != nil {
 			log.Error(err)
@@ -99,34 +100,29 @@ func (s *System) CallMidi(call types.MidiCall) error {
 	case types.MidiChannelType():
 		return s.SetChannel(call.Args.Channel)
 	}
+	if !s.DeviceOutOpened {
+		return errors.New("can't send command when device not opened")
+	}
 	if !s.ChannelSet {
 		return fmt.Errorf("message of type %s require the channel to be set",
 			call.Op)
 	}
-	ch := s.GetChannel()
 	switch call.Op {
 	case types.MidiNoteOnType():
-		// XXX go back to the writer.NoteOn usage for this ...
 		log.Tracef("calling NoteOn with values: %+v", call.Args.NoteOn)
-		var err error
-		if !s.DeviceOutOpened {
-			return errors.New("can't send command when device not opened")
-		} else {
-			msg := ch.NoteOn(call.Args.NoteOn.Pitch, call.Args.NoteOn.Velocity)
-			log.Tracef("created MIDI msg: %+v", msg)
-			err = s.Writer.Write(msg)
-			if err != nil {
-				return err
-			}
+		err := writer.NoteOn(s.Writer, call.Args.NoteOn.Pitch, call.Args.NoteOn.Velocity)
+		if err != nil {
+			return err
 		}
 		return nil
 	case types.MidiNoteOffType():
-		var err error
-		if !s.DeviceOutOpened {
-			err = errors.New("can't send command when device not opened")
-		} else {
-			err = writer.NoteOff(s.Writer, call.Args.NoteOff)
+		err := writer.NoteOff(s.Writer, call.Args.NoteOff)
+		if err != nil {
+			return err
 		}
+		return nil
+	case types.MidiCCType():
+		err := writer.ControlChange(s.Writer, call.Args.CC.Controller, call.Args.CC.Value)
 		if err != nil {
 			return err
 		}

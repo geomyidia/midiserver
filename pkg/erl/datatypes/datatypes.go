@@ -21,14 +21,14 @@ type PropList erlang.OtpErlangList
 func PropListToMap(list erlang.OtpErlangList) (types.PropList, error) {
 	log.Debug("converting proplist ...")
 	tuplesMap := make(types.PropList)
-	for _, term := range list.Value {
+	for idx, term := range list.Value {
 		k, v, err := Tuple(term)
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
 		tuplesMap[k] = v
-		// log.Tracef("  element %d done.", idx)
+		log.Tracef("  element %d done (%+v).", idx, v)
 	}
 	return tuplesMap, nil
 }

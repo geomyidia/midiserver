@@ -146,8 +146,19 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 			return nil, err
 		}
 		args.NoteOn = types.MidiNoteOn{
-			Pitch:    noteOn["pitch"].(uint8),
-			Velocity: noteOn["velocity"].(uint8),
+			Pitch:    noteOn[types.MidiPitchKey].(uint8),
+			Velocity: noteOn[types.MidiVelocityKey].(uint8),
+		}
+	case types.MidiCCKey:
+		list := v.(erlang.OtpErlangList)
+		cc, err := datatypes.PropListToMap(list)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		args.CC = types.MidiCC{
+			Controller: cc[types.MidiControllerKey].(uint8),
+			Value:      cc[types.MidiValueKey].(uint8),
 		}
 	}
 	return args, nil
