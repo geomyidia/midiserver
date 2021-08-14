@@ -64,11 +64,11 @@ func ProcessMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, f
 	if result == erl.Continue() {
 		return
 	}
-	log.Debug("Got message type: ", result)
+	log.Trace("Got message type: ", result)
 	if mp.IsMidi {
 		midiSys.Dispatch(ctx, mp.MidiCalls(), flags)
 	} else {
 		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
 	}
-	log.Debug("message processing complete")
+	log.Trace("message processing complete")
 }

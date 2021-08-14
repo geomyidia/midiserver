@@ -19,7 +19,7 @@ const (
 type PropList erlang.OtpErlangList
 
 func PropListToMap(list erlang.OtpErlangList) (types.PropList, error) {
-	log.Debug("converting proplist ...")
+	log.Trace("converting proplist ...")
 	tuplesMap := make(types.PropList)
 	for idx, term := range list.Value {
 		k, v, err := Tuple(term)

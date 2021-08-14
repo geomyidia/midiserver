@@ -33,7 +33,7 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 		IsMidi:    false,
 		IsCommand: false,
 	}
-	log.Debugf("got Erlang Port term")
+	log.Tracef("got Erlang Port term")
 	log.Tracef("%#v", t)
 	if datatypes.TupleHasKey(t, "midi") {
 		mp.IsMidi = true

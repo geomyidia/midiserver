@@ -57,7 +57,7 @@ func (s *System) Shutdown() {
 }
 
 func (s *System) SetDevice(deviceId uint8) error {
-	log.Trace("setting device ...")
+	log.Info("setting device ...")
 	s.DeviceOut = s.DevicesOut[deviceId]
 	err := s.DeviceOut.Open()
 	if err != nil {
@@ -70,7 +70,7 @@ func (s *System) SetDevice(deviceId uint8) error {
 }
 
 func (s *System) SetChannel(channelId uint8) error {
-	log.Trace("setting channel ...")
+	log.Info("setting channel ...")
 	s.Writer.SetChannel(channelId)
 	s.ChannelSet = true
 	return nil
@@ -81,7 +81,7 @@ func (s *System) GetChannel() channel.Channel {
 }
 
 func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall, flags *types.Flags) {
-	log.Debug("dispatching MIDI operation ...")
+	log.Trace("dispatching MIDI operation ...")
 	log.Tracef("got MIDI calls: %v", calls)
 	for _, call := range calls {
 		log.Debugf("making MIDI call '%s' ...", call.Op)

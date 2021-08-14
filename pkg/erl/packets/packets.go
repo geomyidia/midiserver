@@ -58,13 +58,13 @@ func NewPacket(bytes []byte, opts *erl.Opts) (*Packet, error) {
 }
 
 func (p *Packet) getTrimmed() []byte {
-	log.Debug("getting trimmed ...")
+	log.Trace("getting trimmed ...")
 	return p.bytes[:p.last]
 }
 
 func (p *Packet) Bytes() ([]byte, error) {
-	log.Debug("getting bytes ...")
-	log.Debugf("IsHexEncoded: %v", p.opts.IsHexEncoded)
+	log.Trace("getting bytes ...")
+	log.Tracef("IsHexEncoded: %v", p.opts.IsHexEncoded)
 	if p.opts.IsHexEncoded {
 		return p.getUnwrapped()
 	}
@@ -87,7 +87,7 @@ func (p *Packet) Bytes() ([]byte, error) {
 // ProcessExecMessage to handle binary encoded Term data with
 // none of its bytes missing.
 func (p *Packet) getUnwrapped() ([]byte, error) {
-	log.Debug("getting unwrapped ... ")
+	log.Trace("getting unwrapped ... ")
 	if p.opts.IsHexEncoded {
 		hexStr := string(p.getTrimmed()[:])
 		log.Tracef("got hex string: %s", hexStr)
@@ -103,7 +103,7 @@ func (p *Packet) getUnwrapped() ([]byte, error) {
 }
 
 func (p *Packet) Term() (interface{}, error) {
-	log.Debug("getting term ...")
+	log.Trace("getting term ...")
 	bytes, err := p.Bytes()
 	if err != nil {
 		return nil, fmt.Errorf("problem getting bytes %#v: %s",
