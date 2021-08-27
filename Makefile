@@ -28,6 +28,12 @@ BINS = $(patsubst $(MAINS),bin/%,$(CMDS))
 
 default: all
 
+goversion:
+	@echo $(GO_VERSION)
+
+goarch:
+	@echo $(GO_ARCH)
+
 all: $(BINS)
 
 bin/%: $(MAINS)
