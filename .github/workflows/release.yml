@@ -19,6 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install deps
+        run: sudo apt-get install libasound2-dev
+
       - name: Set FQ_APP_NAME
         run: echo FQ_APP_NAME=github.com/geomyidia/midiserver >> ${GITHUB_ENV}
       - name: Set APP_VERSION
