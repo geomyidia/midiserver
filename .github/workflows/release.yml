@@ -45,10 +45,4 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "./cmd/midiserver"
           binary_name: "midiserver"
-          ldflags: -X "${{ env.FQ_APP_NAME }}/pkg/version.version=${{ env.APP_VERSION }}" \
-                   -X "${{ env.FQ_APP_NAME }}/pkg/version.buildDate=${{ env.BUILD_DATE }}" \
-                   -X "${{ env.FQ_APP_NAME }}/pkg/version.gitCommit=${{ env.APP_GITCOMMIT }}" \
-                   -X "${{ env.FQ_APP_NAME }}/pkg/version.gitBranch=${{ env.APP_GITBRANCH }}" \
-                   -X "${{ env.FQ_APP_NAME }}/pkg/version.gitSummary=${{ env.APP_GITSUMMARY }}" \
-                   -X "${{ env.FQ_APP_NAME }}/pkg/version.goVersion=${{ env.APP_GOVERSION }}" \
-                   -X "${{ env.FQ_APP_NAME }}/pkg/version.goArch=${{ env.APP_GOARCH }}"
+          ldflags: -X "${{ env.FQ_APP_NAME }}/pkg/version.version=${{ env.APP_VERSION }}" -X "${{ env.FQ_APP_NAME }}/pkg/version.buildDate=${{ env.BUILD_DATE }}" -X "${{ env.FQ_APP_NAME }}/pkg/version.gitCommit=${{ env.APP_GITCOMMIT }}" -X "${{ env.FQ_APP_NAME }}/pkg/version.gitBranch=${{ env.APP_GITBRANCH }}" -X "${{ env.FQ_APP_NAME }}/pkg/version.gitSummary=${{ env.APP_GITSUMMARY }}" -X "${{ env.FQ_APP_NAME }}/pkg/version.goVersion=${{ env.APP_GOVERSION }}" -X "${{ env.FQ_APP_NAME }}/pkg/version.goArch=${{ env.APP_GOARCH }}"
