@@ -28,6 +28,14 @@ BINS = $(patsubst $(MAINS),bin/%,$(CMDS))
 
 default: all
 
+# For Github Action release builds
+linux:
+	@sudo apt-get install libasound2-dev libsndfile-dev
+	$(MAKE) all
+
+# For Github Action release builds
+darwin: all
+
 goversion:
 	@echo $(GO_VERSION)
 

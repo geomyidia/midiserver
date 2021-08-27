@@ -11,14 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, darwin, windows]
+        goos: [linux, darwin]
         goarch: [amd64, arm64]
-        exclude:  
-          - goarch: arm64
-            goos: windows 
     steps:
-      - name: Install deps
-        run: sudo apt-get install libasound2-dev libsndfile-dev
       - uses: actions/checkout@v2
       - uses: wangyoucao577/go-release-action@v1.19
         with:
@@ -27,5 +22,6 @@ jobs:
           goarch: ${{ matrix.goarch }}
           project_path: "./cmd/midiserver"
           binary_name: "midiserver"
-          pre_command: "sudo apt-get install libasound2-dev libsndfile-dev"
-          build_command: "make"
+          asset_name: "midiserver-${{ matrix.goos }}-${{ matrix.goarch }}"
+          pre_command: "apt-get install libasound2-dev libsndfile-dev"
+          build_command: "make ${{ matrix.goos }}"
