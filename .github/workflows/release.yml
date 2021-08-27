@@ -1,4 +1,4 @@
-name: Release midiserver binaries
+name: binary release builder
 
 on:
   release:
