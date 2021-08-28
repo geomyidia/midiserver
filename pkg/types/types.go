@@ -23,12 +23,13 @@ const (
 type ParserName string
 type ParserType ParserName
 type Flags struct {
-	Args     []string
-	Command  CommandType
-	Daemon   bool
-	LogLevel string
-	Parser   ParserType
-	Version  bool
+	Args        []string
+	Command     CommandType
+	Daemon      bool
+	ListDevices bool
+	LogLevel    string
+	Parser      ParserType
+	Version     bool
 }
 
 // General result types

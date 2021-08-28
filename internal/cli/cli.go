@@ -31,6 +31,11 @@ func Parse() *types.Flags {
 	flag.StringVar(&loglevel, "loglevel", logDef, logUse)
 	flag.StringVar(&loglevel, "l", logDef, logUse+shortUse)
 
+	var listing bool
+	listDef := false
+	listUse := "List the system MIDI devices"
+	flag.BoolVar(&listing, "list", listDef, listUse)
+
 	var parser string
 	parsDef := DefaultParser
 	parsLegals := "[" +
@@ -58,12 +63,13 @@ func Parse() *types.Flags {
 		cmd = types.CommandName(args[0])
 	}
 	flags := &types.Flags{
-		Args:     flag.Args(),
-		Command:  types.Command(cmd),
-		Daemon:   daemon,
-		LogLevel: loglevel,
-		Parser:   types.Parser(types.ParserName(parser)),
-		Version:  vsn,
+		Args:        flag.Args(),
+		Command:     types.Command(cmd),
+		Daemon:      daemon,
+		ListDevices: listing,
+		LogLevel:    loglevel,
+		Parser:      types.Parser(types.ParserName(parser)),
+		Version:     vsn,
 	}
 
 	if flags.Version {

@@ -41,7 +41,9 @@ func Dispatch(ctx context.Context, command types.CommandType,
 				command, command))
 	}
 
-	if flags.Parser == types.ExecParser() || flags.Parser == types.PortParser() {
+	if flags.ListDevices {
+		ListDevices()
+	} else if flags.Parser == types.ExecParser() || flags.Parser == types.PortParser() {
 		resp := messages.NewResponse(result, err)
 		resp.Send()
 	} else if flags.Parser == types.TextParser() {

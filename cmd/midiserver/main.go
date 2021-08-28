@@ -32,7 +32,6 @@ func main() {
 		server.Serve(ctx, midiSystem, flags)
 	} else {
 		log.Debug("using CLI mode ...")
-		// XXX fill this up
 		args := make(types.PropList)
 		commands.Dispatch(ctx, flags.Command, args, flags)
 	}
