@@ -26,6 +26,7 @@ type Flags struct {
 	Args        []string
 	Command     CommandType
 	Daemon      bool
+	Example     bool
 	ListDevices bool
 	LogLevel    string
 	Parser      ParserType

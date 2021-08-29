@@ -25,6 +25,12 @@ func Parse() *types.Flags {
 	flag.BoolVar(&daemon, "daemon", daemDef, daemUse)
 	flag.BoolVar(&daemon, "d", daemDef, daemUse+shortUse)
 
+	var example bool
+	exampleDef := false
+	exampleUse := "Play some example MIDI; required args are device, " +
+		"channel, pitch, velocity, and duration"
+	flag.BoolVar(&example, "example", exampleDef, exampleUse)
+
 	var loglevel string
 	logDef := "warn"
 	logUse := "Set the logging level"

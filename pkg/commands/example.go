@@ -42,7 +42,7 @@ func Example(arg types.PropList) {
 			Duration:    arg["duration"].(uint8),
 		}
 	}
-	log.Tracef("Got opts: %+v", opts)
+	log.Debugf("Got opts: %+v", opts)
 	drv, err := driver.New()
 	if err != nil {
 		log.Panic(err)
@@ -59,16 +59,6 @@ func Example(arg types.PropList) {
 		log.Panic(err)
 	}
 
-	log.Debug("MIDI IN Ports:")
-	for _, port := range ins {
-		log.Debugf("\t[%v] %s", port.Number(), port.String())
-	}
-
-	log.Debug("MIDI OUT Ports:")
-	for _, port := range outs {
-		log.Debugf("\t[%v] %s", port.Number(), port.String())
-	}
-
 	in, out := ins[0], outs[opts.DeviceId]
 
 	err = in.Open()
@@ -82,7 +72,7 @@ func Example(arg types.PropList) {
 	}
 
 	wr := writer.New(out)
-	wr.SetChannel(opts.MidiChannel) // sets the channel for the next messages
+	wr.SetChannel(opts.MidiChannel)
 
 	seconds := opts.Duration
 	log.Debugf("playing note for %d seconds ...", seconds)
@@ -94,5 +84,5 @@ func Example(arg types.PropList) {
 
 	duration := time.Duration(seconds) * time.Second
 	time.Sleep(duration)
-	writer.NoteOff(wr, 60) // let the note ring for 5 sec
+	writer.NoteOff(wr, opts.Pitch)
 }

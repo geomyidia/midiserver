@@ -57,6 +57,9 @@ func (s *System) Shutdown() {
 }
 
 func (s *System) SetDevice(deviceId uint8) error {
+	if s.DeviceOutOpened {
+		return nil
+	}
 	log.Info("setting device ...")
 	s.DeviceOut = s.DevicesOut[deviceId]
 	err := s.DeviceOut.Open()
