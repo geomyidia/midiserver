@@ -14,9 +14,34 @@ const (
 	ExecParser    string = "exec"
 	PortParser    string = "port"
 	TextParser    string = "text"
+	helpText      string = `
+  example args
+        where the required positional integer args are device, channel,
+        pitch, velocity, and duration. The pitch will be played with the
+        given argument values for the given duration.
+  list-devices
+        will list the MIDI devices currently recognised by the operating system,
+       grouped by input devices and output devices.
+  ping
+        provided for testing purposes by Erlang Ports implementations
+  version
+        a version info (alternate, concise formatting)
+
+	`
+)
+
+var (
+	Usage = func() {
+		w := flag.CommandLine.Output()
+		fmt.Fprintf(w, "\nUsage: %s [flags] [commands] [args]\n", os.Args[0])
+		fmt.Fprintf(w, "\nFlags:\n\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(w, "\nCommands:\n%s", helpText)
+	}
 )
 
 func Parse() *types.Flags {
+	flag.Usage = Usage
 	shortUse := "; short-form flag"
 
 	var daemon bool
