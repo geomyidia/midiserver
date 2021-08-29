@@ -25,7 +25,7 @@ const (
   ping
         provided for testing purposes by Erlang Ports implementations
   version
-        a version info (alternate, concise formatting)
+        an alternate form of the version info with concise formatting
 
 	`
 )
