@@ -26,7 +26,7 @@ func Parse() *types.Flags {
 	flag.BoolVar(&daemon, "d", daemDef, daemUse+shortUse)
 
 	var loglevel string
-	logDef := "info"
+	logDef := "warn"
 	logUse := "Set the logging level"
 	flag.StringVar(&loglevel, "loglevel", logDef, logUse)
 	flag.StringVar(&loglevel, "l", logDef, logUse+shortUse)
