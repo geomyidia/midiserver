@@ -55,6 +55,11 @@ type MidiCC struct {
 	Controller uint8
 	Value      uint8
 }
+type MidiChord struct {
+	Pitches  []uint8
+	Velocity uint8
+	Duration uint32
+}
 type MidiOps map[MidiOpType]interface{}
 type MidiArgs struct {
 	Id      string
@@ -63,6 +68,7 @@ type MidiArgs struct {
 	NoteOn  MidiNoteOn
 	NoteOff uint8
 	CC      MidiCC
+	Chord   MidiChord
 }
 
 type MidiCall struct {
@@ -162,4 +168,8 @@ func MidiTempoType() MidiOpType {
 
 func MidiCCType() MidiOpType {
 	return MidiOpType("cc")
+}
+
+func MidiChordType() MidiOpType {
+	return MidiOpType("chord")
 }
