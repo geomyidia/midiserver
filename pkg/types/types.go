@@ -104,28 +104,32 @@ func Command(name CommandName) CommandType {
 	return CommandType(name)
 }
 
+func PlayNoteCommand() CommandType {
+	return Command("play-note")
+}
+
 func ExampleCommand() CommandType {
-	return CommandType(CommandType("example"))
+	return Command("example")
 }
 
 func ListDevicesCommand() CommandType {
-	return CommandType(CommandType("list-devices"))
+	return Command("list-devices")
 }
 
 func PingCommand() CommandType {
-	return CommandType(CommandType("ping"))
+	return Command("ping")
 }
 
 func StopCommand() CommandType {
-	return CommandType(CommandType("stop"))
+	return Command("stop")
 }
 
 func VersionCommand() CommandType {
-	return CommandType(CommandType("version"))
+	return Command("version")
 }
 
 func EmptyCommand() CommandType {
-	return CommandType(CommandType(""))
+	return Command("")
 }
 
 func (r Result) ToCommand() CommandType {

@@ -22,7 +22,7 @@ func Dispatch(ctx context.Context, command types.CommandType,
 	switch command {
 	case types.PingCommand():
 		result = types.Result("pong")
-	case types.ExampleCommand():
+	case types.PlayNoteCommand():
 		if len(flags.Args) == 6 {
 			args["device"] = toUint(flags.Args[1])
 			args["channel"] = toUint(flags.Args[2])
@@ -30,7 +30,7 @@ func Dispatch(ctx context.Context, command types.CommandType,
 			args["velocity"] = toUint(flags.Args[4])
 			args["duration"] = toUint(flags.Args[5])
 		}
-		Example(args)
+		PlayNote(args)
 		result = types.Result("ok")
 	case types.ListDevicesCommand():
 		ListDevices()

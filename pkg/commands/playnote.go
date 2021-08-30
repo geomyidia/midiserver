@@ -28,7 +28,7 @@ func DefaultOpts() *Opts {
 	}
 }
 
-func Example(arg types.PropList) {
+func PlayNote(arg types.PropList) {
 	var opts *Opts
 	if arg == nil || len(arg) == 0 {
 		log.Debug("got nil args ...")
