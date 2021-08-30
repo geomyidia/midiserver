@@ -5,13 +5,13 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/internal/app"
-	"github.com/geomyidia/midiserver/internal/cli"
-	"github.com/geomyidia/midiserver/pkg/commands"
-	"github.com/geomyidia/midiserver/pkg/midi"
-	"github.com/geomyidia/midiserver/pkg/server"
-	"github.com/geomyidia/midiserver/pkg/types"
-	"github.com/geomyidia/midiserver/pkg/version"
+	"github.com/ut-proj/midiserver/internal/app"
+	"github.com/ut-proj/midiserver/internal/cli"
+	"github.com/ut-proj/midiserver/pkg/commands"
+	"github.com/ut-proj/midiserver/pkg/midi"
+	"github.com/ut-proj/midiserver/pkg/server"
+	"github.com/ut-proj/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/version"
 )
 
 func main() {

@@ -3,7 +3,7 @@ package text
 import (
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 type Response struct {

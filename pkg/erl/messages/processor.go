@@ -3,10 +3,10 @@ package messages
 import (
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/erl"
-	"github.com/geomyidia/midiserver/pkg/erl/datatypes"
-	"github.com/geomyidia/midiserver/pkg/erl/packets"
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/erl"
+	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
+	"github.com/ut-proj/midiserver/pkg/erl/packets"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 type MessageProcessor struct {

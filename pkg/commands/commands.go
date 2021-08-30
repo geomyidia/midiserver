@@ -7,10 +7,10 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/erl/messages"
-	"github.com/geomyidia/midiserver/pkg/text"
-	"github.com/geomyidia/midiserver/pkg/types"
-	"github.com/geomyidia/midiserver/pkg/version"
+	"github.com/ut-proj/midiserver/pkg/erl/messages"
+	"github.com/ut-proj/midiserver/pkg/text"
+	"github.com/ut-proj/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/version"
 )
 
 // Dispatch ...

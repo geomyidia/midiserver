@@ -5,7 +5,7 @@ BIN_APP = bin/$(APP)
 CMD_APP = cmd/$(APP)
 
 DVCS_HOST = github.com
-ORG = geomyidia
+ORG = ut-proj
 PROJ = $(APP)
 FQ_PROJ = $(DVCS_HOST)/$(ORG)/$(PROJ)
 

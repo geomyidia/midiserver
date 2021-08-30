@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/geomyidia/midiserver/pkg/types"
-	"github.com/geomyidia/midiserver/pkg/version"
+	"github.com/ut-proj/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/version"
 )
 
 const (

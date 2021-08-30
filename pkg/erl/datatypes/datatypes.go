@@ -7,7 +7,7 @@ import (
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 const (

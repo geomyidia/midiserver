@@ -5,8 +5,8 @@ import (
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 
-	"github.com/geomyidia/midiserver/pkg/erl/datatypes"
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 type CommandMessage struct {

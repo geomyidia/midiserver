@@ -7,7 +7,7 @@ import (
 	"gitlab.com/gomidi/midi/writer"
 	driver "gitlab.com/gomidi/rtmididrv"
 
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 type Opts struct {

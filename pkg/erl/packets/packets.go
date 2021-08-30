@@ -10,7 +10,7 @@ import (
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/pkg/erl"
+	"github.com/ut-proj/midiserver/pkg/erl"
 )
 
 // Constants

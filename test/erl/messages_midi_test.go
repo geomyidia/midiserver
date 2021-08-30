@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/geomyidia/midiserver/pkg/erl"
-	"github.com/geomyidia/midiserver/pkg/erl/messages"
-	"github.com/geomyidia/midiserver/pkg/erl/packets"
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/erl"
+	"github.com/ut-proj/midiserver/pkg/erl/messages"
+	"github.com/ut-proj/midiserver/pkg/erl/packets"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 const (
@@ -36,7 +36,6 @@ func (suite *MidiMessageTestSuite) SetupTest() {
 	suite.device, _ = dPkt.Term()
 	nPkt, _ := packets.NewPacket(noteOnBytes, opts)
 	suite.noteOn, _ = nPkt.Term()
-
 }
 
 func (suite *MidiMessageTestSuite) TestConvertDevice() {

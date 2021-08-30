@@ -7,12 +7,12 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/midiserver/internal/util"
-	"github.com/geomyidia/midiserver/pkg/commands"
-	"github.com/geomyidia/midiserver/pkg/erl"
-	"github.com/geomyidia/midiserver/pkg/erl/messages"
-	"github.com/geomyidia/midiserver/pkg/midi"
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/internal/util"
+	"github.com/ut-proj/midiserver/pkg/commands"
+	"github.com/ut-proj/midiserver/pkg/erl"
+	"github.com/ut-proj/midiserver/pkg/erl/messages"
+	"github.com/ut-proj/midiserver/pkg/midi"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {

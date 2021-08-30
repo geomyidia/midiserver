@@ -1,4 +1,4 @@
-module github.com/geomyidia/midiserver
+module github.com/ut-proj/midiserver
 
 go 1.12
 

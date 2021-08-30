@@ -1,7 +1,7 @@
 package erl
 
 import (
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 func Continue() types.Result {

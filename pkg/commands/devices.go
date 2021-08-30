@@ -3,7 +3,7 @@ package commands
 import (
 	"fmt"
 
-	"github.com/geomyidia/midiserver/pkg/midi"
+	"github.com/ut-proj/midiserver/pkg/midi"
 )
 
 func ListDevices() {

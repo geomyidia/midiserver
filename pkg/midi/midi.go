@@ -11,7 +11,7 @@ import (
 	"gitlab.com/gomidi/midi/writer"
 	"gitlab.com/gomidi/rtmididrv"
 
-	"github.com/geomyidia/midiserver/pkg/types"
+	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 type System struct {
