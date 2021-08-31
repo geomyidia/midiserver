@@ -10,7 +10,7 @@ import (
 	"github.com/ut-proj/midiserver/pkg/types"
 )
 
-type Opts struct {
+type PlayNoteOpts struct {
 	DeviceId    uint8
 	MidiChannel uint8
 	Pitch       uint8
@@ -18,8 +18,8 @@ type Opts struct {
 	Duration    uint8
 }
 
-func DefaultOpts() *Opts {
-	return &Opts{
+func DefaultPlayNoteOpts() *PlayNoteOpts {
+	return &PlayNoteOpts{
 		DeviceId:    0,
 		MidiChannel: 0,
 		Pitch:       24,
@@ -28,18 +28,18 @@ func DefaultOpts() *Opts {
 	}
 }
 
-func PlayNote(arg types.PropList) {
-	var opts *Opts
-	if arg == nil || len(arg) == 0 {
+func PlayNote(args types.PropList) {
+	var opts *PlayNoteOpts
+	if args == nil || len(args) == 0 {
 		log.Debug("got nil args ...")
-		opts = DefaultOpts()
+		opts = DefaultPlayNoteOpts()
 	} else {
-		opts = &Opts{
-			DeviceId:    arg["device"].(uint8),
-			MidiChannel: arg["channel"].(uint8),
-			Pitch:       arg["pitch"].(uint8),
-			Velocity:    arg["velocity"].(uint8),
-			Duration:    arg["duration"].(uint8),
+		opts = &PlayNoteOpts{
+			DeviceId:    args["device"].(uint8),
+			MidiChannel: args["channel"].(uint8),
+			Pitch:       args["pitch"].(uint8),
+			Velocity:    args["velocity"].(uint8),
+			Duration:    args["duration"].(uint8),
 		}
 	}
 	log.Debugf("Got opts: %+v", opts)

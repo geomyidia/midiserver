@@ -32,6 +32,13 @@ func Dispatch(ctx context.Context, command types.CommandType,
 		}
 		PlayNote(args)
 		result = types.Result("ok")
+	case types.ExampleCommand():
+		if len(flags.Args) == 3 {
+			args["device"] = toUint(flags.Args[1])
+			args["channel"] = toUint(flags.Args[2])
+		}
+		PlayExample(args)
+		result = types.Result("ok")
 	case types.ListDevicesCommand():
 		ListDevices()
 		result = types.Result("ok")

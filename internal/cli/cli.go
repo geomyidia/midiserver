@@ -15,13 +15,16 @@ const (
 	PortParser    string = "port"
 	TextParser    string = "text"
 	helpText      string = `
-  example args
-        where the required positional integer args are device, channel,
-        pitch, velocity, and duration. The pitch will be played with the
-        given argument values for the given duration.
+  example [args]
+        where the optional positional integer args are device and channel.
+        An example piece of music will be played on given device and channel.
   list-devices
         will list the MIDI devices currently recognised by the operating system,
        grouped by input devices and output devices.
+  play-note [args]
+       where the optional positional integer args are device, channel,
+       pitch, velocity, and duration. The pitch will be played with the
+       given argument values for the given duration.
   ping
         provided for testing purposes by Erlang Ports implementations
   version

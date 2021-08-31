@@ -1,6 +1,9 @@
 package types
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 const (
 	ArgsKey           string = "args"
@@ -58,7 +61,7 @@ type MidiCC struct {
 type MidiChord struct {
 	Pitches  []uint8
 	Velocity uint8
-	Duration uint32
+	Duration time.Duration
 }
 type MidiOps map[MidiOpType]interface{}
 type MidiArgs struct {
@@ -79,6 +82,18 @@ type MidiCall struct {
 
 // Other types
 type PropList map[string]interface{}
+
+func Chord(velocity uint8, duration uint32, notes ...[]uint8) *MidiChord {
+	var pitches []uint8
+	for _, note := range notes {
+		pitches = append(pitches, note[0]+(12*(1+note[1])))
+	}
+	return &MidiChord{
+		Pitches:  pitches,
+		Velocity: velocity,
+		Duration: time.Duration(duration),
+	}
+}
 
 // Part of CLI Options
 

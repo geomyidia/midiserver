@@ -9,15 +9,16 @@ import (
 	"github.com/ut-proj/midiserver/pkg/types"
 )
 
-func (s *System) PlayChord(chord types.MidiChord) error {
-	log.Info("playing chord ...")
+func (s *System) PlayChord(chord *types.MidiChord) error {
+	log.Debug("playing chord ...")
 	for _, pitch := range chord.Pitches {
 		err := writer.NoteOn(s.Writer, pitch, chord.Velocity)
+		log.Tracef("\tpitch: %v", pitch)
 		if err != nil {
 			return err
 		}
 	}
-	time.Sleep(time.Duration(chord.Duration))
+	time.Sleep(chord.Duration * time.Millisecond)
 	for _, pitch := range chord.Pitches {
 		err := writer.NoteOff(s.Writer, pitch)
 		if err != nil {

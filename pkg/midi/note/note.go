@@ -6,7 +6,7 @@ package note
 
 // Chromatic scale with flats
 const (
-	C = iota
+	C uint8 = iota
 	Db
 	D
 	Eb
@@ -22,7 +22,7 @@ const (
 
 // Sharps
 const (
-	_ = iota
+	_ uint8 = iota
 	Cs
 	_
 	Ds
@@ -37,7 +37,7 @@ const (
 
 // Double flats
 const (
-	Dbb = iota
+	Dbb uint8 = iota
 	_
 	Ebb
 	_
@@ -51,7 +51,7 @@ const (
 
 // Double sharps
 const (
-	_ = iota
+	_ uint8 = iota
 	_
 	Css
 	_
@@ -64,3 +64,11 @@ const (
 	_
 	Ass
 )
+
+func Pitches(notes ...[]uint8) []uint8 {
+	var pitches []uint8
+	for _, note := range notes {
+		pitches = append(pitches, note[0]+(12*(1+note[1])))
+	}
+	return pitches
+}
