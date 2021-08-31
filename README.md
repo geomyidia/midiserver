@@ -7,9 +7,62 @@
 
 [![][logo]][logo-large]
 
-*A MIDI CLI tool and server written in Go, focused on supporting BEAM apps via Erlang Ports*
+*A MIDI CLI tool and server written in Go, focused on supporting BEAM music apps via Erlang Ports*
 
-TBD
+## Usage
+
+```shell
+$ ./bin/midiserver -h
+```
+```text
+Usage: ./bin/midiserver [flags] [commands] [args]
+
+Flags:
+
+  -d    Daemonise midiserver; this disables the text parser; short-form flag
+  -daemon
+        Daemonise midiserver; this disables the text parser
+  -l string
+        Set the logging level; short-form flag (default "warn")
+  -loglevel string
+        Set the logging level (default "warn")
+  -p string
+        Set the parser to user for commands and data. Legal values are:
+        [exec, port, text]. Note that setting to 'text' disables
+        daemonisation and setting any of the other parsers automatically 
+        enables daemonisation; short-form flag (default "text")
+  -parser string
+        Set the parser to user for commands and data. Legal values are:
+        [exec, port, text]. Note that setting to 'text' disables
+        daemonisation and setting any of the other parsers automatically 
+        enables daemonisation (default "text")
+  -v    Display version/build info and exit; short-form flag
+  -version
+        Display version/build info and exit
+
+Commands:
+
+  example [args]
+        where the optional positional integer args are device and channel.
+        An example piece of music will be played on given device and channel.
+        Valid device numbers are any of the "out" devices in the output of
+        the 'list-devices' command; valid channel numbers are any of the 16
+        MIDI channels: 0 through 15.
+  list-devices
+        will list the MIDI devices currently recognised by the operating
+        system, grouped by input devices and output devices.
+  play-note [args]
+        where the optional positional integer args are device, channel,
+        pitch, velocity, and duration. The pitch will be played with the
+        given argument values for the given duration. Valid device numbers
+        are any of the "out" devices in the output of the 'list-devices'
+        command; valid channel numbers are any of the 16 MIDI channels:
+        0 through 15.
+  ping
+        provided for testing purposes by Erlang Ports implementations
+  version
+        an alternate form of the version info with concise formattin
+```
 
 ## License
 
