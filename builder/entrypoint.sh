@@ -6,16 +6,22 @@ if [[ -z "$GITHUB_WORKSPACE" ]]; then
   echo "Set the GITHUB_WORKSPACE env variable."
   exit 1
 fi
+echo "----> Using GITHUB_WORKSPACE $GITHUB_WORKSPACE"
 
 if [[ -z "$GITHUB_REPOSITORY" ]]; then
   echo "Set the GITHUB_REPOSITORY env variable."
   exit 1
 fi
+echo "----> Using GITHUB_REPOSITORY $GITHUB_REPOSITORY"
 
 root_path="/go/src/github.com/$GITHUB_REPOSITORY"
 release_path="$GITHUB_WORKSPACE/.release"
 repo_name="$(echo $GITHUB_REPOSITORY | cut -d '/' -f2)"
 targets=${@-"darwin/amd64 darwin/386arm64 linux/amd64 linux/386 windows/amd64 windows/386"}
+
+echo "----> Using root_path $root_path"
+echo "----> Using release_path $release_path"
+echo "----> Using repo_name $repo_name"
 
 echo "----> Setting up Go repository"
 mkdir -p $release_path

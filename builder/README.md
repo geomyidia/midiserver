@@ -21,9 +21,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
 
-      - name: Make binaries
+      - name: Cross-compile midiserver
         uses: ut-proj/midiserver/builder@main
         with:
           args: linux/amd64 darwin/amd64 darwin/arm64
