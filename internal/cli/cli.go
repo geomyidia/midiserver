@@ -16,7 +16,6 @@ const (
 	TextParser    string = "text"
 	helpText      string = `
   example [args]
-        where the optional positional integer args are device and channel.
         An example piece of music will be played on given device and channel.
         Valid device numbers are any of the "out" devices in the output of
         the 'list-devices' command; valid channel numbers are any of the 16
@@ -25,12 +24,13 @@ const (
         will list the MIDI devices currently recognised by the operating
         system, grouped by input devices and output devices.
   play-note [args]
-        where the optional positional integer args are device, channel,
-        pitch, velocity, and duration. The pitch will be played with the
-        given argument values for the given duration. Valid device numbers
+        A pitch will be played with the default values for the arguments,
+        opertionally overridden. Positional args are the integer values for
+        device, channel, pitch, velocity, and duration.  Valid device numbers
         are any of the "out" devices in the output of the 'list-devices'
         command; valid channel numbers are any of the 16 MIDI channels:
-        0 through 15.
+        0 through 15. Pitch and velocity are standard MIDI integer values for
+        the same. Duration is in seconds.
   ping
         provided for testing purposes by Erlang Ports implementations
   version
