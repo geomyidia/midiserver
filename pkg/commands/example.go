@@ -41,6 +41,8 @@ func PlayExample(args types.PropList) error {
 	if err != nil {
 		return err
 	}
+	// A rendition of Max Richter's "On the Nature of Daylight" from the album
+	// The Blue Notebooks
 	chord1 := types.Chord(50, 3600, []uint8{note.Bb, 2}, []uint8{note.F, 3}, []uint8{note.Db, 4})
 	chord2 := types.Chord(50, 3600, []uint8{note.Ab, 2}, []uint8{note.F, 3}, []uint8{note.C, 4})
 	chord3 := types.Chord(50, 3600, []uint8{note.Db, 2}, []uint8{note.Db, 3}, []uint8{note.Ab, 3})
