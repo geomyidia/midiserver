@@ -26,7 +26,8 @@ jobs:
       - name: Cross-compile midiserver
         uses: ut-proj/midiserver/builder@main
         with:
-          args: linux/amd64 darwin/amd64 darwin/arm64
+          args: darwin/amd64
+          #args: linux/amd64 darwin/amd64 darwin/arm64
 ```
 
 Basic workflow configuration will compile binaries for the following platforms:

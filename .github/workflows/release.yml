@@ -1,4 +1,4 @@
-name: binary release builder
+name: midiserver release builders
 
 on:
   release:
@@ -11,12 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        goos: [linux, darwin]
-        goarch: [amd64, arm64]
+        #goos: [linux, darwin]
+        #goarch: [amd64, arm64]
+        goos: [linux]
+        goarch: [amd64]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Cross-compile midiserver
+      - name: Build Linux midiserver
         uses: ut-proj/midiserver/builder@main
         with:
           args: ${{ matrix.goos }}/${{ matrix.goarch }}
+      - name: Release Linux midiserver
+        uses: softprops/action-gh-release@v1
+        with:
+          files: builds/midiserver-linux-amd64

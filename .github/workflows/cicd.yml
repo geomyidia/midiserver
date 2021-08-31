@@ -20,6 +20,10 @@ jobs:
         go-version: 1.17
     - name: Install deps
       run: sudo apt-get install libasound2-dev
+    - name: Get current directory
+      run: |
+        pwd
+        ls -al
     - name: Build
       run: go build -v -race ./...
     - name: Test

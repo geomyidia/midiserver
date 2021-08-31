@@ -48,6 +48,9 @@ bin/%: $(MAINS)
 	@echo ">> Building $@ ..."
 	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
+cross-compile:
+	@go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) ./$(CMD_APP)
+
 clean:
 	@echo ">> Removing $(BINS) ..."
 	@rm -f $(BINS)
