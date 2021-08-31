@@ -14,14 +14,9 @@ jobs:
         goos: [linux, darwin]
         goarch: [amd64, arm64]
     steps:
-      - uses: actions/checkout@v2
-      - uses: wangyoucao577/go-release-action@v1.19
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cross-compile midiserver
+        uses: ut-proj/midiserver/builder@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          project_path: "./cmd/midiserver"
-          binary_name: "midiserver"
-          asset_name: "midiserver-${{ matrix.goos }}-${{ matrix.goarch }}"
-          pre_command: "apt-get install libasound2-dev libsndfile-dev"
-          build_command: "make ${{ matrix.goos }}"
+          args: ${{ matrix.goos }}/${{ matrix.goarch }}
