@@ -60,3 +60,17 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+  linux-arm64-releases:
+    name: Linux ARM64 Go binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [aarch64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Release Linux midiserver
+        uses: softprops/action-gh-release@v1
+        with:
+          files: bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
