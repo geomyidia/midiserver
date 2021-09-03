@@ -30,7 +30,7 @@ jobs:
     strategy:
       matrix:
         goos: [darwin]
-        goarch: [amd64]
+        goarch: [x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
       - name: Build
         run: |
           make
-          mv bin/midiserver bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+          ls -al bin/
       - name: Release macOS midiserver
         uses: softprops/action-gh-release@v1
         with:

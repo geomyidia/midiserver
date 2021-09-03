@@ -15,30 +15,30 @@
 $ ./bin/midiserver -h
 ```
 ```text
-Usage: ./bin/midiserver [flags] [commands] [args]
+Usage: ./bin/midiserver-darwin-arm64 [flags] [commands] [args]
 
 Flags:
 
-  -d    Daemonise midiserver; this disables the text parser; short-form flag
+  -d	Daemonise midiserver; this disables the text parser; short-form flag
   -daemon
-        Daemonise midiserver; this disables the text parser
+          Daemonise midiserver; this disables the text parser
   -l string
-        Set the logging level; short-form flag (default "warn")
+          Set the logging level; short-form flag (default "warn")
   -loglevel string
-        Set the logging level (default "warn")
+          Set the logging level (default "warn")
   -p string
-        Set the parser to user for commands and data. Legal values are:
-        [exec, port, text]. Note that setting to 'text' disables
-        daemonisation and setting any of the other parsers automatically 
-        enables daemonisation; short-form flag (default "text")
+          Set the parser to user for commands and data. Legal values are:
+          [exec, port, text]. Note that setting to 'text' disables
+          daemonisation and setting any of the other parsers automatically
+          enables daemonisation; short-form flag (default "text")
   -parser string
-        Set the parser to user for commands and data. Legal values are:
-        [exec, port, text]. Note that setting to 'text' disables
-        daemonisation and setting any of the other parsers automatically 
-        enables daemonisation (default "text")
-  -v    Display version/build info and exit; short-form flag
+          Set the parser to user for commands and data. Legal values are:
+          [exec, port, text]. Note that setting to 'text' disables
+          daemonisation and setting any of the other parsers automatically
+          enables daemonisation (default "text")
+  -v	Display version/build info and exit; short-form flag
   -version
-        Display version/build info and exit
+          Display version/build info and exit
 
 Commands:
 
@@ -48,7 +48,7 @@ Commands:
         the 'list-devices' command; valid channel numbers are any of the 16
         MIDI channels: 0 through 15.
   list-devices
-        will list the MIDI devices currently recognised by the operating
+        Will list the MIDI devices currently recognised by the operating
         system, grouped by input devices and output devices.
   play-note [args]
         A pitch will be played with the default values for the arguments,
@@ -59,9 +59,9 @@ Commands:
         0 through 15. Pitch and velocity are standard MIDI integer values for
         the same. Duration is in seconds.
   ping
-        provided for testing purposes by Erlang Ports implementations
+        Provided for testing purposes by Erlang Ports implementations
   version
-        an alternate form of the version info with concise formatting
+        An alternate form of the version info with concise formatting.
 ```
 
 ## License

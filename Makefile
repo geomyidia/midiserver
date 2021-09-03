@@ -3,6 +3,7 @@ VERSION = $(shell cat VERSION)
 ARCH = $(shell uname -m)
 OS = $(shell uname -s|tr '[:upper:]' '[:lower:]')
 BIN_APP = bin/$(APP)
+BIN_APP_ARCH = bin/$(APP)-$(OS)-$(ARCH)
 CMD_APP = cmd/$(APP)
 
 DVCS_HOST = github.com
@@ -27,7 +28,7 @@ MAINS = cmd/%/main.go
 CMDS = $(wildcard cmd/*/main.go)
 BINS = $(patsubst $(MAINS),bin/%,$(CMDS))
 
-default: all bin/$(APP)-$(OS)-$(ARCH)
+default: all $(BIN_APP_ARCH)
 
 goversion:
 	@echo $(GO_VERSION)
@@ -41,8 +42,8 @@ bin/%: $(MAINS)
 	@echo ">> Building $@ ..."
 	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
-bin/$(APP)-$(OS)-$(ARCH):
-	@mv bin/$(APP) bin/$(APP)-$(OS)-$(ARCH)
+$(BIN_APP_ARCH):
+	@mv bin/$(APP) $(BIN_APP_ARCH)
 
 cross-compile:
 	@env
@@ -52,7 +53,7 @@ cross-compile:
 
 clean:
 	@echo ">> Removing $(BINS) ..."
-	@rm -f $(BINS) $(BIN_APP)*
+	@rm -f $(BINS) $(BIN_APP_ARCH)
 
 serve: all
 	@echo ">> Serving from compiled binary ..."
