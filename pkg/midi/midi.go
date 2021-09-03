@@ -26,6 +26,7 @@ type System struct {
 }
 
 func NewSystem() *System {
+	log.Info("creating MIDI system ...")
 	drv, err := rtmididrv.New()
 	if err != nil {
 		log.Fatal(err)
