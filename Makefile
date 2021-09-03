@@ -1,6 +1,7 @@
 APP = midiserver
 VERSION = $(shell cat VERSION)
-
+ARCH = $(shell uname -m)
+OS = $(shell uname -s|tr '[:upper:]' '[:lower:]')
 BIN_APP = bin/$(APP)
 CMD_APP = cmd/$(APP)
 
@@ -26,7 +27,7 @@ MAINS = cmd/%/main.go
 CMDS = $(wildcard cmd/*/main.go)
 BINS = $(patsubst $(MAINS),bin/%,$(CMDS))
 
-default: all
+default: all bin/$(APP)-$(OS)-$(ARCH)
 
 goversion:
 	@echo $(GO_VERSION)
@@ -40,6 +41,9 @@ bin/%: $(MAINS)
 	@echo ">> Building $@ ..."
 	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
+bin/$(APP)-$(OS)-$(ARCH):
+	@mv bin/$(APP) bin/$(APP)-$(OS)-$(ARCH)
+
 cross-compile:
 	@env
 	@pwd
@@ -48,7 +52,7 @@ cross-compile:
 
 clean:
 	@echo ">> Removing $(BINS) ..."
-	@rm -f $(BINS)
+	@rm -f $(BINS) $(BIN_APP)*
 
 serve: all
 	@echo ">> Serving from compiled binary ..."

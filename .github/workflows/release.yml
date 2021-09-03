@@ -23,23 +23,39 @@ jobs:
       - name: Release Linux midiserver
         uses: softprops/action-gh-release@v1
         with:
-          files: builds/midiserver-linux-amd64
-  darwin-releases:
-    name: MacOS Go binaries
+          files: builds/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+  darwin-amd64-releases:
+    name: MacOS AMD64 Go binary
     runs-on: macos-11
     strategy:
       matrix:
         goos: [darwin]
         goarch: [amd64]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
         with:
           go-version: '1.17'
       - name: Build
         run: |
           make
           mv bin/midiserver bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+      - name: Release macOS midiserver
+        uses: softprops/action-gh-release@v1
+        with:
+          files: bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+  darwin-arm64-releases:
+    name: MacOS ARM64 Go binary
+    runs-on: macos-11
+    strategy:
+      matrix:
+        goos: [darwin]
+        goarch: [arm64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Release macOS midiserver
         uses: softprops/action-gh-release@v1
         with:
