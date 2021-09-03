@@ -83,13 +83,24 @@ func (s *System) GetChannel() channel.Channel {
 	return channel.Channel(s.Writer.Channel())
 }
 
-func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall, flags *types.Flags) {
+func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall,
+	isParallel bool, flags *types.Flags) {
+	var err error
 	log.Trace("dispatching MIDI operation ...")
-	log.Tracef("got MIDI calls: %v", calls)
+	log.Debugf("got MIDI calls: %v", calls)
+
 	for _, call := range calls {
 		log.Debugf("making MIDI call '%s' ...", call.Op)
-		log.Tracef("with (id, args): (%d, %+v) ...", call.Id, call.Args)
-		err := s.CallMidi(call)
+		log.Debugf("with (id, args): (%d, %+v) ...", call.Id, call.Args)
+		// XXX This isn't safe ... what's the right way to do this in gomidi?
+		// if isParallel {
+		// 	log.Trace("making calling in parallel ...")
+		// 	go s.CallMidi(call)
+		// } else {
+		// 	log.Trace("making calling in series ...")
+		// 	err = s.CallMidi(call)
+		// }
+		err = s.CallMidi(call)
 		if err != nil {
 			log.Error(err)
 		}

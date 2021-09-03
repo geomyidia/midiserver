@@ -66,7 +66,8 @@ func ProcessMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, f
 	}
 	log.Trace("Got message type: ", result)
 	if mp.IsMidi {
-		midiSys.Dispatch(ctx, mp.MidiCalls(), flags)
+		callGroup := mp.MidiCallGroup()
+		midiSys.Dispatch(ctx, callGroup.Calls(), callGroup.IsParallel(), flags)
 	} else {
 		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
 	}

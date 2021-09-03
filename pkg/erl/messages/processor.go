@@ -37,13 +37,13 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 	log.Tracef("%#v", t)
 	if datatypes.TupleHasKey(t, "midi") {
 		mp.IsMidi = true
-		calls, err := NewMidiCallGroup(t)
+		callGroup, err := NewMidiCallGroup(t)
 		if err != nil {
 			resp := NewResponse(types.Result(""), types.Err(err.Error()))
 			resp.Send()
 			return nil, err
 		}
-		mp.midiCalls = calls
+		mp.midiCalls = callGroup
 		return mp, nil
 	}
 	msg, err := NewCommandMessage(t)
@@ -77,4 +77,8 @@ func (mp *MessageProcessor) CommandArgs() types.PropList {
 
 func (mp *MessageProcessor) MidiCalls() []types.MidiCall {
 	return mp.midiCalls.Calls()
+}
+
+func (mp *MessageProcessor) MidiCallGroup() *MidiCallGroup {
+	return mp.midiCalls
 }

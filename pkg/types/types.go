@@ -11,6 +11,7 @@ const (
 	MidiKey           string = "midi"
 	MidiBatchKey      string = "batch"
 	MidiIdKey         string = "id"
+	MidiParallelKey   string = "parallel?"
 	MidiMessagesKey   string = "messages"
 	MidiDeviceKey     string = "device"
 	MidiPitchKey      string = "pitch"
