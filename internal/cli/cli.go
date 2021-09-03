@@ -21,7 +21,7 @@ const (
         the 'list-devices' command; valid channel numbers are any of the 16
         MIDI channels: 0 through 15.
   list-devices
-        will list the MIDI devices currently recognised by the operating
+        This will list the MIDI devices currently recognised by the operating
         system, grouped by input devices and output devices.
   play-note [args]
         A pitch will be played with the default values for the arguments,
@@ -32,11 +32,11 @@ const (
         0 through 15. Pitch and velocity are standard MIDI integer values for
         the same. Duration is in seconds.
   ping
-        provided for testing purposes by Erlang Ports implementations
+        Provided for testing purposes by Erlang Ports implementations.
   version
-        an alternate form of the version info with concise formatting
+        An alternate form of the version info with concise formatting.
 
-	`
+`
 )
 
 var (
