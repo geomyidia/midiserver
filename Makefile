@@ -43,7 +43,7 @@ bin/%: $(MAINS)
 	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
 $(BIN_APP_ARCH):
-	@mv bin/$(APP) $(BIN_APP_ARCH)
+	@cp bin/$(APP) $(BIN_APP_ARCH)
 
 cross-compile:
 	@env
