@@ -9,7 +9,30 @@
 
 *A MIDI CLI tool and server written in Go, focused on supporting BEAM music apps via Erlang Ports*
 
+## About
+
+The executable built by this project is intended to:
+* communicate via messages with BEAM (Erlang language family) clients
+* to do so with messages created by [midilib](https://github.com/erlsci/midilib)
+* to be controlled by a `gen_server` (e.g., see [undermidi go server](https://github.com/ut-proj/undermidi/blob/release/0.2.x/src/undermidi/supervisor.lfe))
+* to be run as part of a supervision tree (e.g., see [undermidi supervisor](https://github.com/ut-proj/undermidi))
+
 ## Usage
+
+A typical execution looks like this:
+
+```shell
+$ ./bin/midiserver -d -l warn -p exec
+```
+
+You can use it to test your MIDI setup:
+
+```shell
+$ ./bin/midiserver list-devices
+$ ./bin/midiserver example 0 0
+```
+
+Full usage:
 
 ```shell
 $ ./bin/midiserver -h
