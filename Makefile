@@ -28,14 +28,6 @@ BINS = $(patsubst $(MAINS),bin/%,$(CMDS))
 
 default: all
 
-# For Github Action release builds
-linux:
-	@sudo apt-get install libasound2-dev libsndfile-dev
-	$(MAKE) all
-
-# For Github Action release builds
-darwin: all
-
 goversion:
 	@echo $(GO_VERSION)
 
@@ -49,6 +41,9 @@ bin/%: $(MAINS)
 	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
 cross-compile:
+	@env
+	@pwd
+	@ls -al .
 	@go build -ldflags "$(LDFLAGS)" -o $(OUTPUT) ./$(CMD_APP)
 
 clean:
