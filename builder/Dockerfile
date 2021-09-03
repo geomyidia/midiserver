@@ -10,7 +10,9 @@ LABEL "com.github.actions.color"="#E0EBF5"
 
 RUN \
   apt-get update && \
-  apt-get install -y ca-certificates openssl zip libasound2-dev && \
+  apt-get install -y ca-certificates openssl zip libasound2-dev libasound2 \
+  alsa-utils libasound2-plugins pulseaudio pulseaudio-utils \
+  && \
   update-ca-certificates && \
   rm -rf /var/lib/apt
 
