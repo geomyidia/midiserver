@@ -8,12 +8,12 @@ import (
 )
 
 // SetupApp ...
-func SetupLogging(logLevel string) {
+func SetupLogging(logLevel string, reportCaller bool) {
 	logger.SetupLogging(&logger.ZyLogOptions{
 		Colored:      true,
 		Level:        logLevel,
 		Output:       "stderr",
-		ReportCaller: true,
+		ReportCaller: reportCaller,
 	})
 
 }
