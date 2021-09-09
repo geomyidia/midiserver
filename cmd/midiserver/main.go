@@ -16,7 +16,7 @@ import (
 
 func main() {
 	flags := cli.Parse()
-	app.SetupLogging(flags.LogLevel, false)
+	app.SetupLogging(flags.LogLevel, flags.LogReportCaller)
 	log.Info("Welcome to the Go midiserver!")
 	log.Infof("running version: %s", version.VersionedBuildString())
 	log.Tracef("flags: %+v", flags)
