@@ -74,3 +74,18 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+  linux-armv7l-releases:
+    name: Linux/Raspberry PI Go binary
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [armv7l]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Release Linux/Raspberry midiserver
+        uses: softprops/action-gh-release@v1
+        with:
+          files: bin/midiserver-${{ matrix.goos }}-${{ matrix.goarch }}
+
