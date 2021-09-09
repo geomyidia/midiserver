@@ -65,6 +65,12 @@ func Parse() *types.Flags {
 	flag.StringVar(&loglevel, "loglevel", logDef, logUse)
 	flag.StringVar(&loglevel, "l", logDef, logUse+shortUse)
 
+	var logReportCaller bool
+	logRCDef := false
+	logRCUse := "Indicate whehter the log lines contain the report caller"
+	flag.BoolVar(&logReportCaller, "log-reportcaller", logRCDef, logRCUse)
+	flag.BoolVar(&logReportCaller, "r", logRCDef, logRCUse+shortUse)
+
 	var parser string
 	parsDef := DefaultParser
 	parsLegals := "[" +
@@ -91,12 +97,13 @@ func Parse() *types.Flags {
 		cmd = types.CommandName(args[0])
 	}
 	flags := &types.Flags{
-		Args:     flag.Args(),
-		Command:  types.Command(cmd),
-		Daemon:   daemon,
-		LogLevel: loglevel,
-		Parser:   types.Parser(types.ParserName(parser)),
-		Version:  vsn,
+		Args:            flag.Args(),
+		Command:         types.Command(cmd),
+		Daemon:          daemon,
+		LogLevel:        loglevel,
+		LogReportCaller: logReportCaller,
+		Parser:          types.Parser(types.ParserName(parser)),
+		Version:         vsn,
 	}
 
 	if flags.Version {
