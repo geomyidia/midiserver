@@ -40,7 +40,7 @@ all: $(BINS)
 
 bin/%: $(MAINS)
 	@echo ">> Building $@ ..."
-	@go build -race -ldflags "$(LDFLAGS)" -o ./$@ ./$<
+	@go build -ldflags "$(LDFLAGS)" -o ./$@ ./$<
 
 $(BIN_APP_ARCH):
 	@cp bin/$(APP) $(BIN_APP_ARCH)
