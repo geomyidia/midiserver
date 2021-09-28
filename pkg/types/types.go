@@ -6,21 +6,25 @@ import (
 )
 
 const (
-	ArgsKey           string = "args"
-	CommandKey        string = "command"
-	MidiKey           string = "midi"
-	MidiBatchKey      string = "batch"
-	MidiIdKey         string = "id"
-	MidiParallelKey   string = "parallel?"
-	MidiMessagesKey   string = "messages"
-	MidiDeviceKey     string = "device"
-	MidiPitchKey      string = "pitch"
-	MidiVelocityKey   string = "velocity"
-	MidiNoteOffKey    string = "note_off"
-	MidiNoteOnKey     string = "note_on"
-	MidiCCKey         string = "cc"
-	MidiControllerKey string = "controller"
-	MidiValueKey      string = "value"
+	ArgsKey              string = "args"
+	CommandKey           string = "command"
+	MidiKey              string = "midi"
+	MidiBatchKey         string = "batch"
+	MidiChannelKey       string = "channel"
+	MidiIdKey            string = "id"
+	MidiParallelKey      string = "parallel?"
+	MidiMessagesKey      string = "messages"
+	MidiDeviceKey        string = "device"
+	MidiPitchKey         string = "pitch"
+	MidiBankSelectMSBKey string = "bank_select_msb"
+	MidiBankSelectLSBKey string = "bank_select_lsb"
+	MidiProgramChangeKey string = "program_change"
+	MidiVelocityKey      string = "velocity"
+	MidiNoteOffKey       string = "note_off"
+	MidiNoteOnKey        string = "note_on"
+	MidiCCKey            string = "cc"
+	MidiControllerKey    string = "controller"
+	MidiValueKey         string = "value"
 )
 
 // CLI Flag types
@@ -74,6 +78,7 @@ type MidiArgs struct {
 	NoteOff uint8
 	CC      MidiCC
 	Chord   MidiChord
+	Program uint8
 }
 
 type MidiCall struct {
@@ -181,6 +186,18 @@ func MidiNoteOnType() MidiOpType {
 
 func MidiNoteOffType() MidiOpType {
 	return MidiOpType("note_off")
+}
+
+func MidiProgramChangeType() MidiOpType {
+	return MidiOpType("program_change")
+}
+
+func MidiBankSelectMSBType() MidiOpType {
+	return MidiOpType("bank_select_msb")
+}
+
+func MidiBankSelectLSBType() MidiOpType {
+	return MidiOpType("bank_select_lsb")
 }
 
 func MidiTempoType() MidiOpType {

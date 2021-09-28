@@ -174,8 +174,11 @@ func ConvertBatch(term interface{}) (*MidiCallGroup, error) {
 }
 
 func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
+	log.Debug("converting args ...")
 	args := &types.MidiArgs{}
 	switch k {
+	case types.MidiChannelKey:
+		args.Channel = v.(uint8)
 	case types.MidiDeviceKey:
 		args.Device = v.(uint8)
 	case types.MidiNoteOffKey:
@@ -190,6 +193,12 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 		args.NoteOn = types.MidiNoteOn{
 			Pitch:    noteOn[types.MidiPitchKey].(uint8),
 			Velocity: noteOn[types.MidiVelocityKey].(uint8),
+		}
+	case types.MidiProgramChangeKey:
+		args.Program = v.(uint8)
+	case types.MidiBankSelectMSBKey, types.MidiBankSelectLSBKey:
+		args.CC = types.MidiCC{
+			Value: v.(uint8),
 		}
 	case types.MidiCCKey:
 		list := v.(erlang.OtpErlangList)

@@ -14,6 +14,11 @@ import (
 	"github.com/ut-proj/midiserver/pkg/types"
 )
 
+const (
+	MSBBankCC uint8 = 0
+	LSBBankCC uint8 = 32
+)
+
 type System struct {
 	Driver          *rtmididrv.Driver
 	DevicesIn       []midi.In
@@ -77,6 +82,7 @@ func (s *System) SetChannel(channelId uint8) error {
 	log.Info("setting channel ...")
 	s.Writer.SetChannel(channelId)
 	s.ChannelSet = true
+	log.Tracef("current channel value: %v", s.GetChannel())
 	return nil
 }
 
@@ -132,6 +138,24 @@ func (s *System) CallMidi(call types.MidiCall) error {
 		return nil
 	case types.MidiNoteOffType():
 		err := writer.NoteOff(s.Writer, call.Args.NoteOff)
+		if err != nil {
+			return err
+		}
+		return nil
+	case types.MidiProgramChangeType():
+		err := writer.ProgramChange(s.Writer, call.Args.Program)
+		if err != nil {
+			return err
+		}
+		return nil
+	case types.MidiBankSelectMSBType():
+		err := writer.ControlChange(s.Writer, MSBBankCC, call.Args.CC.Value)
+		if err != nil {
+			return err
+		}
+		return nil
+	case types.MidiBankSelectLSBType():
+		err := writer.ControlChange(s.Writer, LSBBankCC, call.Args.CC.Value)
 		if err != nil {
 			return err
 		}
