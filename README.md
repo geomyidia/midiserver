@@ -37,6 +37,7 @@ Full usage:
 ```shell
 $ ./bin/midiserver -h
 ```
+
 ```text
 Usage: ./bin/midiserver [flags] [commands] [args]
 
