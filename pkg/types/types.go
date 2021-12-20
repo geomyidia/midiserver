@@ -38,6 +38,7 @@ type Flags struct {
 	ListDevices     bool
 	LogLevel        string
 	LogReportCaller bool
+	MidiInDeviceID  int
 	Parser          ParserType
 	Version         bool
 }

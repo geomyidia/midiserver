@@ -8,6 +8,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/gomidi/midi"
 	"gitlab.com/gomidi/midi/midimessage/channel"
+	"gitlab.com/gomidi/midi/reader"
 	"gitlab.com/gomidi/midi/writer"
 	"gitlab.com/gomidi/rtmididrv"
 
@@ -25,7 +26,9 @@ type System struct {
 	DevicesOut      []midi.Out
 	DeviceIn        midi.In
 	DeviceOut       midi.Out
+	Reader          *reader.Reader
 	Writer          *writer.Writer
+	DeviceInOpened  bool
 	DeviceOutOpened bool
 	ChannelSet      bool
 }
@@ -50,6 +53,7 @@ func NewSystem() *System {
 	return &System{
 		Driver:          drv,
 		DevicesIn:       ins,
+		DeviceInOpened:  false,
 		DevicesOut:      outs,
 		DeviceOutOpened: false,
 		ChannelSet:      false,
@@ -59,15 +63,22 @@ func NewSystem() *System {
 func (s *System) Shutdown() {
 	log.Info("shutting down MIDI system ...")
 	s.Driver.Close()
+	if s.DeviceOut.IsOpen() {
+		s.DeviceOut.Close()
+	}
 	s.DeviceOutOpened = false
+	if s.DeviceIn.IsOpen() {
+		s.DeviceIn.Close()
+	}
+	s.DeviceInOpened = false
 }
 
-func (s *System) SetDevice(deviceId uint8) error {
+func (s *System) SetWriter(deviceOutID uint8) error {
 	if s.DeviceOutOpened {
 		return nil
 	}
 	log.Info("setting device ...")
-	s.DeviceOut = s.DevicesOut[deviceId]
+	s.DeviceOut = s.DevicesOut[deviceOutID]
 	err := s.DeviceOut.Open()
 	if err != nil {
 		log.Fatal(err)
@@ -78,7 +89,17 @@ func (s *System) SetDevice(deviceId uint8) error {
 	return nil
 }
 
-func (s *System) SetChannel(channelId uint8) error {
+func (s *System) SetReader(deviceInID uint8) {
+	s.Reader = reader.New(
+		reader.NoLogger(),
+		reader.Each(ReceiveEach),
+	)
+	s.DeviceIn = s.DevicesIn[deviceInID]
+	s.DeviceIn.Open()
+	s.DeviceInOpened = true
+}
+
+func (s *System) SetWriterChannel(channelId uint8) error {
 	log.Info("setting channel ...")
 	s.Writer.SetChannel(channelId)
 	s.ChannelSet = true
@@ -86,7 +107,7 @@ func (s *System) SetChannel(channelId uint8) error {
 	return nil
 }
 
-func (s *System) GetChannel() channel.Channel {
+func (s *System) GetWriterChannel() channel.Channel {
 	return channel.Channel(s.Writer.Channel())
 }
 
@@ -170,4 +191,21 @@ func (s *System) CallMidi(call types.MidiCall) error {
 		log.Errorf("no handler for operation '%s'", call.Op)
 		return nil
 	}
+}
+
+// DEPRECATED FUNCTIONS
+
+func (s *System) SetDevice(deviceId uint8) error {
+	log.Warnf("the 'SetDevice' method is deprecated; use 'SetWriter' instead")
+	return s.SetWriter(deviceId)
+}
+
+func (s *System) SetChannel(channelId uint8) error {
+	log.Warnf("the 'SetChannel' method is deprecated; use 'SetWriterChannel' instead")
+	return s.SetWriterChannel(channelId)
+}
+
+func (s *System) GetChannel() channel.Channel {
+	log.Warnf("the 'GetChannel' method is deprecated; use 'GetWriterChannel' instead")
+	return s.GetWriterChannel()
 }
