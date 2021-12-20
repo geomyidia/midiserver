@@ -31,6 +31,16 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 		ProcessMessages(ctx, midiSys, opts, flags)
 	}()
 
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		err := ReceiveMIDI(ctx, midiSys, flags)
+		if err != nil {
+			log.Error(err)
+			cancel()
+		}
+	}()
+
 	// Listen for the interrupt signal.
 	<-ctx.Done()
 	// Restore default behavior on the interrupt signal and notify user of shutdown.
@@ -72,4 +82,13 @@ func ProcessMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, f
 		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
 	}
 	log.Trace("message processing complete")
+}
+
+func ReceiveMIDI(ctx context.Context, midiSys *midi.System, flags *types.Flags) error {
+	if flags.MidiInDeviceID < 0 {
+		log.Warn("no valid device ID set for mini-in; not starting listener ...")
+	}
+	midiSys.SetReader(uint8(flags.MidiInDeviceID))
+	log.Infof("awaiting MIDI messages on device %v ...", flags.MidiInDeviceID)
+	return midiSys.Reader.ListenTo(midiSys.DeviceIn)
 }

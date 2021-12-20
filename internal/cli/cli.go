@@ -67,9 +67,16 @@ func Parse() *types.Flags {
 
 	var logReportCaller bool
 	logRCDef := false
-	logRCUse := "Indicate whehter the log lines contain the report caller"
+	logRCUse := "Indicate whether the log lines contain the report caller"
 	flag.BoolVar(&logReportCaller, "log-reportcaller", logRCDef, logRCUse)
 	flag.BoolVar(&logReportCaller, "r", logRCDef, logRCUse+shortUse)
+
+	var midiInDeviceID int
+	midiInDeviceIDUse := "This needs to be a valid ID for a MIDI device capable " +
+		"of receiving\nMIDI data; for a list of valid IDs be sure to run the " +
+		"'list-devices' \ncommand"
+	flag.IntVar(&midiInDeviceID, "midi-in", -1, midiInDeviceIDUse)
+	flag.IntVar(&midiInDeviceID, "i", -1, midiInDeviceIDUse+shortUse)
 
 	var parser string
 	parsDef := DefaultParser
