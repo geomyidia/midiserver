@@ -101,6 +101,7 @@ func (s *System) SetReader(deviceInID uint8) {
 		reader.RTStart(ReceiveStart),
 		reader.RTStop(ReceiveStop),
 		reader.RTTick(ReceiveTick),
+		reader.Unknown(ReceiveUnknown),
 	)
 	s.DeviceIn = s.DevicesIn[deviceInID]
 	s.DeviceIn.Open()
