@@ -17,7 +17,7 @@ import (
 
 func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	log.Info("starting the server ...")
-	ctx, cancel := util.SignalWithContext(ctx, syscall.SIGINT, syscall.SIGTERM)
+	ctx, cancel := util.SignalWithContext(ctx, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
 	defer cancel()
 	var wg sync.WaitGroup
 
