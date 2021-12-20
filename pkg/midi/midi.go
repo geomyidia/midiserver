@@ -21,7 +21,8 @@ const (
 )
 
 type System struct {
-	Driver          *rtmididrv.Driver
+	// Driver          *rtmididrv.Driver
+	Driver          midi.Driver
 	DevicesIn       []midi.In
 	DevicesOut      []midi.Out
 	DeviceIn        midi.In
@@ -36,6 +37,7 @@ type System struct {
 func NewSystem() *System {
 	log.Info("creating MIDI system ...")
 	drv, err := rtmididrv.New()
+	// drv, err := portmididrv.New()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -93,6 +95,12 @@ func (s *System) SetReader(deviceInID uint8) {
 	s.Reader = reader.New(
 		reader.NoLogger(),
 		reader.Each(ReceiveEach),
+		reader.RTClock(ReceiveClock),
+		reader.RTContinue(ReceiveContinue),
+		reader.RTReset(ReceiveReset),
+		reader.RTStart(ReceiveStart),
+		reader.RTStop(ReceiveStop),
+		reader.RTTick(ReceiveTick),
 	)
 	s.DeviceIn = s.DevicesIn[deviceInID]
 	s.DeviceIn.Open()
