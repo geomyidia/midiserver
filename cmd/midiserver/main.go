@@ -11,17 +11,11 @@ import (
 	"github.com/ut-proj/midiserver/pkg/midi"
 	"github.com/ut-proj/midiserver/pkg/server"
 	"github.com/ut-proj/midiserver/pkg/types"
-	"github.com/ut-proj/midiserver/pkg/version"
 )
 
 func main() {
 	flags := cli.Parse()
-	app.SetupLogging(flags.LogLevel, flags.LogReportCaller)
-	log.Info("Welcome to the Go midiserver!")
-	log.Infof("running version: %s", version.VersionedBuildString())
-	log.Tracef("flags: %+v", flags)
-	app.SetupRandom()
-
+	app.Setup(flags)
 	midiSystem := midi.NewSystem()
 	defer midiSystem.Shutdown()
 
