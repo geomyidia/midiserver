@@ -10,6 +10,10 @@ func ReceiveEach(p *reader.Position, msg midi.Message) {
 	log.Debugf("got MIDI msg %+v (at position %v)", msg, p)
 }
 
+func ReceiveUnknown(p *reader.Position, msg midi.Message) {
+	log.Debugf("got unknown msg %+v (at position %v)", msg, p)
+}
+
 func ReceiveClock() {
 	log.Debug("got clock msg")
 }
