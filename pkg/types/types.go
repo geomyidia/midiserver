@@ -25,6 +25,7 @@ const (
 	MidiCCKey            string = "cc"
 	MidiControllerKey    string = "controller"
 	MidiValueKey         string = "value"
+	MidiRealtimeKey      string = "realtime"
 )
 
 // CLI Flag types
@@ -55,6 +56,7 @@ type MessageProcessor func() Result
 
 // MIDI types
 type MidiOpType string
+type MidiRTType string
 type MidiPitch uint8
 type MidiVelocity uint8
 type MidiNoteOn struct {
@@ -72,14 +74,15 @@ type MidiChord struct {
 }
 type MidiOps map[MidiOpType]interface{}
 type MidiArgs struct {
-	Id      string
-	Device  uint8
-	Channel uint8
-	NoteOn  MidiNoteOn
-	NoteOff uint8
-	CC      MidiCC
-	Chord   MidiChord
-	Program uint8
+	Id       string
+	Device   uint8
+	Channel  uint8
+	NoteOn   MidiNoteOn
+	NoteOff  uint8
+	CC       MidiCC
+	Chord    MidiChord
+	Program  uint8
+	Realtime MidiRTType
 }
 
 type MidiCall struct {
@@ -211,4 +214,32 @@ func MidiCCType() MidiOpType {
 
 func MidiChordType() MidiOpType {
 	return MidiOpType("chord")
+}
+
+func MidiRealtimeType() MidiOpType {
+	return MidiOpType("realtime")
+}
+
+func MidiRTClock() MidiRTType {
+	return MidiRTType("clock")
+}
+
+func MidiRTContinue() MidiRTType {
+	return MidiRTType("continue")
+}
+
+func MidiRTReset() MidiRTType {
+	return MidiRTType("reset")
+}
+
+func MidiRTStart() MidiRTType {
+	return MidiRTType("start")
+}
+
+func MidiRTStop() MidiRTType {
+	return MidiRTType("stop")
+}
+
+func MidiRTTick() MidiRTType {
+	return MidiRTType("tick")
 }
