@@ -21,7 +21,6 @@ const (
 )
 
 type System struct {
-	// Driver          *rtmididrv.Driver
 	Driver          midi.Driver
 	DevicesIn       []midi.In
 	DevicesOut      []midi.Out
@@ -37,7 +36,6 @@ type System struct {
 func NewSystem() *System {
 	log.Info("creating MIDI system ...")
 	drv, err := rtmididrv.New()
-	// drv, err := portmididrv.New()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -147,9 +145,9 @@ func (s *System) Dispatch(ctx context.Context, calls []types.MidiCall,
 func (s *System) CallMidi(call types.MidiCall) error {
 	switch call.Op {
 	case types.MidiDeviceType():
-		return s.SetDevice(call.Args.Device)
+		return s.SetWriter(call.Args.Device)
 	case types.MidiChannelType():
-		return s.SetChannel(call.Args.Channel)
+		return s.SetWriterChannel(call.Args.Channel)
 	}
 	if !s.DeviceOutOpened {
 		return errors.New("can't send command when device not opened")
@@ -196,6 +194,49 @@ func (s *System) CallMidi(call types.MidiCall) error {
 			return err
 		}
 		return nil
+	case types.MidiRealtimeType():
+		log.Tracef("got RT message with args: %+v", call.Args)
+		switch call.Args.Realtime {
+		case types.MidiRTClock():
+			err := writer.RTClock(s.Writer)
+			if err != nil {
+				return err
+			}
+			return nil
+		case types.MidiRTContinue():
+			err := writer.RTContinue(s.Writer)
+			if err != nil {
+				return err
+			}
+			return nil
+		case types.MidiRTReset():
+			err := writer.RTReset(s.Writer)
+			if err != nil {
+				return err
+			}
+			return nil
+		case types.MidiRTStart():
+			err := writer.RTStart(s.Writer)
+			if err != nil {
+				return err
+			}
+			return nil
+		case types.MidiRTStop():
+			err := writer.RTStop(s.Writer)
+			if err != nil {
+				return err
+			}
+			return nil
+		case types.MidiRTTick():
+			err := writer.RTTick(s.Writer)
+			if err != nil {
+				return err
+			}
+			return nil
+		default:
+			log.Errorf("unsupported realtime message '%s'", call.Args.Realtime)
+			return nil
+		}
 	default:
 		log.Errorf("no handler for operation '%s'", call.Op)
 		return nil

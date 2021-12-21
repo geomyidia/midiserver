@@ -211,6 +211,12 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 			Controller: cc[types.MidiControllerKey].(uint8),
 			Value:      cc[types.MidiValueKey].(uint8),
 		}
+	case types.MidiRealtimeKey:
+		atomRealtime, ok := v.(erlang.OtpErlangAtom)
+		if !ok {
+			return nil, errors.New("couldn't convert 'realtime'")
+		}
+		args.Realtime = types.MidiRTType(string(atomRealtime))
 	}
 	return args, nil
 }
