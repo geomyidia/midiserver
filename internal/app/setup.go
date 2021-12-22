@@ -4,9 +4,9 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/geomyidia/zylog/logger"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/geomyidia/zylog/logger"
 	"github.com/ut-proj/midiserver/pkg/types"
 	"github.com/ut-proj/midiserver/pkg/version"
 )
