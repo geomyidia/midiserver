@@ -147,6 +147,10 @@ func PingCommand() CommandType {
 	return Command("ping")
 }
 
+func RemotePort() CommandType {
+	return Command("remote-port")
+}
+
 func StopCommand() CommandType {
 	return Command("stop")
 }
