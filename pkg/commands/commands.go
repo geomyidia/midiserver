@@ -43,7 +43,7 @@ func Dispatch(ctx context.Context, command types.CommandType,
 		ListDevices()
 		result = types.Result("ok")
 	case types.RemotePortCommand():
-		RemotePort()
+		ShowRemotePort(flags)
 		result = types.Result("ok")
 	case types.StopCommand():
 		log.Info("stopping Go MIDI server ...")
