@@ -63,11 +63,11 @@ func NewSystem() *System {
 func (s *System) Shutdown() {
 	log.Info("shutting down MIDI system ...")
 	s.Driver.Close()
-	if s.DeviceOut.IsOpen() {
+	if s.DeviceOut != nil && s.DeviceOut.IsOpen() {
 		s.DeviceOut.Close()
 	}
 	s.DeviceOutOpened = false
-	if s.DeviceIn.IsOpen() {
+	if s.DeviceIn != nil && s.DeviceIn.IsOpen() {
 		s.DeviceIn.Close()
 	}
 	s.DeviceInOpened = false

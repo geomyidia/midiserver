@@ -41,6 +41,7 @@ type Flags struct {
 	LogReportCaller bool
 	MidiInDeviceID  int
 	Parser          ParserType
+	RemoteNode      string
 	Version         bool
 }
 
