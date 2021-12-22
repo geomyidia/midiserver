@@ -33,6 +33,9 @@ const (
         the same. Duration is in seconds.
   ping
         Provided for testing purposes by Erlang Ports implementations.
+  remote-port
+        Query epmd for the port of the remote node (set with the -remote-node
+	flag).
   version
         An alternate form of the version info with concise formatting.
 
