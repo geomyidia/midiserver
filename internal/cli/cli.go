@@ -62,6 +62,16 @@ func Parse() *types.Flags {
 	flag.BoolVar(&daemon, "daemon", daemDef, daemUse)
 	flag.BoolVar(&daemon, "d", daemDef, daemUse+shortUse)
 
+	var epmdHost string
+	epmdHostDef := "localhost"
+	epmdHostUse := "Set hostname of the epmd to use"
+	flag.StringVar(&epmdHost, "epmd-host", epmdHostDef, epmdHostUse)
+
+	var epmdPort int
+	epmdPortDef := 4369
+	epmdPortUse := "Set port for the epmd to use"
+	flag.IntVar(&epmdPort, "epmd-port", epmdPortDef, epmdPortUse)
+
 	var loglevel string
 	logDef := "warn"
 	logUse := "Set the logging level"
@@ -116,6 +126,8 @@ func Parse() *types.Flags {
 		Args:            flag.Args(),
 		Command:         types.Command(cmd),
 		Daemon:          daemon,
+		EPMDHost:        epmdHost,
+		EPMDPort:        epmdPort,
 		LogLevel:        loglevel,
 		LogReportCaller: logReportCaller,
 		Parser:          types.Parser(types.ParserName(parser)),

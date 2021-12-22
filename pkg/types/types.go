@@ -41,6 +41,8 @@ type Flags struct {
 	LogReportCaller bool
 	MidiInDeviceID  int
 	Parser          ParserType
+	EPMDHost        string
+	EPMDPort        int
 	RemoteNode      string
 	Version         bool
 }
