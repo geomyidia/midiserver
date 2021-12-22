@@ -17,6 +17,7 @@ func Setup(flags *types.Flags) {
 	setupRandom()
 	log.Info("Welcome to the Go midiserver!")
 	log.Infof("running version: %s", version.VersionedBuildString())
+	log.Infof("remote node: %s", flags.RemoteNode)
 	log.Tracef("flags: %+v", flags)
 }
 

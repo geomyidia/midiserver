@@ -91,6 +91,12 @@ func Parse() *types.Flags {
 	flag.StringVar(&parser, "parser", parsDef, parsUse)
 	flag.StringVar(&parser, "p", parsDef, parsUse+shortUse)
 
+	var remoteNode string
+	remoteNodeDef := ""
+	remoteNodeUse := "Set the Erlang node name for remote communications"
+	flag.StringVar(&remoteNode, "remote-node", remoteNodeDef, remoteNodeUse)
+	flag.StringVar(&remoteNode, "n", remoteNodeDef, remoteNodeUse+shortUse)
+
 	var vsn bool
 	verDef := false
 	verUse := "Display version/build info and exit"
@@ -110,6 +116,7 @@ func Parse() *types.Flags {
 		LogLevel:        loglevel,
 		LogReportCaller: logReportCaller,
 		Parser:          types.Parser(types.ParserName(parser)),
+		RemoteNode:      remoteNode,
 		Version:         vsn,
 	}
 
