@@ -1,8 +1,8 @@
 package tcp
 
 import (
-	"bytes"
 	"fmt"
+	"io"
 	"net"
 
 	log "github.com/sirupsen/logrus"
@@ -35,18 +35,21 @@ func (c *Client) WriteStr(data string) error {
 }
 
 func (c *Client) Write(data []byte) error {
-	log.Tracef("writing data to TCP connection: %s", string(data))
+	log.Tracef("writing data to TCP connection: %v (%s)", data, string(data))
 	_, err := c.conn.Write(data)
 	return err
 }
 
 func (c *Client) Read() ([]byte, error) {
-	reply := new(bytes.Buffer)
-	_, err := c.conn.ReadFrom(reply)
+	reply := make([]byte, 1024)
+	_, err := c.conn.Read(reply)
+	if err == io.EOF {
+		return reply, nil
+	}
 	if err != nil {
 		return nil, err
 	}
-	return reply.Bytes(), nil
+	return reply, nil
 }
 
 func (c *Client) Close() error {
