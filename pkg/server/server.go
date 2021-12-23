@@ -5,6 +5,9 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/ergo-services/ergo"
+	"github.com/ergo-services/ergo/gen"
+	"github.com/ergo-services/ergo/node"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ut-proj/midiserver/internal/util"
@@ -14,6 +17,10 @@ import (
 	"github.com/ut-proj/midiserver/pkg/midi"
 	"github.com/ut-proj/midiserver/pkg/types"
 )
+
+type GenServer struct {
+	gen.Server
+}
 
 func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	log.Info("starting the server ...")
@@ -34,7 +41,18 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		err := ReceiveMIDI(ctx, midiSys, flags)
+		// TODO: find a proper way to manage ergo nodes
+		node, err := ergo.StartNode("midiserver@localhost", "cookies", node.Options{})
+		if err != nil {
+			log.Error(err)
+			cancel()
+		}
+		process, err := node.Spawn("midiserver", gen.ProcessOptions{}, &GenServer{})
+		if err != nil {
+			log.Error(err)
+			cancel()
+		}
+		err = ReceiveMIDI(ctx, midiSys, process, flags)
 		if err != nil {
 			log.Error(err)
 			cancel()
@@ -84,11 +102,11 @@ func ProcessMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, f
 	log.Trace("message processing complete")
 }
 
-func ReceiveMIDI(ctx context.Context, midiSys *midi.System, flags *types.Flags) error {
+func ReceiveMIDI(ctx context.Context, midiSys *midi.System, process gen.Process, flags *types.Flags) error {
 	if flags.MidiInDeviceID < 0 {
 		log.Warn("no valid device ID set for mini-in; not starting listener ...")
 	}
-	midiSys.SetReader(uint8(flags.MidiInDeviceID))
+	midiSys.SetReader(process, uint8(flags.MidiInDeviceID))
 	log.Infof("awaiting MIDI messages on device %v ...", flags.MidiInDeviceID)
 	return midiSys.Reader.ListenTo(midiSys.DeviceIn)
 }

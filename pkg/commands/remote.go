@@ -16,3 +16,16 @@ func ShowRemotePort(flags *types.Flags) {
 	}
 	fmt.Printf("Remote node %s is running on port %d\n", flags.RemoteNode, port)
 }
+
+func PingRemoteModule(flags *types.Flags) error {
+	rpcClient, err := rpc.New(flags)
+	if err != nil {
+		return err
+	}
+	result, err := rpcClient.Ping(flags.RemoteModule)
+	if err != nil {
+		return err
+	}
+	fmt.Println(result)
+	return nil
+}

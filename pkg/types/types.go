@@ -44,6 +44,7 @@ type Flags struct {
 	EPMDHost        string
 	EPMDPort        int
 	RemoteNode      string
+	RemoteModule    string
 	Version         bool
 }
 

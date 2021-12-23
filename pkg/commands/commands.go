@@ -21,7 +21,16 @@ func Dispatch(ctx context.Context, command types.CommandType,
 	var err types.Err
 	switch command {
 	case types.PingCommand():
-		result = types.Result("pong")
+		if flags.RemoteNode != "" && flags.RemoteModule != "" {
+			err := PingRemoteModule(flags)
+			if err != nil {
+				log.Error(err)
+			} else {
+				result = types.Result("ok")
+			}
+		} else {
+			result = types.Result("pong")
+		}
 	case types.PlayNoteCommand():
 		if len(flags.Args) == 6 {
 			args["device"] = toUint(flags.Args[1])
