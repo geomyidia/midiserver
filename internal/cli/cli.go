@@ -19,18 +19,18 @@ const (
         An example piece of music will be played on given device and channel.
         Valid device numbers are any of the "out" devices in the output of
         the 'list-devices' command; valid channel numbers are any of the 16
-        MIDI channels: 0 through 15.
+        MIDI channels: 0 through 15. Default args: 0 0.
   list-devices
         This will list the MIDI devices currently recognised by the operating
         system, grouped by input devices and output devices.
   play-note [args]
         A pitch will be played with the default values for the arguments,
-        opertionally overridden. Positional args are the integer values for
+        optionally overridden. Positional args are the integer values for
         device, channel, pitch, velocity, and duration.  Valid device numbers
         are any of the "out" devices in the output of the 'list-devices'
         command; valid channel numbers are any of the 16 MIDI channels:
         0 through 15. Pitch and velocity are standard MIDI integer values for
-        the same. Duration is in seconds.
+        the same. Duration is in seconds. Default args: 0 0.
   ping
         Provided for testing purposes by Erlang Ports implementations. If the
         'remote-module' flag has been set, a ping will be attempted there
