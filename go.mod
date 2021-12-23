@@ -3,6 +3,8 @@ module github.com/ut-proj/midiserver
 go 1.12
 
 require (
+	github.com/davecgh/go-spew v1.1.1
+	github.com/ergo-services/ergo v1.999.201
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/geomyidia/zylog v0.1.5
 	github.com/google/uuid v1.3.0
