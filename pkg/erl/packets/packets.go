@@ -81,11 +81,11 @@ func (p *Packet) Bytes() ([]byte, error) {
 // bytes at the sending end were present and correct, just not
 // at the receiving end.
 //
-// So, in order to get around this, the sending end hex-encoded
-// the Term protocol bytes and send that as a bitstring; the
-// function below hex-decodes this, and allows the function
-// ProcessExecMessage to handle binary encoded Term data with
-// none of its bytes missing.
+// So, in order to get around this, the sending end now
+// hex-encodes the Term protocol bytes and sends that as a
+// bitstring; the function below hex-decodes this, and allows the
+// function ProcessExecMessage to handle binary encoded Term data
+// with none of its bytes missing.
 func (p *Packet) getUnwrapped() ([]byte, error) {
 	log.Trace("getting unwrapped ... ")
 	if p.opts.IsHexEncoded {

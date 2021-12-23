@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ergo-services/ergo/gen"
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/gomidi/midi"
 	"gitlab.com/gomidi/midi/midimessage/channel"
@@ -89,7 +90,7 @@ func (s *System) SetWriter(deviceOutID uint8) error {
 	return nil
 }
 
-func (s *System) SetReader(deviceInID uint8) {
+func (s *System) SetReader(process gen.Process, deviceInID uint8) {
 	s.Reader = reader.New(
 		reader.NoLogger(),
 		reader.Each(ReceiveEach),

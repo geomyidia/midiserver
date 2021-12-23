@@ -32,7 +32,9 @@ const (
         0 through 15. Pitch and velocity are standard MIDI integer values for
         the same. Duration is in seconds.
   ping
-        Provided for testing purposes by Erlang Ports implementations.
+        Provided for testing purposes by Erlang Ports implementations. If the
+		'remote-module' flag has been set, a ping will be attempted there
+		instead.
   remote-port
         Query epmd for the port of the remote node (set with the -remote-node
 	flag).
@@ -104,6 +106,11 @@ func Parse() *types.Flags {
 	flag.StringVar(&parser, "parser", parsDef, parsUse)
 	flag.StringVar(&parser, "p", parsDef, parsUse+shortUse)
 
+	var remoteModule string
+	remoteModuleDef := ""
+	remoteModuleUse := "Set the Erlang module for remote communications"
+	flag.StringVar(&remoteModule, "remote-module", remoteModuleDef, remoteModuleUse)
+
 	var remoteNode string
 	remoteNodeDef := ""
 	remoteNodeUse := "Set the Erlang node name for remote communications"
@@ -131,6 +138,7 @@ func Parse() *types.Flags {
 		LogLevel:        loglevel,
 		LogReportCaller: logReportCaller,
 		Parser:          types.Parser(types.ParserName(parser)),
+		RemoteModule:    remoteModule,
 		RemoteNode:      remoteNode,
 		Version:         vsn,
 	}
