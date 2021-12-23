@@ -25,6 +25,7 @@ const (
 	PORT2_OK         = 0
 	ErrInt           = -1
 	channelBuffers   = 2
+	clockModule      = "undermidi.extclock"
 )
 
 var (
@@ -45,10 +46,11 @@ type RPC struct {
 
 type Client struct {
 	gen.Server
-	node         node.Node
-	remoteNode   string
-	remoteModule string
-	result       chan interface{}
+	node          node.Node
+	remoteModule  string
+	remoteNode    string
+	remoteProcess gen.Process
+	result        chan interface{}
 }
 
 func New(flags *types.Flags) (*Client, error) {
@@ -66,7 +68,11 @@ func New(flags *types.Flags) (*Client, error) {
 		remoteNode:   flags.RemoteNode,
 		remoteModule: flags.RemoteModule,
 	}
-
+	remoteProcess, err := remoteNode.Spawn(erl.ShortNodename, gen.ProcessOptions{}, client)
+	if err != nil {
+		return nil, err
+	}
+	client.remoteProcess = remoteProcess
 	return client, nil
 }
 
@@ -92,13 +98,33 @@ func (c *Client) HandleInfo(process *gen.ServerProcess, message etf.Term) gen.Se
 }
 
 func (c *Client) Ping(module string) (string, error) {
-	process, err := c.node.Spawn(erl.ShortNodename, gen.ProcessOptions{}, c)
+	val, err := c.send(module, "ping")
 	if err != nil {
 		return "", err
 	}
-	err = process.Send(process.Self(), RPC{module: module, function: "ping"})
+	return val.(string), nil
+}
+
+func (c *Client) ClockTick() (string, error) {
+	val, err := c.send(clockModule, "tick")
 	if err != nil {
 		return "", err
+	}
+	return val.(string), nil
+}
+
+// Private methods
+
+func (c *Client) send(module, function string, args ...etf.Term) (interface{}, error) {
+	var err error
+	if len(args) == 0 {
+		err = c.remoteProcess.Send(c.remoteProcess.Self(), RPC{module: module, function: function})
+	} else {
+		err = c.remoteProcess.Send(
+			c.remoteProcess.Self(), RPC{module: module, function: function, args: args})
+	}
+	if err != nil {
+		return nil, err
 	}
 	result, err := c.awaitResult()
 	if err != nil {

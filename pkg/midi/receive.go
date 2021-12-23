@@ -18,7 +18,13 @@ func ReceiveUnknown(p *reader.Position, msg midi.Message) {
 
 func ReceiveClock(rpcClient *rpc.Client) func() {
 	return func() {
-		// TODO: make RPC call undermidi
+		val, err := rpcClient.ClockTick()
+		if err != nil {
+			log.Error(err)
+		}
+		if val != "" {
+			log.Debug(val)
+		}
 		log.Debug("got clock msg")
 	}
 }
