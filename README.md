@@ -43,49 +43,79 @@ Usage: ./bin/midiserver [flags] [commands] [args]
 
 Flags:
 
-  -d    Daemonise midiserver; this disables the text parser; short-form flag
+  -d	Daemonise midiserver; this disables the text parser; short-form flag
   -daemon
-        Daemonise midiserver; this disables the text parser
+    	Daemonise midiserver; this disables the text parser
+  -epmd-host string
+    	Set hostname of the epmd to use (default "localhost")
+  -epmd-port int
+    	Set port for the epmd to use (default 4369)
+  -ergo.norecover
+    	disable panic catching
+  -ergo.trace
+    	enable extended debug info
+  -i int
+    	This needs to be a valid ID for a MIDI device capable of receiving
+    	MIDI data; for a list of valid IDs be sure to run the 'list-devices'
+    	command; short-form flag (default -1)
   -l string
-        Set the logging level; short-form flag (default "warn")
+    	Set the logging level; short-form flag (default "warn")
+  -log-reportcaller
+    	Indicate whether the log lines contain the report caller
   -loglevel string
-        Set the logging level (default "warn")
+    	Set the logging level (default "warn")
+  -midi-in int
+    	This needs to be a valid ID for a MIDI device capable of receiving
+    	MIDI data; for a list of valid IDs be sure to run the 'list-devices'
+    	command (default -1)
+  -n string
+    	Set the Erlang node name for remote communications; short-form flag
   -p string
-        Set the parser to user for commands and data. Legal values are:
-        [exec, port, text]. Note that setting to 'text' disables
-        daemonisation and setting any of the other parsers automatically 
-        enables daemonisation; short-form flag (default "text")
+    	Set the parser to user for commands and data. Legal values are:
+    	[exec, port, text]. Note that setting to 'text' disables
+    	daemonisation and setting any of the other parsers automatically
+    	enables daemonisation; short-form flag (default "text")
   -parser string
-        Set the parser to user for commands and data. Legal values are:
-        [exec, port, text]. Note that setting to 'text' disables
-        daemonisation and setting any of the other parsers automatically 
-        enables daemonisation (default "text")
-  -v    Display version/build info and exit; short-form flag
+    	Set the parser to user for commands and data. Legal values are:
+    	[exec, port, text]. Note that setting to 'text' disables
+    	daemonisation and setting any of the other parsers automatically
+    	enables daemonisation (default "text")
+  -r	Indicate whether the log lines contain the report caller; short-form flag
+  -remote-module string
+    	Set the Erlang module for remote communications
+  -remote-node string
+    	Set the Erlang node name for remote communications
+  -v	Display version/build info and exit; short-form flag
   -version
-        Display version/build info and exit
+    	Display version/build info and exit
 
 Commands:
 
   example [args]
-        An example piece of music will be played on given device and channel.
-        Valid device numbers are any of the "out" devices in the output of
-        the 'list-devices' command; valid channel numbers are any of the 16
-        MIDI channels: 0 through 15.
+      An example piece of music will be played on given device and channel.
+      Valid device numbers are any of the "out" devices in the output of
+      the 'list-devices' command; valid channel numbers are any of the 16
+      MIDI channels: 0 through 15.
   list-devices
-        will list the MIDI devices currently recognised by the operating
-        system, grouped by input devices and output devices.
+      This will list the MIDI devices currently recognised by the operating
+      system, grouped by input devices and output devices.
   play-note [args]
-        A pitch will be played with the default values for the arguments,
-        opertionally overridden. Positional args are the integer values for
-        device, channel, pitch, velocity, and duration.  Valid device numbers
-        are any of the "out" devices in the output of the 'list-devices'
-        command; valid channel numbers are any of the 16 MIDI channels:
-        0 through 15. Pitch and velocity are standard MIDI integer values for
-        the same. Duration is in seconds.
+      A pitch will be played with the default values for the arguments,
+      opertionally overridden. Positional args are the integer values for
+      device, channel, pitch, velocity, and duration.  Valid device numbers
+      are any of the "out" devices in the output of the 'list-devices'
+      command; valid channel numbers are any of the 16 MIDI channels:
+      0 through 15. Pitch and velocity are standard MIDI integer values for
+      the same. Duration is in seconds.
   ping
-        provided for testing purposes by Erlang Ports implementations
+      Provided for testing purposes by Erlang Ports implementations. If the
+      'remote-module' flag has been set, a ping will be attempted there
+      instead.
+  remote-port
+      Query epmd for the port of the remote node (set with the -remote-node
+      flag).
   version
-        an alternate form of the version info with concise formatting
+      An alternate form of the version info with concise formatting.
 ```
 
 ## License
