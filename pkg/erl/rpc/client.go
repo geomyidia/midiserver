@@ -37,9 +37,10 @@ var (
 	ErrTimeout        = errors.New("result timeout")
 )
 
-type Ping struct {
+type RPC struct {
 	module   string
 	function string
+	args     []etf.Term
 }
 
 type Client struct {
@@ -71,11 +72,15 @@ func New(flags *types.Flags) (*Client, error) {
 
 func (c *Client) HandleInfo(process *gen.ServerProcess, message etf.Term) gen.ServerStatus {
 	switch msg := message.(type) {
-	case Ping:
-		log.Debug("Got ping message ...")
-		value, err := process.CallRPC(
-			c.remoteNode, msg.module, msg.function,
-		)
+	case RPC:
+		var value etf.Term
+		var err error
+		log.Debug("Got RPC message ...")
+		if len(msg.args) == 0 {
+			value, err = process.CallRPC(c.remoteNode, msg.module, msg.function)
+		} else {
+			value, err = process.CallRPC(c.remoteNode, msg.module, msg.function, msg.args...)
+		}
 		if err != nil {
 			c.result <- err
 		} else {
@@ -91,20 +96,28 @@ func (c *Client) Ping(module string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = process.Send(process.Self(), Ping{module: module, function: "ping"})
+	err = process.Send(process.Self(), RPC{module: module, function: "ping"})
 	if err != nil {
 		return "", err
 	}
+	result, err := c.awaitResult()
+	if err != nil {
+		return "", err
+	}
+	return result.(string), nil
+}
+
+func (c *Client) awaitResult() (interface{}, error) {
 	select {
 	case value := <-c.result:
 		log.Debugf("got value: %v", value)
-		switch value.(type) {
+		switch val := value.(type) {
 		case etf.Atom:
-			return string(value.(etf.Atom)), nil
+			return string(val), nil
 		case error:
-			return "", value.(error)
+			return nil, val
 		default:
-			return "", fmt.Errorf("unexpected value type: %v", value)
+			return nil, fmt.Errorf("unexpected value type: %v", val)
 		}
 
 	case <-time.After(pingTimeout):
