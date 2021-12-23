@@ -33,11 +33,11 @@ const (
         the same. Duration is in seconds.
   ping
         Provided for testing purposes by Erlang Ports implementations. If the
-		'remote-module' flag has been set, a ping will be attempted there
-		instead.
+        'remote-module' flag has been set, a ping will be attempted there
+        instead.
   remote-port
         Query epmd for the port of the remote node (set with the -remote-node
-	flag).
+        flag).
   version
         An alternate form of the version info with concise formatting.
 
