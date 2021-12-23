@@ -4,6 +4,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/gomidi/midi"
 	"gitlab.com/gomidi/midi/reader"
+
+	"github.com/ut-proj/midiserver/pkg/erl/rpc"
 )
 
 func ReceiveEach(p *reader.Position, msg midi.Message) {
@@ -14,8 +16,11 @@ func ReceiveUnknown(p *reader.Position, msg midi.Message) {
 	log.Debugf("got unknown msg %+v (at position %v)", msg, p)
 }
 
-func ReceiveClock() {
-	log.Debug("got clock msg")
+func ReceiveClock(rpcClient *rpc.Client) func() {
+	return func() {
+		// TODO: make RPC call undermidi
+		log.Debug("got clock msg")
+	}
 }
 
 func ReceiveContinue() {
