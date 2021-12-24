@@ -17,7 +17,7 @@ import (
 
 const (
 	channelBuffers = 2
-	clockModule    = "undermidi.extclock"
+	clockModule    = "undermidi.clock.ext"
 )
 
 var (
@@ -68,7 +68,7 @@ func (c *Client) HandleInfo(process *gen.ServerProcess, message etf.Term) gen.Se
 	case RPC:
 		var value etf.Term
 		var err error
-		log.Debug("Got RPC message ...")
+		log.Trace("Got RPC message ...")
 		if len(msg.args) == 0 {
 			value, err = process.CallRPC(c.remoteNode, msg.module, msg.function)
 		} else {
@@ -123,7 +123,7 @@ func (c *Client) send(module, function string, args ...etf.Term) (interface{}, e
 func (c *Client) awaitResult() (interface{}, error) {
 	select {
 	case value := <-c.result:
-		log.Debugf("got value: %v", value)
+		log.Tracef("got value: %v", value)
 		switch val := value.(type) {
 		case etf.Atom:
 			return string(val), nil

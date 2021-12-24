@@ -23,9 +23,9 @@ func ReceiveClock(rpcClient *rpc.Client) func() {
 			log.Error(err)
 		}
 		if val != "" {
-			log.Debug(val)
+			log.Trace(val)
 		}
-		log.Debug("got clock msg")
+		log.Trace("got clock msg")
 	}
 }
 
