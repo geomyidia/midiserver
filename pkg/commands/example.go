@@ -33,11 +33,11 @@ func PlayExample(args types.PropList) error {
 	log.Debugf("Got opts: %+v", opts)
 
 	sys := midi.NewSystem()
-	err := sys.SetDevice(opts.DeviceId)
+	err := sys.SetWriter(opts.DeviceId)
 	if err != nil {
 		return err
 	}
-	err = sys.SetChannel(opts.MidiChannel)
+	err = sys.SetWriterChannel(opts.MidiChannel)
 	if err != nil {
 		return err
 	}

@@ -36,7 +36,7 @@ func PropListToMap(list erlang.OtpErlangList) (types.PropList, error) {
 func Tuple(term interface{}) (string, interface{}, error) {
 	switch t := term.(type) {
 	default:
-		return "", nil, fmt.Errorf("term %T is not a tuple", t)
+		return "", nil, fmt.Errorf("term %+v (%T) is not a tuple", term, t)
 	case erlang.OtpErlangTuple:
 		tuple := term.(erlang.OtpErlangTuple)
 		if len(tuple) != TUPLEARITY {
@@ -56,7 +56,7 @@ func Tuple(term interface{}) (string, interface{}, error) {
 func TupleHasKey(term interface{}, soughtKey string) bool {
 	key, _, err := Tuple(term)
 	if err != nil {
-		log.Error(err)
+		log.Debug(err)
 		return false
 	}
 	return key == soughtKey
