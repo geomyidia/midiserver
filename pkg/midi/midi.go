@@ -111,7 +111,7 @@ func (s *System) SetWriterChannel(channelId uint8) error {
 	log.Info("setting channel ...")
 	s.Writer.SetChannel(channelId)
 	s.ChannelSet = true
-	log.Tracef("current channel value: %v", s.GetChannel())
+	log.Tracef("current channel value: %v", s.GetWriterChannel())
 	return nil
 }
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	erlang "github.com/okeuday/erlang_go/v2/erlang"
+	log "github.com/sirupsen/logrus"
 
 	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
 	"github.com/ut-proj/midiserver/pkg/types"
@@ -17,6 +18,7 @@ type CommandMessage struct {
 func NewCommandMessage(t interface{}) (*CommandMessage, error) {
 	tuple, ok := t.(erlang.OtpErlangTuple)
 	if !ok {
+		log.Debug("not tuple; checking to see if list of tuples ...")
 		tuples, ok := t.(erlang.OtpErlangList)
 		if !ok {
 			return nil, errors.New("unexpected message format")
