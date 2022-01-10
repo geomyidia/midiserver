@@ -146,6 +146,10 @@ func ListDevicesCommand() CommandType {
 	return Command("list-devices")
 }
 
+func ListNodesCommand() CommandType {
+	return Command("list-nodes")
+}
+
 func PingCommand() CommandType {
 	return Command("ping")
 }
