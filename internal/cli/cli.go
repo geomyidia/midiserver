@@ -23,6 +23,9 @@ const (
   list-devices
         This will list the MIDI devices currently recognised by the operating
         system, grouped by input devices and output devices.
+  list-nodes
+        This will query the given epmd server (set with the epmd* flags) for a
+        list of the available Erlang/OTP nodes.
   play-note [args]
         A pitch will be played with the default values for the arguments,
         optionally overridden. Positional args are the integer values for

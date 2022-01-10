@@ -51,6 +51,9 @@ func Dispatch(ctx context.Context, command types.CommandType,
 	case types.ListDevicesCommand():
 		ListDevices()
 		result = types.Result("ok")
+	case types.ListNodesCommand():
+		ListNodes(flags)
+		result = types.Result("ok")
 	case types.RemotePortCommand():
 		ShowRemotePort(flags)
 		result = types.Result("ok")
