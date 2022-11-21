@@ -1,13 +1,11 @@
-package erl
+package messages
 
-// Basic imports
 import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
 
 	"github.com/ut-proj/midiserver/pkg/erl"
-	"github.com/ut-proj/midiserver/pkg/erl/messages"
 	"github.com/ut-proj/midiserver/pkg/erl/packets"
 	"github.com/ut-proj/midiserver/pkg/types"
 )
@@ -39,7 +37,7 @@ func (suite *MidiMessageTestSuite) SetupTest() {
 }
 
 func (suite *MidiMessageTestSuite) TestConvertDevice() {
-	converted, err := messages.Convert(suite.device)
+	converted, err := Convert(suite.device)
 	suite.NoError(err)
 	suite.Equal("11ff135c-78d5-415c-8818-cde72252ff02", converted.Id())
 	suite.Equal(types.MidiDeviceType(), converted.Calls()[0].Op)
@@ -47,7 +45,7 @@ func (suite *MidiMessageTestSuite) TestConvertDevice() {
 }
 
 func (suite *MidiMessageTestSuite) TestConvertNoteOn() {
-	converted, err := messages.Convert(suite.noteOn)
+	converted, err := Convert(suite.noteOn)
 	suite.NoError(err)
 	suite.Equal("de950779-e60a-439a-bc83-327adf70d961", converted.Id())
 	suite.Equal(types.MidiNoteOnType(), converted.Calls()[0].Op)
@@ -56,7 +54,7 @@ func (suite *MidiMessageTestSuite) TestConvertNoteOn() {
 }
 
 func (suite *MidiMessageTestSuite) TestConvertBatch() {
-	converted, err := messages.Convert(suite.batch)
+	converted, err := Convert(suite.batch)
 	suite.NoError(err)
 	suite.Equal("30969579-ca53-4ba0-b4af-acfced709864", converted.Id())
 	suite.Equal(4, len(converted.Calls()))
