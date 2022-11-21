@@ -12,6 +12,7 @@
 ## About
 
 The executable built by this project is intended to:
+
 * communicate via messages with BEAM (Erlang language family) clients
 * to do so with messages created by [midilib](https://github.com/erlsci/midilib)
 * to be controlled by a `gen_server` (e.g., see [undermidi go server](https://github.com/ut-proj/undermidi/blob/release/0.2.x/src/undermidi/supervisor.lfe))
@@ -22,20 +23,20 @@ The executable built by this project is intended to:
 A typical execution looks like this:
 
 ```shell
-$ ./bin/midiserver -d -l warn -p exec
+./bin/midiserver -d -l warn -p exec
 ```
 
 You can use it to test your MIDI setup:
 
 ```shell
-$ ./bin/midiserver list-devices
-$ ./bin/midiserver example 0 0
+./bin/midiserver list-devices
+./bin/midiserver example 0 0
 ```
 
 Full usage:
 
 ```shell
-$ ./bin/midiserver -h
+./bin/midiserver -h
 ```
 
 ```text
@@ -43,51 +44,51 @@ Usage: ./bin/midiserver [flags] [commands] [args]
 
 Flags:
 
-  -d	Daemonise midiserver; this disables the text parser; short-form flag
+  -d Daemonise midiserver; this disables the text parser; short-form flag
   -daemon
-    	Daemonise midiserver; this disables the text parser
+     Daemonise midiserver; this disables the text parser
   -epmd-host string
-    	Set hostname of the epmd to use (default "localhost")
+     Set hostname of the epmd to use (default "localhost")
   -epmd-port int
-    	Set port for the epmd to use (default 4369)
+     Set port for the epmd to use (default 4369)
   -ergo.norecover
-    	disable panic catching
+     disable panic catching
   -ergo.trace
-    	enable extended debug info
+     enable extended debug info
   -i int
-    	This needs to be a valid ID for a MIDI device capable of receiving
-    	MIDI data; for a list of valid IDs be sure to run the 'list-devices'
-    	command; short-form flag (default -1)
+     This needs to be a valid ID for a MIDI device capable of receiving
+     MIDI data; for a list of valid IDs be sure to run the 'list-devices'
+     command; short-form flag (default -1)
   -l string
-    	Set the logging level; short-form flag (default "warn")
+     Set the logging level; short-form flag (default "warn")
   -log-reportcaller
-    	Indicate whether the log lines contain the report caller
+     Indicate whether the log lines contain the report caller
   -loglevel string
-    	Set the logging level (default "warn")
+     Set the logging level (default "warn")
   -midi-in int
-    	This needs to be a valid ID for a MIDI device capable of receiving
-    	MIDI data; for a list of valid IDs be sure to run the 'list-devices'
-    	command (default -1)
+     This needs to be a valid ID for a MIDI device capable of receiving
+     MIDI data; for a list of valid IDs be sure to run the 'list-devices'
+     command (default -1)
   -n string
-    	Set the Erlang node name for remote communications; short-form flag
+     Set the Erlang node name for remote communications; short-form flag
   -p string
-    	Set the parser to user for commands and data. Legal values are:
-    	[exec, port, text]. Note that setting to 'text' disables
-    	daemonisation and setting any of the other parsers automatically
-    	enables daemonisation; short-form flag (default "text")
+     Set the parser to user for commands and data. Legal values are:
+     [exec, port, text]. Note that setting to 'text' disables
+     daemonisation and setting any of the other parsers automatically
+     enables daemonisation; short-form flag (default "text")
   -parser string
-    	Set the parser to user for commands and data. Legal values are:
-    	[exec, port, text]. Note that setting to 'text' disables
-    	daemonisation and setting any of the other parsers automatically
-    	enables daemonisation (default "text")
-  -r	Indicate whether the log lines contain the report caller; short-form flag
+     Set the parser to user for commands and data. Legal values are:
+     [exec, port, text]. Note that setting to 'text' disables
+     daemonisation and setting any of the other parsers automatically
+     enables daemonisation (default "text")
+  -r Indicate whether the log lines contain the report caller; short-form flag
   -remote-module string
-    	Set the Erlang module for remote communications
+     Set the Erlang module for remote communications
   -remote-node string
-    	Set the Erlang node name for remote communications
-  -v	Display version/build info and exit; short-form flag
+     Set the Erlang node name for remote communications
+  -v Display version/build info and exit; short-form flag
   -version
-    	Display version/build info and exit
+     Display version/build info and exit
 
 Commands:
 
@@ -122,13 +123,12 @@ Commands:
 
 Apache Version 2 License
 
-Copyright © 2020-2021, Duncan McGreggor
+Copyright © 2020-2022, Duncan McGreggor
 
 [//]: ---Named-Links---
 
 [logo]: assets/images/logo-v1-x250.png
 [logo-large]: assets/images/logo-v1-x1000.png
-[github]: https://github.com/ut-proj/midiserver
 [gh-actions-badge]: https://github.com/ut-proj/midiserver/workflows/ci%2Fcd/badge.svg
 [gh-actions]: https://github.com/ut-proj/midiserver/actions
 [go]: https://golang.org/
