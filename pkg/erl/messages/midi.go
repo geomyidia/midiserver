@@ -13,6 +13,8 @@ import (
 	"github.com/ut-proj/midiserver/pkg/types"
 )
 
+const MIDIKey = "midi"
+
 type MidiCallGroup struct {
 	id         string
 	isParallel bool
@@ -85,20 +87,21 @@ func Convert(term interface{}) (*MidiCallGroup, error) {
 		}
 		return &MidiCallGroup{calls: calls}, nil
 	case erlang.OtpErlangTuple:
-		key, val, err := datatypes.Tuple(t)
+		tpl, err := datatypes.NewTupleFromTerm(t)
+
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
-		if key == types.MidiKey {
-			key, val, err = datatypes.Tuple(val)
+		if tpl.Key() == MIDIKey {
+			tpl, err = datatypes.NewTupleFromTerm(tpl.Value())
 		}
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
-		if key == types.MidiBatchKey {
-			batchCallGroup, err := ConvertBatch(val)
+		if tpl.Key() == types.MidiBatchKey {
+			batchCallGroup, err := ConvertBatch(tpl.Value())
 			if err != nil {
 				log.Error(err)
 				return nil, err
@@ -108,12 +111,12 @@ func Convert(term interface{}) (*MidiCallGroup, error) {
 			log.Debug("batch parallel: ", parallel)
 			calls = append(calls, batchCallGroup.calls...)
 		} else {
-			args, err := ConvertArg(key, val)
+			args, err := ConvertArg(tpl.Key().(string), tpl.Value())
 			if err != nil {
 				log.Error(err)
 				return nil, err
 			}
-			call := types.MidiCall{Op: types.MidiOpType(key), Args: args}
+			call := types.MidiCall{Op: types.MidiOpType(tpl.Key().(string)), Args: args}
 			calls = append(calls, call)
 		}
 		log.Debug("parallel: ", parallel)
