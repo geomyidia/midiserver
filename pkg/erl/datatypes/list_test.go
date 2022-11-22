@@ -9,21 +9,38 @@ import (
 
 type ListTestSuite struct {
 	suite.Suite
-	list TupleList
+	list *TupleList
 }
 
 func (s *ListTestSuite) SetupTest() {
-	s.list = newTupleList([]Tuple{
-		newTuple("a", "1"),
-		newTuple("b", "2"),
+	var err error
+	s.list, err = NewTupleListFromSlice([][]interface{}{
+		{"a", "1"},
+		{"b", "2"},
 	})
+	s.NoError(err)
 	s.Equal(2, len(s.list.elements))
+}
+
+func (s *ListTestSuite) TestNewTupleListFromTerm() {
+	list, err := NewTupleListFromTerm(s.list.Convert())
+	s.NoError(err)
+	s.Equal(2, len(list.elements))
+	m := list.ToMap()
+	s.Equal("1", m["a"])
+	s.Equal("2", m["b"])
 }
 
 func (s *ListTestSuite) TestNth() {
 	t := s.list.Nth(1)
 	s.Equal("b", t.Key())
 	s.Equal("2", t.Value())
+}
+
+func (s *ListTestSuite) TestToMap() {
+	m := s.list.ToMap()
+	s.Equal("1", m["a"])
+	s.Equal("2", m["b"])
 }
 
 func (s *ListTestSuite) TestConvert() {

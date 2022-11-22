@@ -9,21 +9,43 @@ const (
 )
 
 type Tuple struct {
-	data []interface{}
+	elements []interface{}
 }
 
-func newTuple(key, value interface{}) Tuple {
-	return Tuple{
-		[]interface{}{key, value},
+func NewTuple(key, value interface{}) *Tuple {
+	return &Tuple{
+		elements: []interface{}{key, value},
 	}
 }
 
+func NewTupleFromTerm(term interface{}) (*Tuple, error) {
+	et, ok := term.(erlang.OtpErlangTuple)
+	if !ok {
+		return nil, ErrCastingTuple
+	}
+	keyTerm := et[tupleKey]
+	key, ok := keyTerm.(erlang.OtpErlangAtom)
+	if !ok {
+		return nil, ErrCastingAtom
+	}
+	valTerm := et[tupleVal]
+	val, ok := valTerm.(erlang.OtpErlangAtom)
+	if !ok {
+		return nil, ErrCastingAtom
+	}
+	return NewTuple(string(key), string(val)), nil
+}
+
 func (t *Tuple) Key() interface{} {
-	return t.data[tupleKey]
+	return t.elements[tupleKey]
 }
 
 func (t *Tuple) Value() interface{} {
-	return t.data[tupleVal]
+	return t.elements[tupleVal]
+}
+
+func (t *Tuple) HasKey(key interface{}) bool {
+	return t.Key() == key
 }
 
 func (t *Tuple) Convert() erlang.OtpErlangTuple {
