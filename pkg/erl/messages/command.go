@@ -36,8 +36,8 @@ func (cm *CommandMessage) Args() types.PropList {
 	return cm.args
 }
 
-func (cm *CommandMessage) SetCommand(cmdIf interface{}) error {
-	cmdAtom, ok := cmdIf.(erlang.OtpErlangAtom)
+func (cm *CommandMessage) SetCommand(cmd interface{}) error {
+	cmdAtom, ok := cmd.(erlang.OtpErlangAtom)
 	if !ok {
 		return errors.New("could not cast command to atom")
 	}
@@ -52,4 +52,46 @@ func (cm *CommandMessage) SetArgs(argsIf interface{}) error {
 	}
 	cm.args = args
 	return nil
+}
+
+func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
+	log.Debug("handling tuple ...")
+	key, val, err := datatypes.Tuple(tuple)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Debugf("Key: %+v (type %T)", key, key)
+	if key == types.CommandKey {
+		msg := &CommandMessage{}
+		err = msg.SetCommand(val)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		return msg, nil
+	}
+	return nil, nil
+}
+
+func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
+	log.Debug("handling tuples ...")
+	t, err := datatypes.PropListToMap(tuples)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Debugf("Got map: %+v", t)
+	msg := &CommandMessage{}
+	err = msg.SetCommand(t[types.CommandKey])
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	err = msg.SetArgs(t[types.ArgsKey])
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	return msg, nil
 }
