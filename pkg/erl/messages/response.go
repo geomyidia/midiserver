@@ -21,30 +21,12 @@ func NewResponse(result types.Result, err types.Err) *Response {
 		hasError = true
 	}
 	msg := &Response{
-		result:   ResultMessage(result),
-		err:      ErrorMessage(err),
+		result:   NewResult(result).Convert(),
+		err:      NewError(err).Convert(),
 		hasError: hasError,
 	}
 	log.Debugf("created result message: %#v", msg)
 	return msg
-}
-
-// ErrorMessage ...
-func ErrorMessage(errMsg types.Err) erlang.OtpErlangTuple {
-	err := make([]interface{}, 2)
-	err[0] = erlang.OtpErlangAtom("error")
-	err[1] = errMsg
-	log.Warnf("created error tuple: %#v", err)
-	return erlang.OtpErlangTuple(err)
-}
-
-// ResultMessage ...
-func ResultMessage(value types.Result) erlang.OtpErlangTuple {
-	result := make([]interface{}, 2)
-	result[0] = erlang.OtpErlangAtom("result")
-	result[1] = value
-	log.Tracef("created result tuple: %#v", result)
-	return erlang.OtpErlangTuple(result)
 }
 
 // SendMessage ...
