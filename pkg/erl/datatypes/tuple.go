@@ -23,17 +23,11 @@ func NewTupleFromTerm(term interface{}) (*Tuple, error) {
 	if !ok {
 		return nil, ErrCastingTuple
 	}
-	keyTerm := et[tupleKey]
-	key, ok := keyTerm.(erlang.OtpErlangAtom)
-	if !ok {
-		return nil, ErrCastingAtom
+	slice, err := TupleToSlice(et)
+	if err != nil {
+		return nil, err
 	}
-	valTerm := et[tupleVal]
-	val, ok := valTerm.(erlang.OtpErlangAtom)
-	if !ok {
-		return nil, ErrCastingAtom
-	}
-	return NewTuple(string(key), string(val)), nil
+	return NewTuple(slice[tupleKey], slice[tupleVal]), nil
 }
 
 func (t *Tuple) Key() interface{} {

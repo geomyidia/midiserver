@@ -136,7 +136,7 @@ func ConvertBatch(term interface{}) (*MidiCallGroup, error) {
 	if !ok {
 		return nil, errors.New("couldn't convert batch")
 	}
-	batchMap, err := datatypes.PropListToMap(list)
+	batchMap, err := datatypes.TupleListToMap(list)
 	if err != nil {
 		return nil, err
 	}
@@ -188,7 +188,7 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 		args.NoteOff = v.(uint8)
 	case types.MidiNoteOnKey:
 		list := v.(erlang.OtpErlangList)
-		noteOn, err := datatypes.PropListToMap(list)
+		noteOn, err := datatypes.TupleListToMap(list)
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -205,7 +205,7 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 		}
 	case types.MidiCCKey:
 		list := v.(erlang.OtpErlangList)
-		cc, err := datatypes.PropListToMap(list)
+		cc, err := datatypes.TupleListToMap(list)
 		if err != nil {
 			log.Error(err)
 			return nil, err
