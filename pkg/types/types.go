@@ -52,6 +52,11 @@ type Flags struct {
 type Result string
 type Err string
 
+var (
+	ContinueResult = Result("continue")
+	EmptyResult    = Result("")
+)
+
 // Command types
 type CommandName string
 type CommandType CommandName
@@ -93,6 +98,12 @@ type MidiCall struct {
 	Id   int
 	Op   MidiOpType
 	Args *MidiArgs
+}
+
+type MidiCallGroup struct {
+	Id         string
+	IsParallel bool
+	Calls      []MidiCall
 }
 
 // Other types

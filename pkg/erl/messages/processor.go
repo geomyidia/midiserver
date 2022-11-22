@@ -23,23 +23,26 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 	if err != nil {
 		return nil, err
 	}
-	t, err := packet.Term()
+	term, err := packet.Term()
 	if err != nil {
 		return nil, err
 	}
+	log.Tracef("got Erlang Port term: %#v", term)
 	mp := &MessageProcessor{
 		packet:    packet,
-		term:      t,
+		term:      term,
 		IsMidi:    false,
 		IsCommand: false,
 	}
-	log.Tracef("got Erlang Port term")
-	log.Tracef("%#v", t)
-	if datatypes.TupleHasKey(t, "midi") {
+	t, err := datatypes.NewTupleFromTerm(term)
+	if err != nil {
+		return nil, err
+	}
+	if t.HasKey(MIDIKey) {
 		mp.IsMidi = true
 		callGroup, err := NewMidiCallGroup(t)
 		if err != nil {
-			resp := NewResponse(types.Result(""), types.Err(err.Error()))
+			resp := NewResponse(types.EmptyResult, types.Err(err.Error()))
 			resp.Send()
 			return nil, err
 		}
@@ -48,16 +51,12 @@ func NewMessageProcessor(opts *erl.Opts) (*MessageProcessor, error) {
 	}
 	msg, err := NewCommandMessage(t)
 	if err != nil {
-		resp := NewResponse(types.Result(""), types.Err(err.Error()))
+		resp := NewResponse(types.EmptyResult, types.Err(err.Error()))
 		resp.Send()
 		return nil, err
 	}
 	mp.cmdMsg = msg
 	return mp, nil
-}
-
-func (mp *MessageProcessor) Continue() types.Result {
-	return types.Result("continue")
 }
 
 func (mp *MessageProcessor) Process() types.Result {
@@ -67,7 +66,7 @@ func (mp *MessageProcessor) Process() types.Result {
 		return types.Result(types.MidiOp(types.MidiKey))
 	} else {
 		log.Error("unexected message type")
-		return mp.Continue()
+		return types.ContinueResult
 	}
 }
 
