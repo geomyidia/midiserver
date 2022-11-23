@@ -15,18 +15,26 @@ type Response struct {
 	err      erlang.OtpErlangTuple
 }
 
-func NewResponse(result types.Result, err types.Err) *Response {
+func NewResponse(result types.Result, err types.Err) (*Response, error) {
 	hasError := false
 	if err != "" {
 		hasError = true
 	}
+	r, er := NewResult(result).ToTerm()
+	if er != nil {
+		return nil, er
+	}
+	e, er := NewError(err).ToTerm()
+	if er != nil {
+		return nil, er
+	}
 	msg := &Response{
-		result:   NewResult(result).Convert(),
-		err:      NewError(err).Convert(),
+		result:   r.(erlang.OtpErlangTuple),
+		err:      e.(erlang.OtpErlangTuple),
 		hasError: hasError,
 	}
 	log.Debugf("created result message: %#v", msg)
-	return msg
+	return msg, nil
 }
 
 // SendMessage ...

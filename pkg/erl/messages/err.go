@@ -1,7 +1,6 @@
 package messages
 
 import (
-	"github.com/okeuday/erlang_go/v2/erlang"
 	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
 	"github.com/ut-proj/midiserver/pkg/types"
 )
@@ -14,7 +13,10 @@ type Error struct {
 
 func NewError(e types.Err) *Error {
 	return &Error{
-		tuple: datatypes.NewTuple(ErrKey, e),
+		tuple: datatypes.NewTuple([]interface{}{
+			datatypes.NewAtom(ErrKey),
+			datatypes.NewAtom(string(e)),
+		}),
 	}
 }
 
@@ -22,6 +24,6 @@ func (e Error) Value() interface{} {
 	return e.tuple.Value()
 }
 
-func (e Error) Convert() erlang.OtpErlangTuple {
-	return e.tuple.Convert()
+func (r Error) ToTerm() (interface{}, error) {
+	return r.tuple.ToTerm()
 }
