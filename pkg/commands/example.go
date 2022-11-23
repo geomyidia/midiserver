@@ -19,9 +19,9 @@ func DefaultPlayExampleOpts() *PlayExampleOpts {
 		MidiChannel: 0,
 	}
 }
-func PlayExample(args types.PropList) error {
+func PlayExample(args map[string]interface{}) error {
 	var opts *PlayExampleOpts
-	if args == nil || len(args) == 0 {
+	if len(args) == 0 {
 		log.Debug("got nil args ...")
 		opts = DefaultPlayExampleOpts()
 	} else {

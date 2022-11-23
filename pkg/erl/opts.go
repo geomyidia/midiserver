@@ -5,7 +5,7 @@ import (
 )
 
 func Continue() types.Result {
-	return types.Result("continue")
+	return types.ContinueResult
 }
 
 type Opts struct {

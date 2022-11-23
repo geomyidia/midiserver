@@ -12,7 +12,7 @@ import (
 
 type CommandMessage struct {
 	command types.CommandType
-	args    types.PropList
+	args    map[string]string
 }
 
 func NewCommandMessage(t interface{}) (*CommandMessage, error) {
@@ -32,8 +32,8 @@ func (cm *CommandMessage) Command() types.CommandType {
 	return cm.command
 }
 
-func (cm *CommandMessage) Args() types.PropList {
-	return cm.args
+func (cm *CommandMessage) Args() map[string]interface{} {
+	return datatypes.MapStrsToInterfaces(cm.args)
 }
 
 func (cm *CommandMessage) SetCommand(cmd interface{}) error {
@@ -45,8 +45,8 @@ func (cm *CommandMessage) SetCommand(cmd interface{}) error {
 	return nil
 }
 
-func (cm *CommandMessage) SetArgs(argsIf interface{}) error {
-	args, err := datatypes.PropListToMap(argsIf.(erlang.OtpErlangList))
+func (cm *CommandMessage) SetArgs(term interface{}) error {
+	args, err := datatypes.TupleListToMap(term.(erlang.OtpErlangList))
 	if err != nil {
 		return err
 	}
@@ -56,15 +56,15 @@ func (cm *CommandMessage) SetArgs(argsIf interface{}) error {
 
 func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
 	log.Debug("handling tuple ...")
-	key, val, err := datatypes.Tuple(tuple)
+	tpl, err := datatypes.NewTupleFromTerm(tuple)
 	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
-	log.Debugf("Key: %+v (type %T)", key, key)
-	if key == types.CommandKey {
+	log.Debugf("Key: %+v (type %T)", tpl.Key(), tpl.Key())
+	if tpl.Key() == types.CommandKey {
 		msg := &CommandMessage{}
-		err = msg.SetCommand(val)
+		err = msg.SetCommand(tpl.Value())
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -76,7 +76,7 @@ func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
 
 func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
 	log.Debug("handling tuples ...")
-	t, err := datatypes.PropListToMap(tuples)
+	t, err := datatypes.TupleListToMap(tuples)
 	if err != nil {
 		log.Error(err)
 		return nil, err

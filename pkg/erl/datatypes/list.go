@@ -18,7 +18,7 @@ func NewTupleListFromSlice(pairs [][]interface{}) (*TupleList, error) {
 		if len(pair) != tupleArity {
 			return nil, ErrBadTupleArity
 		}
-		t := NewTuple(pair[0], pair[1])
+		t := NewTuple(pair[0].(string), pair[1])
 		elements = append(elements, t)
 	}
 	return &TupleList{

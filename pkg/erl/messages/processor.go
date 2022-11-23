@@ -70,7 +70,7 @@ func (mp *MessageProcessor) Process() types.Result {
 	}
 }
 
-func (mp *MessageProcessor) CommandArgs() types.PropList {
+func (mp *MessageProcessor) CommandArgs() map[string]interface{} {
 	return mp.cmdMsg.Args()
 }
 

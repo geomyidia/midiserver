@@ -72,7 +72,7 @@ func (p *Packet) Bytes() ([]byte, error) {
 }
 
 // setUnwrapped is a utility method for a hack needed in order to
-// successully handle messages from the Erlang exec library.
+// successfully handle messages from the Erlang exec library.
 //
 // What was happening when exec messages were being processed
 // by ProcessPortMessage was that a single byte was being dropped

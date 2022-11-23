@@ -26,7 +26,7 @@ func main() {
 		server.Serve(ctx, midiSystem, flags)
 	} else {
 		log.Debug("using CLI mode ...")
-		args := make(types.PropList)
+		args := make(map[string]interface{})
 		commands.Dispatch(ctx, flags.Command, args, flags)
 	}
 }

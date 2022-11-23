@@ -12,7 +12,7 @@ type Tuple struct {
 	elements []interface{}
 }
 
-func NewTuple(key, value interface{}) *Tuple {
+func NewTuple(key string, value interface{}) *Tuple {
 	return &Tuple{
 		elements: []interface{}{key, value},
 	}
@@ -30,21 +30,21 @@ func NewTupleFromTerm(term interface{}) (*Tuple, error) {
 	return NewTuple(slice[tupleKey], slice[tupleVal]), nil
 }
 
-func (t *Tuple) Key() interface{} {
-	return t.elements[tupleKey]
+func (t *Tuple) Key() string {
+	return t.elements[tupleKey].(string)
 }
 
 func (t *Tuple) Value() interface{} {
 	return t.elements[tupleVal]
 }
 
-func (t *Tuple) HasKey(key interface{}) bool {
+func (t *Tuple) HasKey(key string) bool {
 	return t.Key() == key
 }
 
 func (t *Tuple) Convert() erlang.OtpErlangTuple {
 	tpl := make([]interface{}, tupleArity)
-	tpl[tupleKey] = erlang.OtpErlangAtom(t.Key().(string))
+	tpl[tupleKey] = erlang.OtpErlangAtom(t.Key())
 	tpl[tupleVal] = erlang.OtpErlangAtom(t.Value().(string))
 	return erlang.OtpErlangTuple(tpl)
 }

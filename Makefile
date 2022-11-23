@@ -73,7 +73,8 @@ version: all
 
 test:
 	@echo ">> Running unit tests ..."
-	@export PATH=$$PATH:~/go/bin && richgo test -race -v ./... || echo "Uh-oh ... 🔥"
+	#@export PATH=$$PATH:~/go/bin && richgo test -debug -race -v ./... || echo "Uh-oh ... 🔥"
+	PATH=$$PATH:~/go/bin richgo help build
 
 rebuild: clean all
 

@@ -14,8 +14,12 @@ import (
 )
 
 // Dispatch ...
-func Dispatch(ctx context.Context, command types.CommandType,
-	args types.PropList, flags *types.Flags) {
+func Dispatch(
+	ctx context.Context,
+	command types.CommandType,
+	args map[string]interface{},
+	flags *types.Flags,
+) {
 	log.Debug("Dispatching command ...")
 	var result types.Result
 	var err types.Err

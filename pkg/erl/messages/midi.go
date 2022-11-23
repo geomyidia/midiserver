@@ -87,18 +87,21 @@ func Convert(term interface{}) (*MidiCallGroup, error) {
 		}
 		return &MidiCallGroup{calls: calls}, nil
 	case erlang.OtpErlangTuple:
-		tpl, err := datatypes.NewTupleFromTerm(t)
-
+		tpl, err := datatypes.NewTupleFromTerm(term)
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
+		log.Debugf("tuple data: %+v", tpl)
+		// If the tuple is a MIDI command, then it's going to be
+		// a tuple of tuples:
 		if tpl.Key() == MIDIKey {
 			tpl, err = datatypes.NewTupleFromTerm(tpl.Value())
-		}
-		if err != nil {
-			log.Error(err)
-			return nil, err
+			if err != nil {
+				log.Error(err)
+				return nil, err
+			}
+			log.Debugf("MIDIKey tuple: %+v", tpl)
 		}
 		if tpl.Key() == types.MidiBatchKey {
 			batchCallGroup, err := ConvertBatch(tpl.Value())
@@ -111,12 +114,12 @@ func Convert(term interface{}) (*MidiCallGroup, error) {
 			log.Debug("batch parallel: ", parallel)
 			calls = append(calls, batchCallGroup.calls...)
 		} else {
-			args, err := ConvertArg(tpl.Key().(string), tpl.Value())
+			args, err := ConvertArg(tpl.Key(), tpl.Value())
 			if err != nil {
 				log.Error(err)
 				return nil, err
 			}
-			call := types.MidiCall{Op: types.MidiOpType(tpl.Key().(string)), Args: args}
+			call := types.MidiCall{Op: types.MidiOpType(tpl.Key()), Args: args}
 			calls = append(calls, call)
 		}
 		log.Debug("parallel: ", parallel)
@@ -140,32 +143,28 @@ func ConvertBatch(term interface{}) (*MidiCallGroup, error) {
 	if err != nil {
 		return nil, err
 	}
+	log.Debugf("batch map data: %+v", batchMap)
+
 	// Process the Batch ID
 	rawId := batchMap[types.MidiIdKey]
-	binId, ok := rawId.(erlang.OtpErlangBinary)
-	if !ok {
-		return nil, errors.New("couldn't convert batch id")
+	uuid4, err := uuid.FromBytes([]byte(rawId))
+	if err != nil {
+		return nil, err
 	}
+	id = uuid4.String()
+
+	// Get parallel flag
 	rawParallel := batchMap[types.MidiParallelKey]
-	if rawParallel != nil {
-		atomParallel, ok := rawParallel.(erlang.OtpErlangAtom)
-		if !ok {
-			return nil, errors.New("couldn't convert 'parallel?'")
-		}
-		parallel, err = strconv.ParseBool(string(atomParallel))
+	if rawParallel != "" {
+		parallel, err = strconv.ParseBool(rawParallel)
 		log.Debug("parallel? ", parallel)
 		if err != nil {
 			return nil, err
 		}
 	}
-	uuid4, err := uuid.FromBytes(binId.Value)
-	if err != nil {
-		return nil, err
-	}
-	id = uuid4.String()
+
 	// Process the Batch Messages
 	batch, err := Convert(batchMap[types.MidiMessagesKey])
-
 	if err != nil {
 		return nil, err
 	}
@@ -188,11 +187,13 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 		args.NoteOff = v.(uint8)
 	case types.MidiNoteOnKey:
 		list := v.(erlang.OtpErlangList)
-		noteOn, err := datatypes.TupleListToMap(list)
+		noteOnData, err := datatypes.TupleListToMap(list)
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
+		log.Debugf("noteOnData: %+v", noteOnData)
+		noteOn := datatypes.MapStrsToInterfaces(noteOnData)
 		args.NoteOn = types.MidiNoteOn{
 			Pitch:    noteOn[types.MidiPitchKey].(uint8),
 			Velocity: noteOn[types.MidiVelocityKey].(uint8),
@@ -205,11 +206,12 @@ func ConvertArg(k string, v interface{}) (*types.MidiArgs, error) {
 		}
 	case types.MidiCCKey:
 		list := v.(erlang.OtpErlangList)
-		cc, err := datatypes.TupleListToMap(list)
+		ccData, err := datatypes.TupleListToMap(list)
 		if err != nil {
 			log.Error(err)
 			return nil, err
 		}
+		cc := datatypes.MapStrsToInterfaces(ccData)
 		args.CC = types.MidiCC{
 			Controller: cc[types.MidiControllerKey].(uint8),
 			Value:      cc[types.MidiValueKey].(uint8),

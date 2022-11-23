@@ -8,6 +8,8 @@ import (
 const (
 	ArgsKey              string = "args"
 	CommandKey           string = "command"
+	ContinueKey          string = "continue"
+	EmptyKey             string = ""
 	MidiKey              string = "midi"
 	MidiBatchKey         string = "batch"
 	MidiChannelKey       string = "channel"
@@ -53,14 +55,14 @@ type Result string
 type Err string
 
 var (
-	ContinueResult = Result("continue")
-	EmptyResult    = Result("")
+	ContinueResult = Result(ContinueKey)
+	EmptyResult    = Result(EmptyKey)
 )
 
 // Command types
 type CommandName string
 type CommandType CommandName
-type CommandProcessor func(context.Context, CommandType, PropList, *Flags)
+type CommandProcessor func(context.Context, CommandType, map[string]interface{}, *Flags)
 type MessageProcessor func() Result
 
 // MIDI types
@@ -107,7 +109,6 @@ type MidiCallGroup struct {
 }
 
 // Other types
-type PropList map[string]interface{}
 
 func Chord(velocity uint8, duration uint32, notes ...[]uint8) *MidiChord {
 	var pitches []uint8

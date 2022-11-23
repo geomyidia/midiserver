@@ -25,7 +25,7 @@ func (s *TupleTestSuite) TestNewTupleFromTerm() {
 
 func (s *TupleTestSuite) TestKey() {
 	t := NewTuple("a", "1")
-	s.Equal("a", t.Key().(string))
+	s.Equal("a", t.Key())
 }
 
 func (s *TupleTestSuite) TestHasKey() {

@@ -6,8 +6,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gitlab.com/gomidi/midi/writer"
 	driver "gitlab.com/gomidi/rtmididrv"
-
-	"github.com/ut-proj/midiserver/pkg/types"
 )
 
 type PlayNoteOpts struct {
@@ -28,7 +26,7 @@ func DefaultPlayNoteOpts() *PlayNoteOpts {
 	}
 }
 
-func PlayNote(args types.PropList) {
+func PlayNote(args map[string]interface{}) {
 	var opts *PlayNoteOpts
 	if args == nil || len(args) == 0 {
 		log.Debug("got nil args ...")
