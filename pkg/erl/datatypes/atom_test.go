@@ -1,4 +1,4 @@
-package atom
+package datatypes
 
 import (
 	"testing"
@@ -13,7 +13,7 @@ type AtomTestSuite struct {
 }
 
 func (s *AtomTestSuite) SetupTest() {
-	s.atom = New("my-atom")
+	s.atom = NewAtom("my-atom")
 }
 
 func (s *AtomTestSuite) TestValue() {
@@ -27,11 +27,11 @@ func (s *AtomTestSuite) TestToTerm() {
 }
 
 func (s *AtomTestSuite) TestFromTerm() {
-	term, err := New("another-atom").ToTerm()
+	term, err := NewAtom("another-atom").ToTerm()
 	s.NoError(err)
 	a, err := FromTerm(term)
 	s.NoError(err)
-	s.Equal("another-atom", a.Value())
+	s.Equal("another-atom", a.(*Atom).Value())
 }
 
 func TestAtomTestSuite(t *testing.T) {

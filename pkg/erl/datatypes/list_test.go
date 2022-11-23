@@ -1,11 +1,10 @@
-package compound
+package datatypes
 
 import (
 	"testing"
 
 	"github.com/okeuday/erlang_go/v2/erlang"
 	"github.com/stretchr/testify/suite"
-	"github.com/ut-proj/midiserver/pkg/erl/datatypes/atom"
 )
 
 type ListTestSuite struct {
@@ -16,20 +15,20 @@ type ListTestSuite struct {
 
 func (s *ListTestSuite) SetupTest() {
 	s.simpleList = NewList([]interface{}{
-		atom.New("1"),
-		atom.New("2"),
-		atom.New("3"),
+		NewAtom("1"),
+		NewAtom("2"),
+		NewAtom("3"),
 	})
 	s.list = NewList([]interface{}{
 		s.simpleList,
-		atom.New("hydrogen"),
+		NewAtom("hydrogen"),
 		NewTuple([]interface{}{
-			atom.New("never"),
-			atom.New("let"),
-			atom.New("you"),
-			atom.New("down"),
+			NewAtom("never"),
+			NewAtom("let"),
+			NewAtom("you"),
+			NewAtom("down"),
 		}),
-		atom.New("42"),
+		NewAtom("42"),
 	})
 }
 
@@ -39,9 +38,9 @@ func (s *ListTestSuite) TestLen() {
 }
 
 func (s *ListTestSuite) TestNth() {
-	s.Equal(atom.New("2"), s.simpleList.Nth(1))
-	s.Equal(atom.New("never"), s.list.Nth(2).(*Tuple).Nth(0))
-	s.Equal(atom.New("3"), s.list.Nth(0).(*List).Nth(2))
+	s.Equal(NewAtom("2"), s.simpleList.Nth(1))
+	s.Equal(NewAtom("never"), s.list.Nth(2).(*Tuple).Nth(0))
+	s.Equal(NewAtom("3"), s.list.Nth(0).(*List).Nth(2))
 }
 
 func (s *ListTestSuite) TestToTerm() {
@@ -68,14 +67,14 @@ func (s *ListTestSuite) TestFromTerm() {
 	s.NoError(err)
 	simpleList, ok := data.(*List)
 	s.True(ok)
-	s.Equal(atom.New("3"), simpleList.Nth(2).(*atom.Atom))
+	s.Equal(NewAtom("3"), simpleList.Nth(2).(*Atom))
 	term, err = s.list.ToTerm()
 	s.NoError(err)
 	data, err = FromTerm(term)
 	s.NoError(err)
 	list, ok := data.(*List)
 	s.True(ok)
-	s.Equal(atom.New("never"), list.Nth(2).(*Tuple).Nth(0))
+	s.Equal(NewAtom("never"), list.Nth(2).(*Tuple).Nth(0))
 }
 
 func TestListTestSuite(t *testing.T) {

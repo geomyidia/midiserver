@@ -1,9 +1,7 @@
-package compound
+package datatypes
 
 import (
 	"github.com/okeuday/erlang_go/v2/erlang"
-	"github.com/ut-proj/midiserver/pkg/erl/datatypes/atom"
-	"github.com/ut-proj/midiserver/pkg/erl/datatypes/errors"
 )
 
 type List struct {
@@ -29,8 +27,8 @@ func (l *List) ToTerm() (interface{}, error) {
 	for i, e := range l.elements {
 		switch t := e.(type) {
 		default:
-			return nil, errors.ErrUnsupportedGoType
-		case *atom.Atom:
+			return nil, ErrUnsupportedGoType
+		case *Atom:
 			term, err := t.ToTerm()
 			if err != nil {
 				return nil, err

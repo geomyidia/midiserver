@@ -1,12 +1,10 @@
-package compound
+package datatypes
 
 import (
 	"testing"
 
 	"github.com/okeuday/erlang_go/v2/erlang"
 	"github.com/stretchr/testify/suite"
-
-	"github.com/ut-proj/midiserver/pkg/erl/datatypes/atom"
 )
 
 type TupleTestSuite struct {
@@ -17,27 +15,27 @@ type TupleTestSuite struct {
 
 func (s *TupleTestSuite) SetupTest() {
 	s.twoTuple = NewTuple([]interface{}{
-		atom.New("a"),
-		atom.New("1"),
+		NewAtom("a"),
+		NewAtom("1"),
 	})
 	s.nTuple = NewTuple([]interface{}{
-		atom.New("b"),
-		atom.New("2"),
+		NewAtom("b"),
+		NewAtom("2"),
 		s.twoTuple,
 		NewList([]interface{}{
 			s.nTuple,
-			atom.New("3"),
-			atom.New("c"),
+			NewAtom("3"),
+			NewAtom("c"),
 		}),
 	})
 }
 
 func (s *TupleTestSuite) TestKey() {
-	s.Equal("a", s.twoTuple.Key().(*atom.Atom).Value())
+	s.Equal("a", s.twoTuple.Key().(*Atom).Value())
 }
 
 func (s *TupleTestSuite) TestValue() {
-	s.Equal("1", s.twoTuple.Value().(*atom.Atom).Value())
+	s.Equal("1", s.twoTuple.Value().(*Atom).Value())
 }
 
 func (s *TupleTestSuite) TestLen() {
@@ -46,9 +44,9 @@ func (s *TupleTestSuite) TestLen() {
 }
 
 func (s *TupleTestSuite) TestNth() {
-	s.Equal(atom.New("a"), s.twoTuple.Nth(0))
-	s.Equal(atom.New("2"), s.nTuple.Nth(1))
-	s.Equal(atom.New("1"), s.nTuple.Nth(2).(*Tuple).Nth(1))
+	s.Equal(NewAtom("a"), s.twoTuple.Nth(0))
+	s.Equal(NewAtom("2"), s.nTuple.Nth(1))
+	s.Equal(NewAtom("1"), s.nTuple.Nth(2).(*Tuple).Nth(1))
 }
 
 func (s *TupleTestSuite) TestToTerm() {
