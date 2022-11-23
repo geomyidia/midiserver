@@ -14,6 +14,10 @@ func NewList(elements []interface{}) *List {
 	}
 }
 
+func (l *List) Elements() []interface{} {
+	return l.elements
+}
+
 func (l *List) Len() int {
 	return len(l.elements)
 }
