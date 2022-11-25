@@ -2,6 +2,7 @@ package datatypes
 
 import (
 	"github.com/okeuday/erlang_go/v2/erlang"
+	log "github.com/sirupsen/logrus"
 )
 
 func FromTerm(term interface{}) (interface{}, error) {
@@ -11,6 +12,7 @@ func FromTerm(term interface{}) (interface{}, error) {
 	case erlang.OtpErlangAtom:
 		eAtom, ok := term.(erlang.OtpErlangAtom)
 		if !ok {
+			log.Error(ErrCastingAtom)
 			return nil, ErrCastingAtom
 		}
 		return NewAtom(string(eAtom)), nil
@@ -27,6 +29,7 @@ func FromTerm(term interface{}) (interface{}, error) {
 		for i, term := range t.Value {
 			termStruct, err := FromTerm(term)
 			if err != nil {
+				log.Error(err)
 				return nil, ErrCastingTuple
 			}
 			terms[i] = termStruct
@@ -45,6 +48,7 @@ func FromTerm(term interface{}) (interface{}, error) {
 		for i, term := range t {
 			termStruct, err := FromTerm(term)
 			if err != nil {
+				log.Error(err)
 				return nil, ErrCastingTuple
 			}
 			terms[i] = termStruct

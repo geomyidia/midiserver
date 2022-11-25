@@ -9,9 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ut-proj/midiserver/internal/util"
-	"github.com/ut-proj/midiserver/pkg/commands"
 	"github.com/ut-proj/midiserver/pkg/erl"
 	"github.com/ut-proj/midiserver/pkg/erl/messages"
+	"github.com/ut-proj/midiserver/pkg/erl/packets"
 	"github.com/ut-proj/midiserver/pkg/erl/rpc"
 	"github.com/ut-proj/midiserver/pkg/midi"
 	"github.com/ut-proj/midiserver/pkg/types"
@@ -34,7 +34,7 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 		if flags.Parser == types.PortParser() {
 			opts = erl.DefaultOpts()
 		}
-		ProcessMessages(ctx, midiSys, opts, flags)
+		HandleMessages(ctx, midiSys, opts, flags)
 	}()
 
 	wg.Add(1)
@@ -63,34 +63,49 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	log.Info("application shutdown complete.")
 }
 
-func ProcessMessages(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
+func HandleMessages(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
 	log.Info("processing messages sent to Go language server ...")
 	log.Debugf("using command processor options %#v", opts)
 	go func() {
 		for {
-			ProcessMessage(ctx, midiSys, opts, flags)
+			HandleMessage(ctx, midiSys, opts, flags)
 			continue
 		}
 	}()
 	<-ctx.Done()
 }
 
-func ProcessMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
-	mp, err := messages.NewMessageProcessor(opts)
+func HandleMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
+	var resp *messages.Response
+	term, err := packets.ToTerm(opts)
 	if err != nil {
 		log.Error(err)
+		resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))
+		resp.Send()
 		return
 	}
-	result := mp.Process()
-	if result == erl.Continue() {
+	log.Tracef("got Erlang ports term: %#v", term)
+	cmd, err := messages.NewCommand(term)
+	if err != nil {
+		log.Error(err)
+		resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))
+		resp.Send()
 		return
 	}
-	log.Trace("Got message type: ", result)
-	if mp.IsMidi {
-		callGroup := mp.MidiCallGroup()
-		midiSys.Dispatch(ctx, callGroup.Calls(), callGroup.IsParallel(), flags)
-	} else {
-		commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
+
+	commandName := cmd.Name()
+	log.Tracef("Got message type: %s", commandName)
+	switch commandName {
+	case string(types.MidiKey):
+		// callGroup := mp.MidiCallGroup()
+		// midiSys.Dispatch(ctx, callGroup.Calls(), callGroup.IsParallel(), flags)
+		log.Debug("TODO: update MIDI message handling")
+	case string(types.CommandKey):
+		// commands.Dispatch(ctx, result.ToCommand(), mp.CommandArgs(), flags)
+		log.Debug("TODO: update command message handling")
+	default:
+		err = ErrUnsupMessageType
+		log.Error(err)
 	}
 	log.Trace("message processing complete")
 }

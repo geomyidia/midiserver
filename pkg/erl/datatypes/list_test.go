@@ -43,6 +43,10 @@ func (s *ListTestSuite) TestNth() {
 	s.Equal(NewAtom("3"), s.list.Nth(0).(*List).Nth(2))
 }
 
+func (s *ListTestSuite) TestFindProp() {
+	s.Equal("let", s.list.FindProp("never").(*Atom).Value())
+}
+
 func (s *ListTestSuite) TestToTerm() {
 	term, err := s.simpleList.ToTerm()
 	s.NoError(err)

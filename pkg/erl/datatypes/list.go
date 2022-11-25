@@ -14,6 +14,10 @@ func NewList(elements []interface{}) *List {
 	}
 }
 
+func (l *List) Append(others ...interface{}) {
+	l.elements = append(l.elements, others...)
+}
+
 func (l *List) Elements() []interface{} {
 	return l.elements
 }
@@ -24,6 +28,23 @@ func (l *List) Len() int {
 
 func (l *List) Nth(index int) interface{} {
 	return l.elements[index]
+}
+
+func (l *List) FindProp(key string) interface{} {
+	for _, e := range l.elements {
+		tuple, ok := e.(*Tuple)
+		if !ok {
+			continue
+		}
+		atom, ok := tuple.Key().(*Atom)
+		if !ok {
+			continue
+		}
+		if atom.Value() == key {
+			return tuple.Value()
+		}
+	}
+	return nil
 }
 
 func (l *List) ToTerm() (interface{}, error) {

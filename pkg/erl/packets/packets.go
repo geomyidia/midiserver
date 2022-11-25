@@ -117,3 +117,15 @@ func (p *Packet) Term() (interface{}, error) {
 	}
 	return term, nil
 }
+
+func ToTerm(opts *erl.Opts) (interface{}, error) {
+	packet, err := ReadStdIOPacket(opts)
+	if err != nil {
+		return nil, err
+	}
+	term, err := packet.Term()
+	if err != nil {
+		return nil, err
+	}
+	return term, nil
+}

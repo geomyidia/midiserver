@@ -1,97 +1,70 @@
 package messages
 
 import (
-	"errors"
-
-	erlang "github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
-	"github.com/ut-proj/midiserver/pkg/types"
 )
 
-type CommandMessage struct {
-	command types.CommandType
-	args    map[string]string
+type Command struct {
+	command *datatypes.Atom
+	args    *datatypes.List
 }
 
-func NewCommandMessage(t interface{}) (*CommandMessage, error) {
-	tuple, ok := t.(erlang.OtpErlangTuple)
-	if !ok {
-		log.Debug("not tuple; checking to see if list of tuples ...")
-		tuples, ok := t.(erlang.OtpErlangList)
+func NewCommand(term interface{}) (*Command, error) {
+	var ok bool
+	var cmdTuple *datatypes.Tuple
+	t, err := datatypes.FromTerm(term)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	log.Tracef("got Go/Erlang ports data: %+v", t)
+	cmdList, ok := t.(*datatypes.List)
+	if ok {
+		if cmdList.Len() > 2 {
+			log.Error(ErrCmdListFormat)
+			return nil, ErrCmdListFormat
+		}
+		cmdTuple, ok = cmdList.Nth(0).(*datatypes.Tuple)
 		if !ok {
-			return nil, errors.New("unexpected message format")
+			log.Error(ErrCmdTupleFormat)
+			return nil, ErrCmdTupleFormat
 		}
-		return handleTuples(tuples)
+	} else {
+		cmdTuple, ok = t.(*datatypes.Tuple)
+		if !ok {
+			log.Error(ErrCmdTupleFormat)
+			return nil, ErrCmdTupleFormat
+		}
 	}
-	return handleTuple(tuple)
-}
 
-func (cm *CommandMessage) Command() types.CommandType {
-	return cm.command
-}
-
-func (cm *CommandMessage) Args() map[string]interface{} {
-	return datatypes.MapStrsToInterfaces(cm.args)
-}
-
-func (cm *CommandMessage) SetCommand(cmd interface{}) error {
-	cmdAtom, ok := cmd.(erlang.OtpErlangAtom)
+	cmd, ok := cmdTuple.Key().(*datatypes.Atom)
 	if !ok {
-		return errors.New("could not cast command to atom")
+		log.Error(ErrCmdAtomFormat)
+		return nil, ErrCmdAtomFormat
 	}
-	cm.command = types.Command(types.CommandName(string(cmdAtom)))
-	return nil
-}
 
-func (cm *CommandMessage) SetArgs(term interface{}) error {
-	args, err := datatypes.TupleListToMap(term.(erlang.OtpErlangList))
-	if err != nil {
-		return err
-	}
-	cm.args = args
-	return nil
-}
-
-func handleTuple(tuple erlang.OtpErlangTuple) (*CommandMessage, error) {
-	log.Debug("handling tuple ...")
-	tpl, err := datatypes.NewTupleFromTerm(tuple)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	log.Debugf("Key: %+v (type %T)", tpl.Key(), tpl.Key())
-	if tpl.Key() == types.CommandKey {
-		msg := &CommandMessage{}
-		err = msg.SetCommand(tpl.Value())
-		if err != nil {
-			log.Error(err)
-			return nil, err
+	args := new(datatypes.List)
+	arg, ok := cmdTuple.Value().(*datatypes.Atom)
+	if ok {
+		args.Append(arg)
+	} else {
+		args, ok = cmdTuple.Value().(*datatypes.List)
+		if !ok {
+			return nil, ErrCmdValueFormat
 		}
-		return msg, nil
 	}
-	return nil, nil
+	return &Command{
+		command: cmd,
+		args:    args,
+	}, nil
 }
 
-func handleTuples(tuples erlang.OtpErlangList) (*CommandMessage, error) {
-	log.Debug("handling tuples ...")
-	t, err := datatypes.TupleListToMap(tuples)
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	log.Debugf("Got map: %+v", t)
-	msg := &CommandMessage{}
-	err = msg.SetCommand(t[types.CommandKey])
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	err = msg.SetArgs(t[types.ArgsKey])
-	if err != nil {
-		log.Error(err)
-		return nil, err
-	}
-	return msg, nil
+func (cm *Command) Name() string {
+	return cm.command.Value()
+}
+
+func (cm *Command) Args() []interface{} {
+	return cm.args.Elements()
 }

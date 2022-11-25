@@ -76,7 +76,7 @@ func Dispatch(
 	}
 
 	if flags.Parser == types.ExecParser() || flags.Parser == types.PortParser() {
-		resp := messages.NewResponse(result, err)
+		resp, _ := messages.NewResponse(result, err)
 		resp.Send()
 	} else if flags.Parser == types.TextParser() {
 		resp := text.NewResponse(result, err)
