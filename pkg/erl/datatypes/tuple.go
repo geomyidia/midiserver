@@ -53,12 +53,18 @@ func (t *Tuple) ToTerm() (interface{}, error) {
 			}
 			terms[i] = term
 		case *List:
+			if t == nil {
+				continue
+			}
 			term, err := t.ToTerm()
 			if err != nil {
 				return nil, err
 			}
 			terms[i] = term
 		case *Tuple:
+			if t == nil {
+				continue
+			}
 			term, err := t.ToTerm()
 			if err != nil {
 				return nil, err
