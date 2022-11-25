@@ -1,17 +1,31 @@
 package midi
 
-// // MIDI messages are expected to be in the format as produced by the
-// // midilib Erlang library (the `midimsg` module, in particular):
-// // * https://github.com/erlsci/midilib
-// //
-// // In summary, the following general forms need to be supported:
-// // * {midi, {batch, [{midi, {...}}]}}
-// // * {midi, {...}}
-// //
-// // The {...} parts of the messages have the following forms:
-// // * {command, Arg}
-// // * {command, [{ArgName, ArgValue}, ...]}
-// //
+import (
+	log "github.com/sirupsen/logrus"
+
+	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
+)
+
+// MIDI messages are expected to be in the format as produced by the
+// midilib Erlang library (the `midimsg` module, in particular):
+// * https://github.com/erlsci/midilib
+//
+// In summary, the following general forms need to be supported:
+// * {midi, {batch, [{midi, {...}}]}}
+// * {midi, {...}}
+//
+// The {...} parts of the messages have the following forms:
+// * {command, Arg}
+// * {command, [{ArgName, ArgValue}, ...]}
+
+func HandleMessage(args interface{}) error {
+	switch t := args.(type) {
+	case *datatypes.List:
+		log.Debugf("Got list: %+v", t.Elements())
+	}
+	return nil
+}
+
 // import (
 // 	"errors"
 // 	"fmt"

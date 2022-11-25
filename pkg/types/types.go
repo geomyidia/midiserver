@@ -57,6 +57,9 @@ type Err string
 var (
 	ContinueResult = Result(ContinueKey)
 	EmptyResult    = Result(EmptyKey)
+	OkResult       = Result("ok")
+	PongResult     = Result("pong")
+	StoppingResult = Result("stopping")
 )
 
 // Command types
