@@ -59,6 +59,12 @@ func (l *List) ToTerm() (interface{}, error) {
 				return nil, err
 			}
 			terms[i] = term
+		case *Binary:
+			term, err := t.ToTerm()
+			if err != nil {
+				return nil, err
+			}
+			terms[i] = term
 		case *List:
 			if t == nil {
 				continue

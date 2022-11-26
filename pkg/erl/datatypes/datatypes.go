@@ -24,7 +24,12 @@ func FromTerm(term interface{}) (interface{}, error) {
 		return nil, ErrNotImplemented
 	case erlang.OtpErlangBinary:
 		log.Debug("Processing binary ...")
-		return nil, ErrNotImplemented
+		eBin, ok := term.(erlang.OtpErlangBinary)
+		if !ok {
+			log.Error(ErrCastingBinary)
+			return nil, ErrCastingBinary
+		}
+		return NewBinary(eBin.Value), nil
 	case erlang.OtpErlangFunction:
 		log.Debug("Processing function ...")
 		return nil, ErrNotImplemented
