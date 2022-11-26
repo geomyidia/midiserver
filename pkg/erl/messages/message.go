@@ -56,7 +56,6 @@ func New(t interface{}) (*Message, error) {
 			return nil, err
 		}
 	}
-	// If this is a MIDI message
 	return &Message{
 		messageType: msgType,
 		name:        name,
