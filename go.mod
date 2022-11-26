@@ -6,7 +6,7 @@ require (
 	github.com/ergo-services/ergo v1.999.201
 	github.com/geomyidia/zylog v0.1.5
 	github.com/google/uuid v1.3.0
-	github.com/okeuday/erlang_go/v2 v2.0.2
+	github.com/okeuday/erlang_go/v2 v2.0.5
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.5.1
 	gitlab.com/gomidi/midi v1.23.7

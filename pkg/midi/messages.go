@@ -18,12 +18,13 @@ import (
 // * {command, Arg}
 // * {command, [{ArgName, ArgValue}, ...]}
 
-func HandleMessage(args interface{}) error {
+func HandleMessage(args interface{}) (interface{}, error) {
 	switch t := args.(type) {
 	case *datatypes.List:
 		log.Debugf("Got list: %+v", t.Elements())
+		return t, nil
 	}
-	return nil
+	return nil, nil
 }
 
 // import (

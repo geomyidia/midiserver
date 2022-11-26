@@ -86,7 +86,7 @@ func HandleMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, fl
 		return
 	}
 	log.Tracef("got Erlang ports term: %#v", term)
-	msg, err := messages.New(term)
+	msg, err := messages.NewFromTerm(term)
 	if err != nil {
 		log.Error(err)
 		resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))
@@ -98,7 +98,7 @@ func HandleMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, fl
 	log.Tracef("Got message name %s", msgName)
 	switch msg.Type() {
 	case string(types.MidiKey):
-		err := midi.HandleMessage(msg.Args)
+		_, err := midi.HandleMessage(msg.Args)
 		if err != nil {
 			log.Error(err)
 			resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))

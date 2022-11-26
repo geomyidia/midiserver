@@ -3,7 +3,27 @@ package datatypes
 import (
 	"github.com/okeuday/erlang_go/v2/erlang"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/ut-proj/midiserver/pkg/erl/packets"
 )
+
+func FromPacket(pkt *packets.Packet) (interface{}, error) {
+	bytes, err := pkt.Bytes()
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	return FromBytes(bytes)
+}
+
+func FromBytes(data []byte) (interface{}, error) {
+	term, err := erlang.BinaryToTerm(data)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	return FromTerm(term)
+}
 
 func FromTerm(term interface{}) (interface{}, error) {
 	log.Tracef("Processing term: %+v", term)

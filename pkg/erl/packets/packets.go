@@ -35,7 +35,7 @@ type Packet struct {
 //   {a, a}      = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x1, 0x61, 0xa}
 //   {a, test}   = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x64, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
 //   {a, "test"} = []byte{0x83, 0x68, 0x2, 0x64, 0x0, 0x1, 0x61, 0x6b, 0x0, 0x4, 0x74, 0x65, 0x73, 0x74, 0xa}
-func ReadStdIOPacket(opts *erl.Opts) (*Packet, error) {
+func NewPacketFromStdin(opts *erl.Opts) (*Packet, error) {
 	reader := bufio.NewReader(os.Stdin)
 	bytes, _ := reader.ReadBytes(DELIMITER)
 	return NewPacket(bytes, opts)
@@ -102,7 +102,7 @@ func (p *Packet) getUnwrapped() ([]byte, error) {
 	return nil, nil
 }
 
-func (p *Packet) Term() (interface{}, error) {
+func (p *Packet) ToTerm() (interface{}, error) {
 	log.Trace("getting term ...")
 	bytes, err := p.Bytes()
 	if err != nil {
@@ -119,11 +119,11 @@ func (p *Packet) Term() (interface{}, error) {
 }
 
 func ToTerm(opts *erl.Opts) (interface{}, error) {
-	packet, err := ReadStdIOPacket(opts)
+	packet, err := NewPacketFromStdin(opts)
 	if err != nil {
 		return nil, err
 	}
-	term, err := packet.Term()
+	term, err := packet.ToTerm()
 	if err != nil {
 		return nil, err
 	}
