@@ -1,15 +1,17 @@
 package midi
 
 import (
+	"sort"
 	"testing"
 
-	"github.com/okeuday/erlang_go/v2/erlang"
+	"github.com/ergo-services/ergo/etf"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/ut-proj/midiserver/pkg/erl"
-	"github.com/ut-proj/midiserver/pkg/erl/messages"
-	"github.com/ut-proj/midiserver/pkg/erl/packets"
-	"github.com/ut-proj/midiserver/pkg/erl/testdata"
+	"github.com/geomyidia/erlcmd/pkg/messages"
+	"github.com/geomyidia/erlcmd/pkg/options"
+	"github.com/geomyidia/erlcmd/pkg/packets"
+	"github.com/geomyidia/erlcmd/pkg/testdata"
 )
 
 const (
@@ -19,11 +21,11 @@ const (
 
 type MidiMessageTestSuite struct {
 	suite.Suite
-	opts *erl.Opts
+	opts *options.Opts
 }
 
 func (s *MidiMessageTestSuite) SetupSuite() {
-	s.opts = &erl.Opts{IsHexEncoded: true}
+	s.opts = &options.Opts{IsHexEncoded: true}
 }
 
 func (s *MidiMessageTestSuite) TestBatchMessage() {
@@ -35,12 +37,31 @@ func (s *MidiMessageTestSuite) TestDeviceMessage() {
 func (s *MidiMessageTestSuite) TestNotesOnMessage() {
 	pkt, err := packets.NewPacket(testdata.NoteOnPacketBytes, s.opts)
 	s.Require().NoError(err)
-	term, err := pkt.ToTerm()
+	bytes, err := pkt.Bytes()
 	s.Require().NoError(err)
-	s.Equal("midi", string(term.(erlang.OtpErlangTuple)[0].(erlang.OtpErlangAtom)))
-	// msg, err := messages.New(erlang.OtpErlangList{Value: []interface{}{term}})
-	// s.Require().NoError(err)
-	// s.Equal("XXX", msg)
+	msg, err := messages.NewFromBytes(bytes)
+	s.Require().NoError(err)
+	s.Equal("midi", msg.Type())
+	s.Equal("batch", msg.Name())
+	args := msg.Args()
+	s.Equal(2, len(args))
+	id := args[0].(etf.Tuple)
+	s.Equal(etf.Atom("id"), id.Element(1).(etf.Atom))
+	uuidBytes := id.Element(2).([]uint8)
+	uuid, err := uuid.FromBytes(uuidBytes)
+	s.Require().NoError(err)
+	s.Equal("de950779-e60a-439a-bc83-327adf70d961", uuid.String())
+	batch := args[1].(etf.Tuple)
+	name := batch[0].(etf.Atom)
+	s.Equal(etf.Atom("messages"), name)
+	msgs := batch[1].(etf.List)
+	s.Equal(1, len(msgs))
+	var msgNames []string
+	for _, msg := range msgs {
+		msgNames = append(msgNames, string(msg.(etf.Tuple).Element(1).(etf.Atom)))
+	}
+	sort.Strings(msgNames)
+	s.Equal([]string{"note_on"}, msgNames)
 }
 
 func TestMidiMessageTestSuite(t *testing.T) {
@@ -49,14 +70,14 @@ func TestMidiMessageTestSuite(t *testing.T) {
 
 type MidiMessagesTestSuite struct {
 	suite.Suite
-	opts   *erl.Opts
+	opts   *options.Opts
 	batch  interface{}
 	device interface{}
 	noteOn interface{}
 }
 
 func (s *MidiMessagesTestSuite) SetupSuite() {
-	s.opts = &erl.Opts{IsHexEncoded: true}
+	s.opts = &options.Opts{IsHexEncoded: true}
 	// Batch setup§
 	bPkt, err := packets.NewPacket(testdata.BatchPacketBytes, s.opts)
 	s.Require().NoError(err)

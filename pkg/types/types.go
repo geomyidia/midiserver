@@ -3,13 +3,12 @@ package types
 import (
 	"context"
 	"time"
+
+	"github.com/geomyidia/erlcmd/pkg/messages"
 )
 
 const (
 	ArgsKey              string = "args"
-	CommandKey           string = "command"
-	ContinueKey          string = "continue"
-	EmptyKey             string = ""
 	MidiKey              string = "midi"
 	MidiBatchKey         string = "batch"
 	MidiChannelKey       string = "channel"
@@ -50,23 +49,11 @@ type Flags struct {
 	Version         bool
 }
 
-// General result types
-type Result string
-type Err string
-
-var (
-	ContinueResult = Result(ContinueKey)
-	EmptyResult    = Result(EmptyKey)
-	OkResult       = Result("ok")
-	PongResult     = Result("pong")
-	StoppingResult = Result("stopping")
-)
-
 // Command types
 type CommandName string
 type CommandType CommandName
 type CommandProcessor func(context.Context, CommandType, map[string]interface{}, *Flags)
-type MessageProcessor func() Result
+type MessageProcessor func() messages.Result
 
 // MIDI types
 type MidiOpType string
@@ -182,10 +169,10 @@ func VersionCommand() CommandType {
 }
 
 func EmptyCommand() CommandType {
-	return Command("")
+	return Command(messages.EmptyKey)
 }
 
-func (r Result) ToCommand() CommandType {
+func ResultToCommand(r messages.Result) CommandType {
 	return Command(CommandName(string(r)))
 }
 

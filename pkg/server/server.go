@@ -8,11 +8,12 @@ import (
 	"github.com/ergo-services/ergo/gen"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/erlcmd/pkg/messages"
+	"github.com/geomyidia/erlcmd/pkg/options"
+	"github.com/geomyidia/erlcmd/pkg/packets"
+
 	"github.com/ut-proj/midiserver/internal/util"
 	"github.com/ut-proj/midiserver/pkg/commands"
-	"github.com/ut-proj/midiserver/pkg/erl"
-	"github.com/ut-proj/midiserver/pkg/erl/messages"
-	"github.com/ut-proj/midiserver/pkg/erl/packets"
 	"github.com/ut-proj/midiserver/pkg/erl/rpc"
 	"github.com/ut-proj/midiserver/pkg/midi"
 	"github.com/ut-proj/midiserver/pkg/types"
@@ -31,9 +32,9 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		opts := &erl.Opts{IsHexEncoded: true}
+		opts := &options.Opts{IsHexEncoded: true}
 		if flags.Parser == types.PortParser() {
-			opts = erl.DefaultOpts()
+			opts = options.DefaultOpts()
 		}
 		HandleMessages(ctx, midiSys, opts, flags)
 	}()
@@ -64,7 +65,7 @@ func Serve(ctx context.Context, midiSys *midi.System, flags *types.Flags) {
 	log.Info("application shutdown complete.")
 }
 
-func HandleMessages(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
+func HandleMessages(ctx context.Context, midiSys *midi.System, opts *options.Opts, flags *types.Flags) {
 	log.Info("processing messages sent to Go language server ...")
 	log.Debugf("using command processor options %#v", opts)
 	go func() {
@@ -76,20 +77,20 @@ func HandleMessages(ctx context.Context, midiSys *midi.System, opts *erl.Opts, f
 	<-ctx.Done()
 }
 
-func HandleMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, flags *types.Flags) {
+func HandleMessage(ctx context.Context, midiSys *midi.System, opts *options.Opts, flags *types.Flags) {
 	var resp *messages.Response
 	term, err := packets.ToTerm(opts)
 	if err != nil {
 		log.Error(err)
-		resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))
+		resp, _ = messages.NewResponse(messages.NoResult, messages.Err(err.Error()))
 		resp.Send()
 		return
 	}
 	log.Tracef("got Erlang ports term: %#v", term)
-	msg, err := messages.NewFromTerm(term)
+	msg, err := messages.New(term)
 	if err != nil {
 		log.Error(err)
-		resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))
+		resp, _ = messages.NewResponse(messages.NoResult, messages.Err(err.Error()))
 		resp.Send()
 		return
 	}
@@ -101,14 +102,14 @@ func HandleMessage(ctx context.Context, midiSys *midi.System, opts *erl.Opts, fl
 		_, err := midi.HandleMessage(msg.Args)
 		if err != nil {
 			log.Error(err)
-			resp, _ = messages.NewResponse(types.EmptyResult, types.Err(err.Error()))
+			resp, _ = messages.NewResponse(messages.NoResult, messages.Err(err.Error()))
 			resp.Send()
 			return
 		}
 		// callGroup := mp.MidiCallGroup()
 		// midiSys.Dispatch(ctx, callGroup.Calls(), callGroup.IsParallel(), flags)
 		log.Debug("TODO: update MIDI message handling")
-	case string(types.CommandKey):
+	case string(messages.CommandKey):
 		commands.Dispatch(ctx, msg, flags)
 	default:
 		err = ErrUnsupMessageType

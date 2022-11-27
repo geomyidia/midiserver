@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
-
+	"github.com/ergo-services/ergo/etf"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ut-proj/midiserver/pkg/erl/messages"
+	"github.com/geomyidia/erlcmd/pkg/messages"
+
 	"github.com/ut-proj/midiserver/pkg/text"
 	"github.com/ut-proj/midiserver/pkg/types"
 	"github.com/ut-proj/midiserver/pkg/version"
@@ -22,9 +22,9 @@ func Dispatch(
 	flags *types.Flags,
 ) {
 	log.Debug("Dispatching command ...")
-	var result types.Result
-	var err types.Err
-	if msg.Type() != string(types.CommandKey) {
+	var result messages.Result
+	var err messages.Err
+	if msg.Type() != string(messages.CommandKey) {
 		log.Error(ErrCmdMsgFormat)
 		resp := text.NewResponse(result, err)
 		resp.Send()
@@ -37,10 +37,10 @@ func Dispatch(
 			if err != nil {
 				log.Error(err)
 			} else {
-				result = types.OkResult
+				result = messages.OkResult
 			}
 		} else {
-			result = types.PongResult
+			result = messages.PongResult
 		}
 	case types.PlayNoteCommand():
 		// TODO: let's put this logic into something that parses the
@@ -48,12 +48,12 @@ func Dispatch(
 		//       it
 		args := make(map[string]interface{})
 		for _, arg := range msg.Args() {
-			tuple, ok := arg.(*datatypes.Tuple)
+			tuple, ok := arg.(etf.Tuple)
 			if !ok {
-				log.Error(datatypes.ErrCastingTuple)
+				log.Error(messages.ErrMsgTupleFormat)
 				continue
 			}
-			args[tuple.Key().(string)] = tuple.Value().(uint)
+			args[tuple.Element(1).(string)] = tuple.Element(2).(uint)
 		}
 		// TODO: if the values aren't in the payload, pull them
 		// from the flags
@@ -70,16 +70,16 @@ func Dispatch(
 		// 	args["duration"] = toUint(flags.Args[durationIdx])
 		// }
 		PlayNote(args)
-		result = types.OkResult
+		result = messages.OkResult
 	case types.ExampleCommand():
 		args := make(map[string]interface{})
 		for _, arg := range msg.Args() {
-			tuple, ok := arg.(*datatypes.Tuple)
+			tuple, ok := arg.(etf.Tuple)
 			if !ok {
-				log.Error(datatypes.ErrCastingTuple)
+				log.Error(messages.ErrMsgTupleFormat)
 				continue
 			}
-			args[tuple.Key().(string)] = tuple.Value().(uint)
+			args[tuple.Element(1).(string)] = tuple.Element(2).(uint)
 		}
 		// TODO: if the values aren't in the payload, pull them
 		// from the flags
@@ -88,26 +88,26 @@ func Dispatch(
 		// 	args["channel"] = toUint(flags.Args[2])
 		// }
 		PlayExample(args)
-		result = types.OkResult
+		result = messages.OkResult
 	case types.ListDevicesCommand():
 		ListDevices()
-		result = types.OkResult
+		result = messages.OkResult
 	case types.ListNodesCommand():
 		ListNodes(flags)
-		result = types.OkResult
+		result = messages.OkResult
 	case types.RemotePortCommand():
 		ShowRemotePort(flags)
-		result = types.OkResult
+		result = messages.OkResult
 	case types.StopCommand():
 		log.Info("stopping Go MIDI server ...")
-		result = types.StoppingResult
+		result = messages.StoppingResult
 		<-ctx.Done()
 	case types.VersionCommand():
-		result = types.Result(version.VersionedBuildString())
+		result = messages.Result(version.VersionedBuildString())
 	case types.EmptyCommand():
-		result = types.Result("missing command; see -h for useage")
+		result = messages.Result("missing command; see -h for useage")
 	default:
-		result = types.Result(
+		result = messages.Result(
 			fmt.Sprintf(
 				"received unsupported command: '%s' (data: %+v, type: %T)",
 				cmdName, msg, msg))

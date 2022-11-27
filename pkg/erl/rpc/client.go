@@ -11,7 +11,7 @@ import (
 	"github.com/ergo-services/ergo/node"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ut-proj/midiserver/pkg/erl"
+	"github.com/ut-proj/midiserver/pkg/erl/util"
 	"github.com/ut-proj/midiserver/pkg/types"
 )
 
@@ -41,11 +41,11 @@ type Client struct {
 }
 
 func New(flags *types.Flags) (*Client, error) {
-	cookie, err := erl.ReadCookie()
+	cookie, err := util.ReadCookie()
 	if err != nil {
 		return nil, err
 	}
-	remoteNode, err := ergo.StartNode(erl.LongNodename, cookie, node.Options{})
+	remoteNode, err := ergo.StartNode(util.LongNodename, cookie, node.Options{})
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func New(flags *types.Flags) (*Client, error) {
 		remoteNode:   flags.RemoteNode,
 		remoteModule: flags.RemoteModule,
 	}
-	remoteProcess, err := remoteNode.Spawn(erl.ShortNodename, gen.ProcessOptions{}, client)
+	remoteProcess, err := remoteNode.Spawn(util.ShortNodename, gen.ProcessOptions{}, client)
 	if err != nil {
 		return nil, err
 	}

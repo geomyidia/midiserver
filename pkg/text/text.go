@@ -3,15 +3,15 @@ package text
 import (
 	log "github.com/sirupsen/logrus"
 
-	"github.com/ut-proj/midiserver/pkg/types"
+	"github.com/geomyidia/erlcmd/pkg/messages"
 )
 
 type Response struct {
-	result types.Result
-	err    types.Err
+	result messages.Result
+	err    messages.Err
 }
 
-func NewResponse(result types.Result, err types.Err) *Response {
+func NewResponse(result messages.Result, err messages.Err) *Response {
 	return &Response{
 		result: result,
 		err:    err,

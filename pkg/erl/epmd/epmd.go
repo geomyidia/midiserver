@@ -10,7 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/ut-proj/midiserver/internal/tcp"
-	"github.com/ut-proj/midiserver/pkg/erl"
+	"github.com/ut-proj/midiserver/pkg/erl/util"
 )
 
 const (
@@ -136,7 +136,7 @@ func makeReq(data string, reqCode int) []byte {
 }
 
 func shortName(remoteNode string) string {
-	return strings.Split(remoteNode, erl.NodeDelimit)[0]
+	return strings.Split(remoteNode, util.NodeDelimit)[0]
 }
 
 func bytesToInt(b []byte) uint16 {

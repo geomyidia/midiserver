@@ -5,10 +5,11 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
+	"github.com/geomyidia/erlcmd/pkg/messages"
+
 	"github.com/ut-proj/midiserver/internal/app"
 	"github.com/ut-proj/midiserver/internal/cli"
 	"github.com/ut-proj/midiserver/pkg/commands"
-	"github.com/ut-proj/midiserver/pkg/erl/messages"
 	"github.com/ut-proj/midiserver/pkg/midi"
 	"github.com/ut-proj/midiserver/pkg/server"
 	"github.com/ut-proj/midiserver/pkg/types"

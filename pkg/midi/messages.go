@@ -1,9 +1,8 @@
 package midi
 
 import (
+	"github.com/ergo-services/ergo/etf"
 	log "github.com/sirupsen/logrus"
-
-	"github.com/ut-proj/midiserver/pkg/erl/datatypes"
 )
 
 // MIDI messages are expected to be in the format as produced by the
@@ -18,10 +17,10 @@ import (
 // * {command, Arg}
 // * {command, [{ArgName, ArgValue}, ...]}
 
-func HandleMessage(args interface{}) (interface{}, error) {
-	switch t := args.(type) {
-	case *datatypes.List:
-		log.Debugf("Got list: %+v", t.Elements())
+func HandleMessage(msg interface{}) (interface{}, error) {
+	switch t := msg.(type) {
+	case etf.List:
+		log.Debugf("Got list: %+v", t)
 		return t, nil
 	}
 	return nil, nil
