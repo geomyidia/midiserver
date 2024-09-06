@@ -1,30 +1,65 @@
 name: ci/cd
 
 on:
-  push:
-    branches: ['main', 'release/**', 'task/**', 'feature/**', 'epic/**']
-    tags: ['**']
-  pull_request:
-    branches: ['main', 'release/**', 'task/**', 'feature/**', 'epic/**']
   workflow_dispatch:
+  push:
+    branches: [ main, 'release/*' ]
+  pull_request:
+    branches: [ main, 'release/*' ]
+  # Build once a month, just to be sure things are still working
+  schedule:
+    - cron: "19 3 26 * *"
 
 jobs:
 
-  build:
+  core-builds:
+    name: Erlang $ build
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        otp_version: ['24.3', '25.3', '26.1']
+
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Go
-      uses: actions/setup-go@v2
+    - uses: erlef/setup-beam@v1
       with:
-        go-version: 1.17
-    - name: Install deps
-      run: sudo apt-get install libasound2-dev
-    - name: Get current directory
-      run: |
-        pwd
-        ls -al
-    - name: Build
-      run: go build -v -race ./...
-    - name: Test
-      run: go test -v -race ./...
+        otp-version: $
+        rebar3-version: '3.22'
+    - name: Compile
+      run: rebar3 compile
+    - name: Xref Checks
+      run: rebar3 xref
+    - name: Dialyzer
+      run: rebar3 dialyzer
+    - name: Proper Tests
+      run: rebar3 as test do compile, proper --regressions
+    - name: Run Unit Tests
+      run: rebar3 as test lfe ltest -tall
+
+  older-builds:
+    name: Old Erlang $ build
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        otp_version: ['21.3', '22.3', '23.3']
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: erlef/setup-beam@v1
+      with:
+        otp-version: $
+        rebar3-version: '3.15'
+    - name: Compile
+      run: rebar3 compile
+    - name: Xref Checks
+      run: rebar3 xref
+    - name: Dialyzer
+      run: rebar3 dialyzer
+    - name: Compile Tests
+      run: rebar3 as test compile
+    - name: Proper Tests
+      run: rebar3 as test proper --regressions
+    - name: Run Unit Tests
+      run: rebar3 as test lfe ltest -tall
