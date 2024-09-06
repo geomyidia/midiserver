@@ -123,12 +123,12 @@ Commands:
 
 Apache Version 2 License
 
-Copyright © 2020-2022, Duncan McGreggor
+Copyright © 2020-2024, Duncan McGreggor
 
 [//]: ---Named-Links---
 
-[logo]: assets/images/logo-v1-x250.png
-[logo-large]: assets/images/logo-v1-x1000.png
+[logo]: priv/images/logo-v1-x250.png
+[logo-large]: priv/images/logo-v1-x1000.png
 [gh-actions-badge]: https://github.com/ut-proj/midiserver/workflows/ci%2Fcd/badge.svg
 [gh-actions]: https://github.com/ut-proj/midiserver/actions
 [go]: https://golang.org/
