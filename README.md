@@ -20,6 +20,8 @@ Currently this library is being developed using the following:
 * rustc 1.81
 * rebar 3.24.0
 
+Note that the NIF does not run properly under Erlang 27.
+
 ## Usage
 
 TBD
