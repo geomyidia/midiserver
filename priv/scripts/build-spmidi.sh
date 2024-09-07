@@ -9,7 +9,7 @@ SP_UNZIP_DIR=${SP_DL_DIR}/sonic-pi-${SP_VERS_NUM}
 SP_DIR=sp_midi
 SP_BUILD_DIR=${SP_DIR}/build
 
-function download () {
+download() {
     echo "MIDISERVER: Downloading Sonic Pi MIDI NIF source ..."
     mkdir -p $SP_DL_DIR
     cd $SP_DL_DIR
@@ -29,7 +29,7 @@ function download () {
     cd $ROOT_DIR
 }
 
-function pre_build () {
+pre_build() {
     echo "MIDISERVER: Setting up MIDI NIF build dir ..."
 
     if [ -d $SP_DIR ]; then
@@ -41,16 +41,20 @@ function pre_build () {
     mkdir -p $SP_BUILD_DIR
 }
 
-function build () {
+build() {
     echo "MIDISERVER: Building MIDI NIF ..."
     cd $SP_BUILD_DIR && \
         cmake .. && \
         make
     cd $ROOT_DIR
-    cp ${SP_BUILD_DIR}/libsp_midi.dylib src
 }
 
-function post_build () {
+install() {
+    echo "MIDISERVER: Installing MIDI NIF ..."
+    cp --remove-destination ${SP_BUILD_DIR}/libsp_midi.* src
+}
+
+post_build() {
     echo "MIDISERVER: Cleaning up MIDI NIF temporary and build directories ..."
     rm -rf $SP_DIR
 }
@@ -58,5 +62,6 @@ function post_build () {
 download
 pre_build
 build
+install
 post_build
 

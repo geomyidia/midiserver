@@ -22,6 +22,12 @@ Currently this library is being developed using the following:
 
 Note that the NIF does not run properly under Erlang 27.
 
+To run on a Raspberry PI (or other Debian distro), you will probably need the following:
+
+```shell
+sudo apt-get install cmake libasound2-dev
+```
+
 ## Usage
 
 TBD
