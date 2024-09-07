@@ -1,11 +1,29 @@
 -module(sp_midi).
--export([midi_init/0, midi_deinit/0, midi_send/2, midi_flush/0, midi_ins/0, midi_outs/0, midi_refresh_devices/0,
-        have_my_pid/0, set_this_pid/1, set_log_level/1, get_current_time_microseconds/0]).
+
+-export([
+  is_nif_loaded/0,
+  is_nif_initialized/0, 
+  midi_init/0,
+  midi_deinit/0,
+  midi_send/2,
+  midi_flush/0,
+  midi_ins/0,
+  midi_outs/0,
+  midi_refresh_devices/0,
+  have_my_pid/0,
+  set_this_pid/1,
+  set_log_level/1,
+  get_current_time_microseconds/0]).
+
 -on_load(init/0).
 
 init() ->
     ok = erlang:load_nif("src/libsp_midi", 0).
 
+is_nif_loaded() ->
+    exit(nif_library_not_loaded).
+is_nif_initialized() ->
+    exit(nif_library_not_loaded).
 midi_init() ->
     exit(nif_library_not_loaded).
 midi_deinit() ->
