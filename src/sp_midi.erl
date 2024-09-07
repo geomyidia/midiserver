@@ -17,8 +17,10 @@
 
 -on_load(init/0).
 
+-include_lib("sp_midi.hrl").
+
 init() ->
-    ok = erlang:load_nif("src/libsp_midi", 0).
+    ok = erlang:load_nif(?LIB, 0).
 
 is_nif_loaded() ->
     exit(nif_library_not_loaded).
