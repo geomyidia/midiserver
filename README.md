@@ -14,11 +14,18 @@ TBD
 
 ## Supported Versions
 
+Dependencies:
+* cmake
+* make/gcc/clang
+
 Currently this library is being developed using the following:
 
-* Erlang 26.2
-* rustc 1.81
-* rebar 3.24.0
+* macos 12 & 14
+  * Erlang 26.2
+  * rebar 3.24
+* Raspberrian/Debian 12 (bookworm)
+  * Erlang 25.2
+  * rebar 3.19
 
 Note that the NIF does not run properly under Erlang 27.
 
