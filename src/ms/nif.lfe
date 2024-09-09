@@ -1,4 +1,4 @@
-(defmodule sp-midi
+(defmodule ms.nif
   (export all))
 
 (include-lib "sp_midi.hrl")
