@@ -1,4 +1,5 @@
 src/libsp_midi.dylib
+src/libsp_midi.so
 .DS_Store
 *.beam
 *.beam

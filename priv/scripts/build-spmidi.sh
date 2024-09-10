@@ -51,12 +51,17 @@ build() {
 
 install() {
     echo "MIDISERVER: Installing MIDI NIF ..."
-    cp --remove-destination ${SP_BUILD_DIR}/libsp_midi.* src
+    rm -f src/libsp_midi.*
+    cp ${SP_BUILD_DIR}/libsp_midi.* src
 }
 
 post_build() {
     echo "MIDISERVER: Cleaning up MIDI NIF temporary and build directories ..."
     rm -rf $SP_DIR
+    if [ $(uname -s) == "Darwin" ]; then
+        cd src && ln -s libsp_midi.dylib libsp_midi.so
+    fi
+    cd $ROOT_DIR
 }
 
 download
