@@ -9,6 +9,8 @@
 
 *A MIDI CLI tool and server written in Go, focused on supporting BEAM music apps via Erlang Ports*
 
+**Update:** This repo is no longer being used for the undertone and undermidi projects; those are currently being updated to use the rtmidi Erlang NIF developed by the Sonic Pi project.
+
 ## About
 
 The executable built by this project is intended to:
